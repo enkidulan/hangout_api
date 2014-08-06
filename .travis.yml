@@ -1,0 +1,15 @@
+---
+before_install:
+    - sudo apt-get install -qq python-dev
+install:
+    - pip install setuptools --upgrade
+    - python bootstrap.py
+    - bin/buildout -N -q -t 10
+before_script:
+    - "export DISPLAY=:99.0"
+    - "sh -e /etc/init.d/xvfb start"
+python:
+    - 2.7
+    - 3.3
+language: python
+script: bin/nosetests --no-skip
