@@ -7,14 +7,13 @@ from tempfile import NamedTemporaryFile
 from setuptools.command.develop import develop
 from setuptools.command.install import install
 from os.path import join
-# from setup import CHROMEDRIVER_VERSION
-CHROMEDRIVER_VERSION = '2.10'
-
 
 here = os.path.dirname(os.path.abspath(__file__))
 
+CHROMEDRIVER_VERSION = '2.10'
 CHROMEDRIVER_URL_BASE = "http://chromedriver.storage.googleapis.com/%s/chromedriver_linux64.zip"
 DEST_FILE_NAME = 'CHROMEDRIVER'
+
 
 class RequestProgressWrapper():
     """ Simple helper for displaying file download progress;
@@ -53,6 +52,7 @@ def download_ziped_resource(path, url, name, unzip=False):
             zfile = zipfile.ZipFile(f.name)
             zfile.extractall(path)
             os.rename(os.path.join(path, zfile.namelist()[0]), full_path)
+    os.chmod(full_path, 755)
 
 
 def data_loader(command_subclass):

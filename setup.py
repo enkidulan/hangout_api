@@ -40,6 +40,16 @@ setup(name='hangout_api',
           'selenium',
           # -*- Extra requirements: -*-
       ],
+      extras_require={
+          'tests': ['testfixtures',
+                    'nose',
+                    'nose-selecttests',
+                    'coverage',
+                    'fabric',
+                    'xxxreport',
+                    'pyyaml',
+                    ]
+      },
       entry_points="""
       # -*- Entry points: -*-
       """,
