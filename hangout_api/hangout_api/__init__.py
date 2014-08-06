@@ -10,6 +10,8 @@ from selenium.webdriver.common.by import By
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
 from selenium.common.exceptions import TimeoutException
+from pyvirtualdisplay.smartdisplay import SmartDisplay
+
 
 parret_dir_path = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 CHROMEDRIVER_PATH = join(parret_dir_path, 'CHROMEDRIVER')
@@ -29,6 +31,12 @@ class Hangouts():
         by providing its credential to class or by entering them manually
         in browser log in page.
         """
+        # lets start display in case if no is available
+        self.display = None
+        if not os.environ.get('DISPLAY'):
+            self.display = SmartDisplay(visible=0, bgcolor='black')
+            self.display.start()
+
         self.browser = webdriver.Chrome(executable_path=CHROMEDRIVER_PATH)
         self.wait = WebDriverWait(self.browser, 10)
         self.browser.get('https://plus.google.com/hangouts/active')
@@ -71,6 +79,6 @@ class Hangouts():
                 'Wasn\'t able to login. Check if credentials are correct.')
 
     def __del__(self):
-        while self.browser.window_handles:
-            self.browser.switch_to_window(self.browser.window_handles[0])
-            self.browser.close()
+        self.browser.quit()
+        if self.display is not None:
+            self.display.stop()
