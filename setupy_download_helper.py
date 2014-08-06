@@ -1,8 +1,11 @@
-import os
 import sys
-import zipfile
-import urllib2
+if sys.version_info.major == 2:
+    from urllib2 import urlopen
+else:
+    from urllib.request import urlopen
+import os
 import shutil
+import zipfile
 from tempfile import NamedTemporaryFile
 from setuptools.command.develop import develop
 from setuptools.command.install import install
@@ -20,7 +23,8 @@ class RequestProgressWrapper():
     if works with file-like objects"""
     def __init__(self, obj):
         self.obj = obj
-        self.total_size = float(obj.info().getheader('Content-Length').strip())
+        # import pdb; pdb.set_trace()
+        self.total_size = float(obj.headers['content-length'].strip())
         self.url = obj.url
         self.bytes_so_far = 0
 
@@ -43,7 +47,7 @@ def download_ziped_resource(path, url, name, unzip=False):
     full_path = join(path, name)
     if os.path.exists(full_path):
         return
-    req = urllib2.urlopen(url)
+    req = urlopen(url)
     data_destination = NamedTemporaryFile() if unzip else open(full_path, 'wb')
     with data_destination as f:
         shutil.copyfileobj(RequestProgressWrapper(req), f)

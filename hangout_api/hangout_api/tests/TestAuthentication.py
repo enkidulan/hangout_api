@@ -6,7 +6,7 @@ from hangout_api.hangout_api import LoginError
 from testfixtures import ShouldRaise
 from yaml import load
 
-credentials = load(file('credentials.yaml', 'r'))
+credentials = load(open('credentials.yaml', 'r'))
 
 
 class TestLogIn(unittest.TestCase):
