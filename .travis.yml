@@ -8,8 +8,8 @@ before_install:
 
 install:
     - pip install setuptools --upgrade
-    - python bootstrap.py
-    - bin/buildout -N -q -t 10
+    - python bootstrap.py -c travis.cfg
+    - bin/buildout -N -q -t 10 -c travis.cfg
 python:
     - 2.7
     - 3.3
