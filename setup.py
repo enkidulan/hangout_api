@@ -38,6 +38,7 @@ setup(name='hangout_api',
       install_requires=[
           'setuptools',
           'selenium',
+          'seleniumwrapper',
           'pyscreenshot',
           'entrypoint2',
           'Pillow',

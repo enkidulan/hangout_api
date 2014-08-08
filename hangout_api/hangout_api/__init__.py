@@ -11,6 +11,7 @@ from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
 from selenium.common.exceptions import TimeoutException
 from pyvirtualdisplay.smartdisplay import SmartDisplay
+import seleniumwrapper as selwrap
 
 
 parret_dir_path = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
@@ -19,6 +20,14 @@ CHROMEDRIVER_PATH = join(parret_dir_path, 'CHROMEDRIVER')
 
 class LoginError(BaseException):
     pass
+
+
+def switch_window_to_new_session(browser):
+    while browser.window_handles <= 1:
+        sleep(0.2)  # XXX: add waiting for second window to open
+    browser.close()  # closing old window
+    # 'Google+' title
+    browser.switch_to_window(browser.window_handles[-1])
 
 
 class Hangouts():
@@ -37,43 +46,26 @@ class Hangouts():
             self.display = SmartDisplay(visible=0, bgcolor='black')
             self.display.start()
 
-        self.browser = webdriver.Chrome(executable_path=CHROMEDRIVER_PATH)
-        self.wait = WebDriverWait(self.browser, 10)
+        self.browser = selwrap.create(
+            "chrome", executable_path=CHROMEDRIVER_PATH)
         self.browser.get('https://plus.google.com/hangouts/active')
-        element = self.wait.until(
-            EC.element_to_be_clickable((By.CLASS_NAME, 'opd')))
-        element.click()
+        self.browser.by_class('opd').click()
 
-        sleep(4)  # XXX: add waiting for second window to open
-        self.browser.close()  # closing old window
-
-        # 'Google+' title
-        self.browser.switch_to_window(self.browser.window_handles[-1])
+        switch_window_to_new_session(self.browser)
 
         # Log in - input name pass and press Log in
-        element = self.wait.until(EC.element_to_be_clickable((By.ID, 'Email')))
-        element.send_keys(username)
-        element = self.wait.until(
-            EC.element_to_be_clickable((By.ID, 'Passwd')))
-        element.send_keys(password)
-        element = self.wait.until(
-            EC.element_to_be_clickable((By.ID, 'signIn')))
-        element.click()
+        self.browser.by_id('Email').send_keys(username)
+        self.browser.by_id('Passwd').send_keys(password)
+        self.browser.by_id('signIn').click()
 
         # filling up opt
         if otp:
-            element = self.wait.until(
-                EC.element_to_be_clickable((By.ID, 'smsUserPin')))
-            element.send_keys(otp)
-            element = self.wait.until(
-                EC.element_to_be_clickable((By.ID, 'smsVerifyPin')))
-            element.click()
+            self.browser.by_id('smsUserPin').send_keys(otp)
+            self.browser.by_id('smsVerifyPin').click()
 
         # checking if log in was successful
         try:
-            element = self.wait.until(
-                EC.presence_of_element_located(
-                    (By.XPATH, '//title[text()="Google+ Hangouts"]')))
+            self.browser.xpath('//title[text()="Google+ Hangouts"]')
         except TimeoutException:
             raise LoginError(
                 'Wasn\'t able to login. Check if credentials are correct.')
