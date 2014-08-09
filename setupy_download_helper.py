@@ -10,11 +10,13 @@ from tempfile import NamedTemporaryFile
 from setuptools.command.develop import develop
 from setuptools.command.install import install
 from os.path import join
+import platform
 
 here = os.path.dirname(os.path.abspath(__file__))
 
 CHROMEDRIVER_VERSION = '2.10'
-CHROMEDRIVER_URL_BASE = "http://chromedriver.storage.googleapis.com/%s/chromedriver_linux64.zip"
+platform_version = '64' if platform.uname()[-1] == 'x86_64' else '32'
+CHROMEDRIVER_URL_BASE = "http://chromedriver.storage.googleapis.com/%s/" + "chromedriver_linux%s.zip" % platform_version
 DEST_FILE_NAME = 'CHROMEDRIVER'
 
 
