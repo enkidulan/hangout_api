@@ -7,9 +7,9 @@ setupy_download_helper_path = join(
 setupy_download_helper = imp.load_source(
     'setupy_download_helper', setupy_download_helper_path)
 
-setupy_download_helper.CHROMEDRIVER_URL_BASE = "http://chromedriver.storage.googleapis.com/%s/chromedriver_linux32.zip"
+# setupy_download_helper.CHROMEDRIVER_URL_BASE = "http://chromedriver.storage.googleapis.com/%s/chromedriver_linux32.zip"
 setupy_download_helper.CHROMEDRIVER_VERSION = '2.10'
-setupy_download_helper.DEST_FILE_NAME = 'CHROMEDRIVER'
+# setupy_download_helper.DEST_FILE_NAME = 'CHROMEDRIVER'
 
 version = '1.0'
 

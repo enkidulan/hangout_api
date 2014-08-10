@@ -23,7 +23,7 @@ class LoginError(BaseException):
 
 
 def switch_window_to_new_session(browser):
-    while browser.window_handles <= 1:
+    while len(browser.window_handles) <= 1:
         sleep(0.2)  # XXX: add waiting for second window to open
     browser.close()  # closing old window
     # 'Google+' title

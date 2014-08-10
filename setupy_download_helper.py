@@ -19,9 +19,6 @@ platform_version = '64' if platform.uname()[4] == 'x86_64' else '32'
 CHROMEDRIVER_URL_BASE = "http://chromedriver.storage.googleapis.com/%s/" + "chromedriver_linux%s.zip" % platform_version
 DEST_FILE_NAME = 'CHROMEDRIVER'
 
-print('!!!!!!')
-print(platform.uname())
-
 
 class RequestProgressWrapper():
     """ Simple helper for displaying file download progress;
