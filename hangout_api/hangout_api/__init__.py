@@ -38,7 +38,7 @@ class Hangouts():
         # lets start display in case if no is available
         self.display = None
         if not os.environ.get('DISPLAY'):
-            self.display = SmartDisplay(visible=0, backend='xvnc', bgcolor='black')
+            self.display = SmartDisplay(visible=True, backend='xvnc', bgcolor='black')
             self.display.start()
 
         self.browser = selwrap.create(
