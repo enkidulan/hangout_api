@@ -42,8 +42,7 @@ setup(name='hangout_api',
           'pyscreenshot',
           'entrypoint2',
           'Pillow',
-          # 'pyvirtualdisplay',
-          'xvfbwrapper',
+          'pyvirtualdisplay',
           # -*- Extra requirements: -*-
       ],
       extras_require={

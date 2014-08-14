@@ -11,8 +11,7 @@ from selenium.webdriver.common.by import By
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
 from selenium.common.exceptions import TimeoutException
-# from pyvirtualdisplay.smartdisplay import SmartDisplay
-from xvfbwrapper import Xvfb
+from pyvirtualdisplay.smartdisplay import SmartDisplay
 import seleniumwrapper as selwrap
 
 
@@ -39,8 +38,7 @@ class Hangouts():
         # lets start display in case if no is available
         self.display = None
         if not os.environ.get('DISPLAY'):
-            # self.display = SmartDisplay(visible=0, backend='xvnc', bgcolor='black')
-            self.display = Xvfb(width=1280, height=720)
+            self.display = SmartDisplay(visible=0, backend='xvnc', bgcolor='black')
             self.display.start()
 
         self.browser = selwrap.create(
