@@ -1,6 +1,6 @@
 ---
 before_install:
-    - sudo apt-get install -qq wget python-dev python3-dev xserver-xephyr tightvncserver scrot
+    - sudo apt-get install -qq wget python-dev python3-dev scrot
     - wget -q -O - https://dl-ssl.google.com/linux/linux_signing_key.pub | sudo apt-key add -
     - sudo sh -c 'echo "deb http://dl.google.com/linux/chrome/deb/ stable main" >> /etc/apt/sources.list.d/google.list'
     - sudo apt-get update
@@ -12,6 +12,7 @@ install:
 before_script:
     - "export DISPLAY=:99.0"
     - "sh -e /etc/init.d/xvfb start"
+    - sleep 3
 python:
     - 2.7
     - 3.3
