@@ -38,11 +38,11 @@ class Hangouts():
         # lets start display in case if no is available
         self.display = None
         if not os.environ.get('DISPLAY'):
-            self.display = SmartDisplay(visible=0, backend='xvnc', bgcolor='black')
+            self.display = SmartDisplay()
             self.display.start()
 
         self.browser = selwrap.create(
-            "firefox") #, executable_path=CHROMEDRIVER_PATH)
+            "chrome", executable_path=CHROMEDRIVER_PATH)
 
         # # XXX: Loading browser cookies:
         # # TODO: it's probably better to have custom persistent FF data patch

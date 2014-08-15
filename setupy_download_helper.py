@@ -15,7 +15,7 @@ import platform
 here = os.path.dirname(os.path.abspath(__file__))
 
 CHROMEDRIVER_VERSION = '2.10'
-platform_version = '32'  #  '64' if platform.uname()[4] == 'x86_64' else '32'
+platform_version = '64' if platform.uname()[4] == 'x86_64' else '32'
 CHROMEDRIVER_URL_BASE = "http://chromedriver.storage.googleapis.com/%s/" + "chromedriver_linux%s.zip" % platform_version
 DEST_FILE_NAME = 'CHROMEDRIVER'
 
@@ -25,7 +25,6 @@ class RequestProgressWrapper():
     if works with file-like objects"""
     def __init__(self, obj):
         self.obj = obj
-        # import pdb; pdb.set_trace()
         self.total_size = float(obj.headers['content-length'].strip())
         self.url = obj.url
         self.bytes_so_far = 0
