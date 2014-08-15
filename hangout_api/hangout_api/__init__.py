@@ -42,7 +42,7 @@ class Hangouts():
             self.display.start()
 
         self.browser = selwrap.create(
-            "chrome", executable_path=CHROMEDRIVER_PATH)
+            "firefox") #, executable_path=CHROMEDRIVER_PATH)
 
         # # XXX: Loading browser cookies:
         # # TODO: it's probably better to have custom persistent FF data patch
