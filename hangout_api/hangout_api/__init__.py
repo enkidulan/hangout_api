@@ -67,7 +67,12 @@ class Hangouts():
         if not self.browser.current_url.startswith('https://plus.google.com/hangouts/active'):
             self.browser.get('https://plus.google.com/hangouts/active')
         self.browser.by_class('opd').click()
-        self.switch_window_to_new_session()
+        # G+ opens new window for new hangout, so we need to switch selenium to
+        # it
+        self.switch_window_to_new_session()  
+        # and close dialog window
+        button = self.browser.by_id(':sd.Pf')
+        button.click()
 
     @property
     def is_logged_in(self):
@@ -97,6 +102,20 @@ class Hangouts():
         # # Saving cookies
         # with open(self.cookies_dump_path, "wb") as cookies_dump:
         #     pickle.dump(self.browser.get_cookies(), cookies_dump)
+
+    def get_microphone_devices(self):
+        # making nav link visible
+        self.browser.by_class('Za-Ja-m').click()
+        # click on it
+        self.browser.by_class('MQ').click()
+        # click on MC list to make it load list of all devices
+        self.browser.by_class('qd-pc-kg').click()
+        # get list of devices
+        xpath = '//div[@class="c-i c-i-Ed Hz"]/div/div[@class="c-k-t"]'
+        self.mics_list = {
+            node.get_attribute('innerText'): node
+            for node in self.browser.find_elements_by_xpath(xpath)}
+        return self.mics_list.keys()
 
     def __del__(self):
         try:
