@@ -7,6 +7,7 @@ from testfixtures import ShouldRaise
 from yaml import load
 from selenium.webdriver.support import expected_conditions as EC
 from selenium.webdriver.common.by import By
+import random
 
 
 credentials = load(open('credentials.yaml', 'r'))
@@ -17,6 +18,7 @@ class TestMicrophoneDevices(unittest.TestCase):
     @classmethod
     def setup_class(self):
         self.hangout = Hangouts()
+        self.hangout.browser.timeout = 15
         self.hangout.login(
             credentials['name'],
             credentials['password'],
@@ -32,9 +34,13 @@ class TestMicrophoneDevices(unittest.TestCase):
         self.assertTrue(len(mics) > 0)
 
     def test_set_microphone_devices(self):
-        mics = self.hangout.get_microphone_devices()
-        self.hangout.set_microphone_devices(mics[-1])
-
+        mic_device = random.choice(self.hangout.get_microphone_devices())
+        self.hangout.set_microphone_devices(mic_device)
+        self.hangout.navigate_to_devices_settings()
+        xpath = '//div[contains(@id, ".yt")]//span[@role="option"]'
+        current_device = \
+            self.hangout.browser.xpath(xpath).get_attribute('innerText')
+        compare(mic_device, current_device)
 
 # class TestLogIn(unittest.TestCase):
 

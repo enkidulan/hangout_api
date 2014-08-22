@@ -72,7 +72,7 @@ class Hangouts():
         #     pickle.dump(self.browser.get_cookies(), cookies_dump)
         # and close dialog window
         # close the inviting popup
-        self.browser.xpath('//div[@id=":sd.Qf" or @id=":se.Qf"]').click()
+        self.browser.xpath('//div[contains(@id, ".Qf")]').click()
 
     @property
     def is_logged_in(self):
@@ -117,8 +117,14 @@ class Hangouts():
     def click_cancel_button_if_there_is_one(self):
         # this function close all menus and return browser to staring state
         # xpath = '//div[matches(@id, "^.*?\.Jt.*$"]'  # TODO: xpath
-        cancel_button = self.regex_xpat(
-            '//div[@class="d-w-R"]/div/div[@id]', sufix=".Jt")
+        # cancel_button = self.regex_xpat(
+        #     '//div[@class="d-w-R"]/div/div[@id]', sufix=".Jt")
+        xpath = '//div[@class="d-w-R"]/div/div[contains(@id, ".Jt")]'
+        self.browser.silent = True
+        try:
+            cancel_button = self.browser.xpath(xpath, timeout=0.1)
+        finally:
+            self.browser.silent = False
         if cancel_button is not None:
             cancel_button.click()
 
@@ -157,7 +163,8 @@ class Hangouts():
         # TODO: make sure that browser is on needed context
         self.get_microphone_devices(with_nodes=True)[name].click()
         # click save button
-        self.regex_xpat('//div[@class="d-w-R"]/div/div[@id]', sufix=".Ut").click()
+        xpath = '//div[@class="d-w-R"]/div/div[contains(@id, ".Ut")]'
+        self.browser.xpath(xpath).click()
 
     def __del__(self):
         try:
