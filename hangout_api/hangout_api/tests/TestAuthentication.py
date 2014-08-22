@@ -31,6 +31,10 @@ class TestMicrophoneDevices(unittest.TestCase):
         mics = self.hangout.get_microphone_devices()
         self.assertTrue(len(mics) > 0)
 
+    def test_set_microphone_devices(self):
+        mics = self.hangout.get_microphone_devices()
+        self.hangout.set_microphone_devices(mics[-1])
+
 
 # class TestLogIn(unittest.TestCase):
 
