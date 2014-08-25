@@ -43,7 +43,8 @@ class Hangouts():
 
         self.browser = selwrap.create(
             "chrome", executable_path=CHROMEDRIVER_PATH)
-        self.browser.timeout = 5
+
+        self.browser.timeout = 4
 
         # # XXX: Loading browser cookies:
         # # TODO: it's probably better to have custom persistent FF data patch
@@ -57,7 +58,7 @@ class Hangouts():
     def start(self, onair=False):
         if not self.browser.current_url.startswith('https://plus.google.com/hangouts/active'):
             self.browser.get('https://plus.google.com/hangouts/active')
-        self.browser.by_class('opd').click()
+        self.browser.by_class('opd').click(timeout=0.5)
         # G+ opens new window for new hangout, so we need to switch selenium to
         # it
 
@@ -70,9 +71,8 @@ class Hangouts():
         # XXX: Saving cookies
         # with open(self.cookies_dump_path, "wb") as cookies_dump:
         #     pickle.dump(self.browser.get_cookies(), cookies_dump)
-        # and close dialog window
         # close the inviting popup
-        self.browser.xpath('//div[contains(@id, ".Qf")]').click()
+        self.click_cancel_button_if_there_is_one(timeout=self.browser.timeout)
 
     @property
     def is_logged_in(self):
@@ -88,12 +88,12 @@ class Hangouts():
         # Log in - input name pass and press Log in
         self.browser.by_id('Email').send_keys(username)
         self.browser.by_id('Passwd').send_keys(password)
-        self.browser.by_id('signIn').click()
+        self.browser.by_id('signIn').click(timeout=0.5)
 
         # filling up opt
         if otp:
             self.browser.by_id('smsUserPin').send_keys(otp)
-            self.browser.by_id('smsVerifyPin').click()
+            self.browser.by_id('smsVerifyPin').click(timeout=0.5)
 
         # XXX: checking if log in was successful
         if not self.is_logged_in:
@@ -114,35 +114,37 @@ class Hangouts():
         if targets:
                 return targets[0]
 
-    def click_cancel_button_if_there_is_one(self):
+    def click_cancel_button_if_there_is_one(self, timeout=0.5):
         # this function close all menus and return browser to staring state
-        # xpath = '//div[matches(@id, "^.*?\.Jt.*$"]'  # TODO: xpath
-        # cancel_button = self.regex_xpat(
-        #     '//div[@class="d-w-R"]/div/div[@id]', sufix=".Jt")
-        xpath = '//div[@class="d-w-R"]/div/div[contains(@id, ".Jt")]'
         self.browser.silent = True
         try:
-            cancel_button = self.browser.xpath(xpath, timeout=0.1)
+            # We're looking for text because are id's are hangable
+            # and something weird is going on about css selectors
+            cancel_button = self.browser.by_text('Cancel', timeout=timeout)
         finally:
             self.browser.silent = False
         if cancel_button is not None:
-            cancel_button.click()
+            cancel_button.click(timeout=0.1)
 
     def navigate_to_devices_settings(self):
         self.click_cancel_button_if_there_is_one()
         # making nav link visible
         # webdriver.ActionChains(self.browser).move_to_element(self.browser.by_id(':tc.ct')).perform()
         try:
-            self.browser.by_class('MQ', timeout=0.3).click()
+            self.browser.by_class('MQ', timeout=0.1).click(timeout=0.5)
         except:  # XXX
-            self.browser.by_class('Za-Ja-m').click()
+            self.browser.by_class('Za-Ja-m').click(timeout=0.5)
             # click on it
-            self.browser.by_class('MQ').click()
+            self.browser.by_class('MQ').click(timeout=0.5)
 
     def open_mics_devices_list(self):
         self.navigate_to_devices_settings()
         # click on MC list to make it load list of all devices
-        self.browser.by_class('qd-pc-kg').click()
+        self.browser.by_class('qd-pc-kg').click(timeout=0.5)
+
+    def click_on_devices_save_button(self):
+        xpath = '//div[@class="d-w-R"]/div/div[contains(@id, ".Ut")]'
+        self.browser.xpath(xpath).click(timeout=0.5)
 
     def get_microphone_devices(self, with_nodes=False):
         self.open_mics_devices_list()
@@ -161,10 +163,29 @@ class Hangouts():
 
     def set_microphone_devices(self, name):
         # TODO: make sure that browser is on needed context
-        self.get_microphone_devices(with_nodes=True)[name].click()
+        self.get_microphone_devices(with_nodes=True)[name].click(timeout=0.5)
         # click save button
-        xpath = '//div[@class="d-w-R"]/div/div[contains(@id, ".Ut")]'
-        self.browser.xpath(xpath).click()
+        self.click_on_devices_save_button()
+
+    def get_video_devices(self, with_nodes=False):
+        self.open_mics_devices_list()
+        # TODO: add caching ??? do we need this? there is self.video_devices prop
+        # get list of devices
+        import pdb; pdb.set_trace()
+        video_dev_xpath = '//div[@class="c-i c-i-Ed Hz"]/div/div[@class="c-k-t"]'
+        video_devices = {
+            node.get_attribute('innerText'): node
+            for node in self.browser.find_elements_by_xpath(video_dev_xpath)}
+        self.video_devices = video_devices.keys()
+        if with_nodes:
+            return video_devices
+        return self.video_devices
+
+    def set_video_devices(self, name):
+        # TODO: make sure that browser is on needed context
+        self.get_video_devices(with_nodes=True)[name].click(timeout=0.5)
+        self.click_on_devices_save_button()
+
 
     def __del__(self):
         try:

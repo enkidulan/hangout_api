@@ -42,6 +42,19 @@ class TestMicrophoneDevices(unittest.TestCase):
             self.hangout.browser.xpath(xpath).get_attribute('innerText')
         compare(mic_device, current_device)
 
+    def test_video_microphone_devices(self):
+        mics = self.hangout.get_video_devices()
+        self.assertTrue(len(mics) > 0)
+
+    def test_set_video_devices(self):
+        video_device = random.choice(self.hangout.get_video_devices())
+        self.hangout.set_video_devices(video_device)
+        self.hangout.navigate_to_devices_settings()
+        xpath = '//div[contains(@id, ".yt")]//span[@role="option"]'
+        current_device = \
+            self.hangout.browser.xpath(xpath).get_attribute('innerText')
+        compare(video_device, current_device)
+
 # class TestLogIn(unittest.TestCase):
 
 #     def test_valid_credentials(self):
