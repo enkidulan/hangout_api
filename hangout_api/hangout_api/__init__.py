@@ -29,7 +29,7 @@ class Hangouts():
     Base class that provide all bunch of options.
     """
 
-    cookies_dump_path = "cookies.pkl"  # XXX: bad path should be in user conf path
+    # cookies_dump_path = "cookies.pkl"  # XXX: bad path should be in user conf path
 
     def __init__(self):
         """
@@ -72,7 +72,8 @@ class Hangouts():
         # with open(self.cookies_dump_path, "wb") as cookies_dump:
         #     pickle.dump(self.browser.get_cookies(), cookies_dump)
         # close the inviting popup
-        self.click_cancel_button_if_there_is_one(timeout=self.browser.timeout)
+        self.click_cancel_button_if_there_is_one(
+            timeout=self.browser.timeout, text='Close')
 
     @property
     def is_logged_in(self):
@@ -103,24 +104,13 @@ class Hangouts():
         # with open(self.cookies_dump_path, "wb") as cookies_dump:
         #     pickle.dump(self.browser.get_cookies(), cookies_dump)
 
-    def regex_xpat(self, xpath, sufix, attr='id'):
-        # XXX
-        self.browser.silent = True
-        try:
-            nodes = self.browser.xpath(xpath, timeout=0.01, eager=True) or ()
-        finally:
-            self.browser.silent = False
-        targets = [i for i in nodes if i.attr(attr).endswith(sufix)]
-        if targets:
-                return targets[0]
-
-    def click_cancel_button_if_there_is_one(self, timeout=0.5):
+    def click_cancel_button_if_there_is_one(self, timeout=0.5, text='Cancel'):
         # this function close all menus and return browser to staring state
         self.browser.silent = True
         try:
             # We're looking for text because are id's are hangable
             # and something weird is going on about css selectors
-            cancel_button = self.browser.by_text('Cancel', timeout=timeout)
+            cancel_button = self.browser.by_text(text, timeout=timeout)
         finally:
             self.browser.silent = False
         if cancel_button is not None:
@@ -143,7 +133,7 @@ class Hangouts():
         self.browser.by_class('qd-pc-kg').click(timeout=0.5)
 
     def click_on_devices_save_button(self):
-        xpath = '//div[@class="d-w-R"]/div/div[contains(@id, ".Ut")]'
+        xpath = '//div[text()="Save"]'
         self.browser.xpath(xpath).click(timeout=0.5)
 
     def get_microphone_devices(self, with_nodes=False):
@@ -156,36 +146,71 @@ class Hangouts():
         mics = {
             node.get_attribute('innerText'): node
             for node in self.browser.find_elements_by_xpath(xpath)}
-        self.mics_list = mics.keys()
+        self.mics_list = list(mics.keys())
         if with_nodes:
             return mics
         return self.mics_list
 
     def set_microphone_devices(self, name):
         # TODO: make sure that browser is on needed context
-        self.get_microphone_devices(with_nodes=True)[name].click(timeout=0.5)
+        self.get_microphone_devices(with_nodes=True)[name].click()
         # click save button
         self.click_on_devices_save_button()
 
     def get_video_devices(self, with_nodes=False):
-        self.open_mics_devices_list()
+        pass
+        # self.open_mics_devices_list()
         # TODO: add caching ??? do we need this? there is self.video_devices prop
         # get list of devices
-        import pdb; pdb.set_trace()
-        video_dev_xpath = '//div[@class="c-i c-i-Ed Hz"]/div/div[@class="c-k-t"]'
-        video_devices = {
-            node.get_attribute('innerText'): node
-            for node in self.browser.find_elements_by_xpath(video_dev_xpath)}
-        self.video_devices = video_devices.keys()
-        if with_nodes:
-            return video_devices
-        return self.video_devices
+        # import pdb; pdb.set_trace()
+        # video_dev_xpath = '//div[@class="c-i c-i-Ed Hz"]/div/div[@class="c-k-t"]'
+        # video_devices = {
+        #     node.get_attribute('innerText'): node
+        #     for node in self.browser.find_elements_by_xpath(video_dev_xpath)}
+        # self.video_devices = list(video_devices.keys())
+        # if with_nodes:
+        #     return video_devices
+        # return self.video_devices
 
     def set_video_devices(self, name):
         # TODO: make sure that browser is on needed context
-        self.get_video_devices(with_nodes=True)[name].click(timeout=0.5)
+        self.get_video_devices(with_nodes=True)[name].click()
         self.click_on_devices_save_button()
 
+    def _get_bandwidth_controooller(self):
+        if not self.browser.xpath('//div[text()="Limit Bandwidth"]').is_displayed():
+            # no need to open bandwidth settings tab if it's opened already
+            self.click_cancel_button_if_there_is_one()
+            setting_button = self.browser.xpath(
+                '//div[@aria-label="Adjust bandwidth usage"]')
+            if not setting_button.is_displayed():
+                self.browser.by_class('Za-Ja-m').click(timeout=0.5)
+            setting_button.click(timeout=0.5)
+        controller = \
+            self.browser.xpath(
+                '//div[@aria-label="Adjust the quality of your video"]')
+        return controller
+
+    def set_bandwidth(self, bandwidth):
+        """
+        Set bandwidth setting for hangout:
+            * 0 - Audio only
+            * 1 - Very Low
+            * 2 - Low
+            * 3 - Medium
+            * 4 - Auto HD
+        """
+        controller = self._get_bandwidth_controooller()
+        levels = controller.by_class('Sa-IU-HT', eager=True)
+        # setting levels
+        levels[bandwidth].click(timeout=0.5)
+
+    def get_bandwidth(self):
+        """
+        Get bandwidth setting for hangout
+        """
+        controller = self._get_bandwidth_controooller()
+        return int(controller.get_attribute('aria-valuenow'))
 
     def __del__(self):
         try:
