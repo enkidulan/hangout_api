@@ -157,25 +157,25 @@ class Hangouts():
         # click save button
         self.click_on_devices_save_button()
 
-    def get_video_devices(self, with_nodes=False):
-        pass
-        # self.open_mics_devices_list()
-        # TODO: add caching ??? do we need this? there is self.video_devices prop
-        # get list of devices
-        # import pdb; pdb.set_trace()
-        # video_dev_xpath = '//div[@class="c-i c-i-Ed Hz"]/div/div[@class="c-k-t"]'
-        # video_devices = {
-        #     node.get_attribute('innerText'): node
-        #     for node in self.browser.find_elements_by_xpath(video_dev_xpath)}
-        # self.video_devices = list(video_devices.keys())
-        # if with_nodes:
-        #     return video_devices
-        # return self.video_devices
+    # def get_video_devices(self, with_nodes=False):
+    #     raise
+    #     # self.open_mics_devices_list()
+    #     # TODO: add caching ??? do we need this? there is self.video_devices prop
+    #     # get list of devices
+    #     # import pdb; pdb.set_trace()
+    #     # video_dev_xpath = '//div[@class="c-i c-i-Ed Hz"]/div/div[@class="c-k-t"]'
+    #     # video_devices = {
+    #     #     node.get_attribute('innerText'): node
+    #     #     for node in self.browser.find_elements_by_xpath(video_dev_xpath)}
+    #     # self.video_devices = list(video_devices.keys())
+    #     # if with_nodes:
+    #     #     return video_devices
+    #     # return self.video_devices
 
-    def set_video_devices(self, name):
-        # TODO: make sure that browser is on needed context
-        self.get_video_devices(with_nodes=True)[name].click()
-        self.click_on_devices_save_button()
+    # def set_video_devices(self, name):
+    #     # TODO: make sure that browser is on needed context
+    #     self.get_video_devices(with_nodes=True)[name].click()
+    #     self.click_on_devices_save_button()
 
     def _get_bandwidth_controooller(self):
         if not self.browser.xpath('//div[text()="Limit Bandwidth"]').is_displayed():
@@ -211,6 +211,58 @@ class Hangouts():
         """
         controller = self._get_bandwidth_controooller()
         return int(controller.get_attribute('aria-valuenow'))
+
+    def mute_audio(self):
+        """
+        Mute audio device. Returns:
+            * True - Audio went from un-muted to muted
+            * False - Audio was already muted
+        """
+        xpath = '//div[contains(@aria-label, "Turn camera")]'
+        mute_button = self.browser.xpath(xpath)
+        if mute_button.get_attribute('aria-label') == 'Turn camera on':
+            return False
+        if not mute_button.is_displayed():
+            # if button is hidden make it displayed
+            self.browser.by_class('Za-Ja-m').click(timeout=0.5)
+        mute_button.click(timeout=0.5)
+        return True
+
+    def unmute_audio(self):
+        """
+        Un-mute audio device. Returns:
+            * True - Audio went from muted to un-muted
+            * False - Audio was already un-muted
+        """
+        xpath = '//div[contains(@aria-label, "Turn camera")]'
+        mute_button = self.browser.xpath(xpath)
+        if mute_button.get_attribute('aria-label') == 'Turn camera off':
+            return False
+        if not mute_button.is_displayed():
+            # if button is hidden make it displayed
+            self.browser.by_class('Za-Ja-m').click(timeout=0.5)
+        mute_button.click(timeout=0.5)
+        return True
+
+    def get_audio_devices(self, with_nodes=False):
+        self.navigate_to_devices_settings()
+        # click on MC list to make it load list of all devices
+        self.browser.by_class('iph_s_ao').click(timeout=0.5)
+
+        # get list of devices
+        xpath = '//div[@class="c-i c-i-Ed Iz"]/div/div[@class="c-k-t"]'
+        audio_devices = {
+            node.get_attribute('innerText'): node
+            for node in self.browser.xpath(xpath, eager=True)}
+        if with_nodes:
+            return audio_devices
+        return list(audio_devices.keys())
+
+    def set_audio_devices(self, device_name):
+        # TODO: make sure that browser is on needed context
+        self.get_audio_devices(with_nodes=True)[device_name].click()
+        # click save button
+        self.click_on_devices_save_button()
 
     def __del__(self):
         try:

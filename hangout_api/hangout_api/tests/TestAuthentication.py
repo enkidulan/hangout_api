@@ -54,12 +54,36 @@ class TestDevicesSettings(unittest.TestCase):
         current_bandwidth = self.hangout.get_bandwidth()
         compare(current_bandwidth in [0, 1, 2, 3, 4], True)
 
+    def test_get_audio_devices(self):
+        audio_devices = self.hangout.get_audio_devices()
+        self.assertTrue(len(audio_devices) > 0)
+
+    def test_set_audio_devices(self):
+        audio_device = random.choice(self.hangout.get_audio_devices())
+        self.hangout.set_audio_devices(audio_device)
+        self.hangout.navigate_to_devices_settings()
+        current_audio_device = \
+            self.hangout.browser.xpath(
+                '//div[text()="Play test sound"]').parent.parent.get_attribute(
+                'innerText').split('\n')[0].strip()
+        compare(audio_device, current_audio_device)
+
+    def test_audio_mute_unmute(self):
+        # set up in case if video was muted by previous test
+        self.hangout.unmute_audio()
+
+        compare(self.hangout.mute_audio(), True)
+        compare(self.hangout.mute_audio(), False)
+        compare(self.hangout.unmute_audio(), True)
+        compare(self.hangout.unmute_audio(), False)
 
     # def test_get_video_devices(self):
+    #     raise
     #     cams = self.hangout.get_video_devices()
     #     self.assertTrue(len(cams) > 0)
 
     # def test_set_video_devices(self):
+    #     raise
     #     video_device = random.choice(self.hangout.get_video_devices())
     #     self.hangout.set_video_devices(video_device)
     #     self.hangout.navigate_to_devices_settings()
