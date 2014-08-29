@@ -29,6 +29,17 @@ class TestDevicesSettings(unittest.TestCase):
     def teardown_class(self):
         self.hangout.__del__()
 
+    def test_connect(self):
+        hangout_2 = Hangouts()
+        hangout_2.login(credentials['name_2'], credentials['password_2'])
+        hangout_2.connect(self.hangout.hangout_id)
+        hangout_2.browser.xpath('//div[@aria-label="Open menu for John Doe"]')
+        # the John Doe is connected
+        user_icon = hangout_2.browser.xpath(
+            '//div[@aria-label="Open menu for John Doe"]')
+        compare(user_icon.is_displayed(), True)
+        del hangout_2
+
     def test_get_microphone_devices(self):
         mics = self.hangout.get_microphone_devices()
         self.assertTrue(len(mics) > 0)
@@ -76,6 +87,18 @@ class TestDevicesSettings(unittest.TestCase):
         compare(self.hangout.mute_audio(), False)
         compare(self.hangout.unmute_audio(), True)
         compare(self.hangout.unmute_audio(), False)
+
+    def test_invite(self):
+        self.hangout.invite(['maxybot@gmail.com', 'test circle for call'])
+        waiting_message = self.hangout.browser.by_text(
+            'Waiting for people to join this video call...')
+        compare(waiting_message.is_displayed(), True)
+
+    def test_participants(self):
+        raise NotImplementedError()
+        self.hangout.invite(['maxybot@gmail.com', 'test circle for call'])
+        participants = self.hangout.participants()
+        import pdb; pdb.set_trace()
 
     # def test_get_video_devices(self):
     #     raise

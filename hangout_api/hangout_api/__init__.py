@@ -17,7 +17,7 @@ import seleniumwrapper as selwrap
 
 parret_dir_path = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 CHROMEDRIVER_PATH = join(parret_dir_path, 'CHROMEDRIVER')
-
+BASE_HANGOUT_URL = 'https://plus.google.com/hangouts/_/'
 
 class LoginError(BaseException):
     pass
@@ -74,6 +74,20 @@ class Hangouts():
         # close the inviting popup
         self.click_cancel_button_if_there_is_one(
             timeout=self.browser.timeout, text='Close')
+        # setting hangout id property
+        self.hangout_id = self.browser.current_url[
+            len(BASE_HANGOUT_URL):].split('?', 1)[0]
+
+
+
+    def connect(self, hangout_id):
+        """
+        Connect to an existing hangout
+        """
+        self.browser.get(BASE_HANGOUT_URL + hangout_id)
+        # there may be a big delay before 'Join' button appears, so we need
+        # to add longer timeout for this
+        self.browser.by_text('Join', timeout=60).click(timeout=0.5)
 
     @property
     def is_logged_in(self):
@@ -106,13 +120,14 @@ class Hangouts():
 
     def click_cancel_button_if_there_is_one(self, timeout=0.5, text='Cancel'):
         # this function close all menus and return browser to staring state
+        origin_state = self.browser.silent
         self.browser.silent = True
         try:
             # We're looking for text because are id's are hangable
             # and something weird is going on about css selectors
             cancel_button = self.browser.by_text(text, timeout=timeout)
         finally:
-            self.browser.silent = False
+            self.browser.silent = origin_state
         if cancel_button is not None:
             cancel_button.click(timeout=0.1)
 
@@ -264,7 +279,47 @@ class Hangouts():
         # click save button
         self.click_on_devices_save_button()
 
+    def invite(self, participants):
+        """
+        Invite person or circle to hangout
+            >>> hangout.invite("persona@gmail.com")
+            >>> hangout.invite(["personb@gmail.com", "Circle Name A"])
+        """
+        if not any(isinstance(participants, i) for i in (list, tuple)):
+            participants = [participants, ]
+        self.click_cancel_button_if_there_is_one()
+        # click on Invite People button
+        invite_people_button = self.browser.xpath(
+            '//div[@aria-label="Invite People"]')
+        if not invite_people_button.is_displayed():
+            # if button is hidden make it displayed
+            self.browser.by_class('Za-Ja-m').click(timeout=0.5)
+        invite_people_button.click(timeout=0.5)
+        input = self.browser.xpath(
+            '//input[@placeholder="+ Add names, circles, or email addresses"]')
+        input.send_keys("\n".join(participants) + "\n\n")
+        self.browser.by_text('Invite').click(timeout=0.5)
+
+    def participants(self):
+        """
+        Returns information about current participants
+            >>> hangout.participants()
+            {participantid: {details}}
+        """
+        import pdb; pdb.set_trace()
+
+    def leave_call(self):
+        self.click_cancel_button_if_there_is_one()
+        leave_call_button = self.browser.xpath(
+            '//div[@aria-label="Leave call"]')
+        if not leave_call_button.is_displayed():
+            # if button is hidden make it displayed
+            self.browser.by_class('Za-Ja-m').click(timeout=0.5)
+        leave_call_button.click(0.5)
+
     def __del__(self):
+        self.browser.silent = True
+        self.leave_call()
         try:
             self.browser.quit()
         finally:
