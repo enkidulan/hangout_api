@@ -227,12 +227,47 @@ class Hangouts():
         controller = self._get_bandwidth_controooller()
         return int(controller.get_attribute('aria-valuenow'))
 
+    def unmute_audio(self):
+        """
+        Un-mute audio device. Returns:
+            * True - Audio went from muted to un-muted
+            * False - Audio was already un-muted
+        """
+        self.click_cancel_button_if_there_is_one()
+        xpath = '//div[contains(@aria-label, "ute microphone")]'
+        mute_button = self.browser.xpath(xpath)
+        if mute_button.get_attribute('aria-label') == 'Mute microphone':
+            return False
+        if not mute_button.is_displayed():
+            # if button is hidden make it displayed
+            self.browser.by_class('Za-Ja-m').click(timeout=0.5)
+        mute_button.click(timeout=0.5)
+        return True
+
     def mute_audio(self):
         """
         Mute audio device. Returns:
             * True - Audio went from un-muted to muted
             * False - Audio was already muted
         """
+        self.click_cancel_button_if_there_is_one()
+        xpath = '//div[contains(@aria-label, "ute microphone")]'
+        mute_button = self.browser.xpath(xpath)
+        if mute_button.get_attribute('aria-label') == 'Unmute microphone':
+            return False
+        if not mute_button.is_displayed():
+            # if button is hidden make it displayed
+            self.browser.by_class('Za-Ja-m').click(timeout=0.5)
+        mute_button.click(timeout=0.5)
+        return True
+
+    def mute_video(self):
+        """
+        Mute video device. Returns:
+            * True - Video went from un-muted to muted
+            * False - Video was already muted
+        """
+        self.click_cancel_button_if_there_is_one()
         xpath = '//div[contains(@aria-label, "Turn camera")]'
         mute_button = self.browser.xpath(xpath)
         if mute_button.get_attribute('aria-label') == 'Turn camera on':
@@ -243,12 +278,13 @@ class Hangouts():
         mute_button.click(timeout=0.5)
         return True
 
-    def unmute_audio(self):
+    def unmute_video(self):
         """
-        Un-mute audio device. Returns:
-            * True - Audio went from muted to un-muted
-            * False - Audio was already un-muted
+        Un-mute video device. Returns:
+            * True - Video went from muted to un-muted
+            * False - Video was already un-muted
         """
+        self.click_cancel_button_if_there_is_one()
         xpath = '//div[contains(@aria-label, "Turn camera")]'
         mute_button = self.browser.xpath(xpath)
         if mute_button.get_attribute('aria-label') == 'Turn camera off':
@@ -285,9 +321,9 @@ class Hangouts():
             >>> hangout.invite("persona@gmail.com")
             >>> hangout.invite(["personb@gmail.com", "Circle Name A"])
         """
+        self.click_cancel_button_if_there_is_one()
         if not any(isinstance(participants, i) for i in (list, tuple)):
             participants = [participants, ]
-        self.click_cancel_button_if_there_is_one()
         # click on Invite People button
         invite_people_button = self.browser.xpath(
             '//div[@aria-label="Invite People"]')

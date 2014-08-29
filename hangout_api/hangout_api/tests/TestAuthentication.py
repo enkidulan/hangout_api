@@ -88,6 +88,15 @@ class TestDevicesSettings(unittest.TestCase):
         compare(self.hangout.unmute_audio(), True)
         compare(self.hangout.unmute_audio(), False)
 
+    def test_video_mute_unmute(self):
+        # set up in case if video was muted by previous test
+        self.hangout.unmute_video()
+
+        compare(self.hangout.mute_video(), True)
+        compare(self.hangout.mute_video(), False)
+        compare(self.hangout.unmute_video(), True)
+        compare(self.hangout.unmute_video(), False)
+
     def test_invite(self):
         self.hangout.invite(['maxybot@gmail.com', 'test circle for call'])
         waiting_message = self.hangout.browser.by_text(
