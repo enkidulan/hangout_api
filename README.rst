@@ -1,6 +1,10 @@
 Hangout Api
 ============
 
+.. DANGER::
+   This package is under heavy development
+
+
 Python API for controlling Google+ Hangouts
 
 
