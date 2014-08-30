@@ -8,6 +8,7 @@ from yaml import load
 from selenium.webdriver.support import expected_conditions as EC
 from selenium.webdriver.common.by import By
 import random
+from time import sleep
 
 
 credentials = load(open('credentials.yaml', 'r'))
@@ -33,7 +34,8 @@ class TestDevicesSettings(unittest.TestCase):
         hangout_2 = Hangouts()
         hangout_2.login(credentials['name_2'], credentials['password_2'])
         hangout_2.connect(self.hangout.hangout_id)
-        hangout_2.browser.xpath('//div[@aria-label="Open menu for John Doe"]')
+        hangout_2.browser.xpath('//div[@aria-label="Open menu for John Doe"]',
+                                timeout=30)
         # the John Doe is connected
         user_icon = hangout_2.browser.xpath(
             '//div[@aria-label="Open menu for John Doe"]')
@@ -104,10 +106,21 @@ class TestDevicesSettings(unittest.TestCase):
         compare(waiting_message.is_displayed(), True)
 
     def test_participants(self):
-        raise NotImplementedError()
-        self.hangout.invite(['maxybot@gmail.com', 'test circle for call'])
+        # raise NotImplementedError()
+        self.hangout.invite(['maxybot@gmail.com'])
+        hangout_2 = Hangouts()
+        hangout_2.login(credentials['name_2'], credentials['password_2'])
+        hangout_2.connect(self.hangout.hangout_id)
+        hangout_3 = Hangouts()
+        hangout_3.login(credentials['name_3'], credentials['password_3'])
+        hangout_3.connect(self.hangout.hangout_id)
+        sleep(3)  # lets give some time to make sure that google add all
+        # participants to hangout
         participants = self.hangout.participants()
-        import pdb; pdb.set_trace()
+        compare(participants, ['Gilgamesh Bot', 'Lorem Impus', 'John Doe'])
+        # XXX: add context manager
+        del hangout_3
+        del hangout_2
 
     # def test_get_video_devices(self):
     #     raise

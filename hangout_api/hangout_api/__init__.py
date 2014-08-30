@@ -19,9 +19,9 @@ parret_dir_path = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 CHROMEDRIVER_PATH = join(parret_dir_path, 'CHROMEDRIVER')
 BASE_HANGOUT_URL = 'https://plus.google.com/hangouts/_/'
 
+
 class LoginError(BaseException):
     pass
-
 
 
 class Hangouts():
@@ -71,9 +71,9 @@ class Hangouts():
         # XXX: Saving cookies
         # with open(self.cookies_dump_path, "wb") as cookies_dump:
         #     pickle.dump(self.browser.get_cookies(), cookies_dump)
-        # close the inviting popup
+        # close the inviting popup - the button text and timeots is different
         self.click_cancel_button_if_there_is_one(
-            timeout=self.browser.timeout, text='Close')
+            timeout=30, text='Close')
         # setting hangout id property
         self.hangout_id = self.browser.current_url[
             len(BASE_HANGOUT_URL):].split('?', 1)[0]
@@ -122,14 +122,18 @@ class Hangouts():
         # this function close all menus and return browser to staring state
         origin_state = self.browser.silent
         self.browser.silent = True
+        xpath = '//*[text()="Cancel" or text()="Close"]'
         try:
             # We're looking for text because are id's are hangable
             # and something weird is going on about css selectors
-            cancel_button = self.browser.by_text(text, timeout=timeout)
+            cancel_buttons = self.browser.xpath(
+                xpath, timeout=timeout, eager=True)
         finally:
             self.browser.silent = origin_state
-        if cancel_button is not None:
-            cancel_button.click(timeout=0.1)
+        if cancel_buttons is not None:
+            for cancel_button in cancel_buttons:
+                if cancel_button.is_displayed():
+                    cancel_button.click(timeout=timeout)
 
     def navigate_to_devices_settings(self):
         self.click_cancel_button_if_there_is_one()
@@ -342,7 +346,10 @@ class Hangouts():
             >>> hangout.participants()
             {participantid: {details}}
         """
-        import pdb; pdb.set_trace()
+        xpath = '//div[@aria-label="Video call participants"]/div'
+        participants = self.browser.xpath(xpath, eager=True)
+        return [p.get_attribute('aria-label').split('Open menu for ')[1]
+                for p in participants]
 
     def leave_call(self):
         self.click_cancel_button_if_there_is_one()
