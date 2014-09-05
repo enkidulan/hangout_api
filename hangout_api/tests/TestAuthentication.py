@@ -1,17 +1,35 @@
 import os.path
 import unittest
 from testfixtures import compare, LogCapture
-from hangout_api.hangout_api import Hangouts
-from hangout_api.hangout_api import LoginError
+from hangout_api import Hangouts
+from hangout_api import LoginError
 from testfixtures import ShouldRaise
 from yaml import load
 from selenium.webdriver.support import expected_conditions as EC
 from selenium.webdriver.common.by import By
 import random
 from time import sleep
+from contextlib import contextmanager
 
 
 credentials = load(open('credentials.yaml', 'r'))
+
+
+@contextmanager
+def hangouts_connection_manager(users_credentials, hangout_id):
+    connections = []
+    try:
+        for credentials in users_credentials:
+            hangout = Hangouts()
+            hangout.browser.timeout = 15
+            hangout.login(credentials[0], credentials[1])
+            hangout.connect(hangout_id)
+            connections.append(hangout)
+        yield connections
+    finally:
+        # TODO: won't work sometimes
+        for connection in connections:
+            del connection
 
 
 class TestDevicesSettings(unittest.TestCase):
@@ -31,16 +49,15 @@ class TestDevicesSettings(unittest.TestCase):
         self.hangout.__del__()
 
     def test_connect(self):
-        hangout_2 = Hangouts()
-        hangout_2.login(credentials['name_2'], credentials['password_2'])
-        hangout_2.connect(self.hangout.hangout_id)
-        hangout_2.browser.xpath('//div[@aria-label="Open menu for John Doe"]',
-                                timeout=30)
-        # the John Doe is connected
-        user_icon = hangout_2.browser.xpath(
-            '//div[@aria-label="Open menu for John Doe"]')
-        compare(user_icon.is_displayed(), True)
-        del hangout_2
+        user = [[credentials['name_2'], credentials['password_2']]]
+        with hangouts_connection_manager(user, self.hangout.hangout_id) as nhg:
+            new_connection = nhg[0]
+            new_connection.browser.xpath(
+                '//div[@aria-label="Open menu for John Doe"]', timeout=30)
+            # the John Doe is connected
+            user_icon = new_connection.browser.xpath(
+                '//div[@aria-label="Open menu for John Doe"]')
+            compare(user_icon.is_displayed(), True)
 
     def test_get_microphone_devices(self):
         mics = self.hangout.get_microphone_devices()
@@ -108,19 +125,14 @@ class TestDevicesSettings(unittest.TestCase):
     def test_participants(self):
         # raise NotImplementedError()
         self.hangout.invite(['maxybot@gmail.com'])
-        hangout_2 = Hangouts()
-        hangout_2.login(credentials['name_2'], credentials['password_2'])
-        hangout_2.connect(self.hangout.hangout_id)
-        hangout_3 = Hangouts()
-        hangout_3.login(credentials['name_3'], credentials['password_3'])
-        hangout_3.connect(self.hangout.hangout_id)
-        sleep(3)  # lets give some time to make sure that google add all
-        # participants to hangout
-        participants = self.hangout.participants()
+
+        users = [[credentials['name_2'], credentials['password_2']],
+                 [credentials['name_3'], credentials['password_3']]]
+        with hangouts_connection_manager(users, self.hangout.hangout_id):
+            sleep(3)  # lets give some time to make sure that google add all
+            # participants to hangout
+            participants = self.hangout.participants()
         compare(participants, ['Gilgamesh Bot', 'Lorem Impus', 'John Doe'])
-        # XXX: add context manager
-        del hangout_3
-        del hangout_2
 
     # def test_get_video_devices(self):
     #     raise

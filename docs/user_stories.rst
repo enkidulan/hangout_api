@@ -13,7 +13,7 @@ How to create new hangout and invite people?
     from yaml import load
     credentials = load(open('credentials.yaml', 'r'))
 
-    from hangout_api.hangout_api import Hangouts
+    from hangout_api import Hangouts
 
 
 .. testcleanup:: base_api
