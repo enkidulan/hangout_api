@@ -3,15 +3,16 @@
    You can adapt this file completely to your liking, but it should at least
    contain the root `toctree` directive.
 
-Welcome to Python Hangout Api's documentation!
-==============================================
+Welcome to Python Hangout Api's documentation!!!
+================================================
 
 Contents:
 
 .. toctree::
    :maxdepth: 2
 
-
+   base_api
+   user_stories
 
 
 Indices and tables
@@ -20,4 +21,3 @@ Indices and tables
 * :ref:`genindex`
 * :ref:`modindex`
 * :ref:`search`
-
