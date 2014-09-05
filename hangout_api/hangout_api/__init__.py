@@ -5,12 +5,7 @@ Python API for controlling Google+ Hangouts
 import os.path
 from os.path import join
 from time import sleep
-import pickle
-from selenium import webdriver
-from selenium.webdriver.common.by import By
-from selenium.webdriver.support.ui import WebDriverWait
-from selenium.webdriver.support import expected_conditions as EC
-from selenium.common.exceptions import TimeoutException
+# import pickle
 from pyvirtualdisplay.smartdisplay import SmartDisplay
 import seleniumwrapper as selwrap
 
@@ -45,6 +40,7 @@ class Hangouts():
             "chrome", executable_path=CHROMEDRIVER_PATH)
 
         self.browser.timeout = 4
+        self.hangout_id = None
 
         # # XXX: Loading browser cookies:
         # # TODO: it's probably better to have custom persistent FF data patch
@@ -56,6 +52,8 @@ class Hangouts():
         #     self.browser.get('https://plus.google.com/hangouts/active')
 
     def start(self, onair=False):
+        """ Start new hangout,
+        """
         if not self.browser.current_url.startswith('https://plus.google.com/hangouts/active'):
             self.browser.get('https://plus.google.com/hangouts/active')
         self.browser.by_class('opd').click(timeout=0.5)
@@ -136,20 +134,13 @@ class Hangouts():
                     cancel_button.click(timeout=timeout)
 
     def navigate_to_devices_settings(self):
-        self.click_cancel_button_if_there_is_one()
-        # making nav link visible
-        # webdriver.ActionChains(self.browser).move_to_element(self.browser.by_id(':tc.ct')).perform()
-        try:
-            self.browser.by_class('MQ', timeout=0.1).click(timeout=0.5)
-        except:  # XXX
-            self.browser.by_class('Za-Ja-m').click(timeout=0.5)
-            # click on it
-            self.browser.by_class('MQ').click(timeout=0.5)
+        self.click_menu_element('MQ', func='by_class')
 
     def open_mics_devices_list(self):
         self.navigate_to_devices_settings()
         # click on MC list to make it load list of all devices
-        self.browser.by_class('qd-pc-kg').click(timeout=0.5)
+        # self.browser.by_class('qd-pc-kg').click(timeout=0.5)
+        self.browser.by_text('Microphone').parent.click(timeout=0.5)
 
     def click_on_devices_save_button(self):
         xpath = '//div[text()="Save"]'
@@ -199,16 +190,10 @@ class Hangouts():
     def _get_bandwidth_controooller(self):
         if not self.browser.xpath('//div[text()="Limit Bandwidth"]').is_displayed():
             # no need to open bandwidth settings tab if it's opened already
-            self.click_cancel_button_if_there_is_one()
-            setting_button = self.browser.xpath(
+            self.click_menu_element(
                 '//div[@aria-label="Adjust bandwidth usage"]')
-            if not setting_button.is_displayed():
-                self.browser.by_class('Za-Ja-m').click(timeout=0.5)
-            setting_button.click(timeout=0.5)
-        controller = \
-            self.browser.xpath(
+        return self.browser.xpath(
                 '//div[@aria-label="Adjust the quality of your video"]')
-        return controller
 
     def set_bandwidth(self, bandwidth):
         """
@@ -242,10 +227,7 @@ class Hangouts():
         mute_button = self.browser.xpath(xpath)
         if mute_button.get_attribute('aria-label') == 'Mute microphone':
             return False
-        if not mute_button.is_displayed():
-            # if button is hidden make it displayed
-            self.browser.by_class('Za-Ja-m').click(timeout=0.5)
-        mute_button.click(timeout=0.5)
+        self.click_menu_element(xpath)
         return True
 
     def mute_audio(self):
@@ -259,10 +241,7 @@ class Hangouts():
         mute_button = self.browser.xpath(xpath)
         if mute_button.get_attribute('aria-label') == 'Unmute microphone':
             return False
-        if not mute_button.is_displayed():
-            # if button is hidden make it displayed
-            self.browser.by_class('Za-Ja-m').click(timeout=0.5)
-        mute_button.click(timeout=0.5)
+        self.click_menu_element(xpath)
         return True
 
     def mute_video(self):
@@ -276,10 +255,7 @@ class Hangouts():
         mute_button = self.browser.xpath(xpath)
         if mute_button.get_attribute('aria-label') == 'Turn camera on':
             return False
-        if not mute_button.is_displayed():
-            # if button is hidden make it displayed
-            self.browser.by_class('Za-Ja-m').click(timeout=0.5)
-        mute_button.click(timeout=0.5)
+        self.click_menu_element(xpath)
         return True
 
     def unmute_video(self):
@@ -293,10 +269,7 @@ class Hangouts():
         mute_button = self.browser.xpath(xpath)
         if mute_button.get_attribute('aria-label') == 'Turn camera off':
             return False
-        if not mute_button.is_displayed():
-            # if button is hidden make it displayed
-            self.browser.by_class('Za-Ja-m').click(timeout=0.5)
-        mute_button.click(timeout=0.5)
+        self.click_menu_element(xpath)
         return True
 
     def get_audio_devices(self, with_nodes=False):
@@ -329,12 +302,7 @@ class Hangouts():
         if not any(isinstance(participants, i) for i in (list, tuple)):
             participants = [participants, ]
         # click on Invite People button
-        invite_people_button = self.browser.xpath(
-            '//div[@aria-label="Invite People"]')
-        if not invite_people_button.is_displayed():
-            # if button is hidden make it displayed
-            self.browser.by_class('Za-Ja-m').click(timeout=0.5)
-        invite_people_button.click(timeout=0.5)
+        self.click_menu_element('//div[@aria-label="Invite People"]')
         input = self.browser.xpath(
             '//input[@placeholder="+ Add names, circles, or email addresses"]')
         input.send_keys("\n".join(participants) + "\n\n")
@@ -342,9 +310,9 @@ class Hangouts():
 
     def participants(self):
         """
-        Returns information about current participants
+        Returns list of current participants
             >>> hangout.participants()
-            {participantid: {details}}
+            ['']
         """
         xpath = '//div[@aria-label="Video call participants"]/div'
         participants = self.browser.xpath(xpath, eager=True)
@@ -352,13 +320,10 @@ class Hangouts():
                 for p in participants]
 
     def leave_call(self):
-        self.click_cancel_button_if_there_is_one()
-        leave_call_button = self.browser.xpath(
-            '//div[@aria-label="Leave call"]')
-        if not leave_call_button.is_displayed():
-            # if button is hidden make it displayed
-            self.browser.by_class('Za-Ja-m').click(timeout=0.5)
-        leave_call_button.click(0.5)
+        """
+        Leave hangout. EQ to click on "Leave call" button.
+        """
+        self.click_menu_element('//div[@aria-label="Leave call"]')
 
     def __del__(self):
         self.browser.silent = True
@@ -368,3 +333,11 @@ class Hangouts():
         finally:
             if self.display is not None:
                 self.display.stop()
+
+    def click_menu_element(self, xpath, func='xpath'):
+        self.click_cancel_button_if_there_is_one()
+        menu_button = getattr(self.browser, func)(xpath)
+        if not menu_button.is_displayed():
+            # if menu buttons is hidden make them displayed
+            self.browser.by_class('Za-Ja-m').click(timeout=0.5)
+        menu_button.click(0.5)
