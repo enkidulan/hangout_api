@@ -1,13 +1,6 @@
 from setuptools import setup, find_packages
 import os
-from os.path import join
-import imp
-setupy_download_helper_path = join(
-    os.path.dirname(os.path.abspath(__file__)), 'setupy_download_helper.py')
-setupy_download_helper = imp.load_source(
-    'setupy_download_helper', setupy_download_helper_path)
 
-setupy_download_helper.CHROMEDRIVER_VERSION = '2.10'
 version = '1.0'
 
 setup(name='hangout_api',
