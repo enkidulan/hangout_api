@@ -29,9 +29,6 @@ setup(name='hangout_api',
       namespace_packages=[],
       include_package_data=True,
       zip_safe=False,
-      cmdclass={'install': setupy_download_helper.InstallCommand,
-                'bdist_egg': setupy_download_helper.InstallCommand,
-                'develop': setupy_download_helper.DevelopCommand},
       install_requires=[
           'setuptools',
           'selenium',
@@ -41,6 +38,7 @@ setup(name='hangout_api',
           # 'Pillow',
           'pyvirtualdisplay',
           'easydict',
+          'chromedriver',
           # -*- Extra requirements: -*-
       ],
       extras_require={

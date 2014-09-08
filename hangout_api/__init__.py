@@ -3,14 +3,12 @@ Python API for controlling Google+ Hangouts
 ===========================================
 """
 import os.path
-from os.path import join
 from time import sleep
 from pyvirtualdisplay.smartdisplay import SmartDisplay
 import seleniumwrapper as selwrap
 from easydict import EasyDict
+from chromedriver import CHROMEDRV_PATH
 
-PARRET_DIR_PATH = os.path.dirname(os.path.abspath(__file__))
-CHROMEDRV_PATH = join(PARRET_DIR_PATH, 'CHROMEDRIVER')
 URLS = EasyDict(
     hangout_session_base='https://plus.google.com/hangouts/_/',
     hangouts_active_list='https://plus.google.com/hangouts/active',
