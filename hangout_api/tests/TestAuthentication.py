@@ -1,12 +1,9 @@
-import os.path
 import unittest
-from testfixtures import compare, LogCapture
+from testfixtures import compare
 from hangout_api import Hangouts
-from hangout_api import LoginError
-from testfixtures import ShouldRaise
+# from hangout_api.exceptions import LoginError
+# from testfixtures import ShouldRaise
 from yaml import load
-from selenium.webdriver.support import expected_conditions as EC
-from selenium.webdriver.common.by import By
 import random
 from time import sleep
 from contextlib import contextmanager
@@ -29,7 +26,10 @@ def hangouts_connection_manager(users_credentials, hangout_id):
     finally:
         # TODO: won't work sometimes
         for connection in connections:
-            del connection
+            try:
+                del connection
+            except:
+                pass
 
 
 class TestDevicesSettings(unittest.TestCase):
