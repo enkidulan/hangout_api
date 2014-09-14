@@ -5,9 +5,10 @@ import seleniumwrapper as selwrap
 from chromedriver import CHROMEDRV_PATH
 from .utils import NavigationHelpers, URLS
 from .exceptions import LoginError
+from .settings import BaseSettings
 
 
-class Hangouts(NavigationHelpers):
+class Hangouts(NavigationHelpers, BaseSettings):
     """
     Base class that provide all bunch of options.
 
@@ -101,136 +102,6 @@ class Hangouts(NavigationHelpers):
             raise LoginError(
                 'Wasn\'t able to login. Check if credentials are correct'
                 'and make sure that you have G+ account activated')
-
-    def set_microphone_devices(self, name):
-        # TODO: make sure that browser is on needed context
-        self.get_microphone_devices(with_nodes=True)[name].click()
-        # click save button
-        self.click_on_devices_save_button()
-
-    def get_video_devices(self, with_nodes=False):
-        self.navigate_to_devices_settings()
-        # click on MC list to make it load list of all devices
-        self.browser.by_text('Video and Camera').parent.click(timeout=0.5)
-
-        # get list of devices
-        xpath = '//div[@class="c-i c-i-Ed Iz"]/div/div[@class="c-k-t"]'
-        video_devices = {
-            node.get_attribute('innerText'): node
-            for node in self.browser.xpath(xpath, eager=True)}
-        if with_nodes:
-            return video_devices
-        return list(video_devices.keys())
-
-    def set_video_devices(self, device_name):
-        self.get_video_devices(with_nodes=True)[device_name].click()
-        self.click_on_devices_save_button()
-
-    def _get_bandwidth_controooller(self):
-        limit_bandwidth_xpath = '//div[text()="Limit Bandwidth"]'
-        if not self.browser.xpath(limit_bandwidth_xpath).is_displayed():
-            # no need to open bandwidth settings tab if it's opened already
-            self.click_menu_element(
-                '//div[@aria-label="Adjust bandwidth usage"]')
-        return self.browser.xpath(
-            '//div[@aria-label="Adjust the quality of your video"]')
-
-    def set_bandwidth(self, bandwidth):
-        """
-        Set bandwidth setting for hangout:
-            * 0 - Audio only
-            * 1 - Very Low
-            * 2 - Low
-            * 3 - Medium
-            * 4 - Auto HD
-        """
-        controller = self._get_bandwidth_controooller()
-        levels = controller.by_class('Sa-IU-HT', eager=True)
-        # setting levels
-        levels[bandwidth].click(timeout=0.5)
-
-    def get_bandwidth(self):
-        """
-        Get bandwidth setting for hangout
-        """
-        controller = self._get_bandwidth_controooller()
-        return int(controller.get_attribute('aria-valuenow'))
-
-    def unmute_audio(self):
-        """
-        Un-mute audio device. Returns:
-            * True - Audio went from muted to un-muted
-            * False - Audio was already un-muted
-        """
-        self.click_cancel_button_if_there_is_one()
-        xpath = '//div[contains(@aria-label, "ute microphone")]'
-        mute_button = self.browser.xpath(xpath)
-        if mute_button.get_attribute('aria-label') == 'Mute microphone':
-            return False
-        self.click_menu_element(xpath)
-        return True
-
-    def mute_audio(self):
-        """
-        Mute audio device. Returns:
-            * True - Audio went from un-muted to muted
-            * False - Audio was already muted
-        """
-        self.click_cancel_button_if_there_is_one()
-        xpath = '//div[contains(@aria-label, "ute microphone")]'
-        mute_button = self.browser.xpath(xpath)
-        if mute_button.get_attribute('aria-label') == 'Unmute microphone':
-            return False
-        self.click_menu_element(xpath)
-        return True
-
-    def mute_video(self):
-        """
-        Mute video device. Returns:
-            * True - Video went from un-muted to muted
-            * False - Video was already muted
-        """
-        self.click_cancel_button_if_there_is_one()
-        xpath = '//div[contains(@aria-label, "Turn camera")]'
-        mute_button = self.browser.xpath(xpath)
-        if mute_button.get_attribute('aria-label') == 'Turn camera on':
-            return False
-        self.click_menu_element(xpath)
-        return True
-
-    def unmute_video(self):
-        """
-        Un-mute video device. Returns:
-            * True - Video went from muted to un-muted
-            * False - Video was already un-muted
-        """
-        self.click_cancel_button_if_there_is_one()
-        xpath = '//div[contains(@aria-label, "Turn camera")]'
-        mute_button = self.browser.xpath(xpath)
-        if mute_button.get_attribute('aria-label') == 'Turn camera off':
-            return False
-        self.click_menu_element(xpath)
-        return True
-
-    def get_audio_devices(self, with_nodes=False):
-        self.navigate_to_devices_settings()
-        # click on MC list to make it load list of all devices
-        self.browser.by_class('iph_s_ao').click(timeout=0.5)
-
-        # get list of devices
-        xpath = '//div[@class="c-i c-i-Ed Iz"]/div/div[@class="c-k-t"]'
-        audio_devices = {
-            node.get_attribute('innerText'): node
-            for node in self.browser.xpath(xpath, eager=True)}
-        if with_nodes:
-            return audio_devices
-        return list(audio_devices.keys())
-
-    def set_audio_devices(self, device_name):
-        # TODO: make sure that browser is on needed context
-        self.get_audio_devices(with_nodes=True)[device_name].click()
-        # click save button
-        self.click_on_devices_save_button()
 
     def invite(self, participants):
         """
