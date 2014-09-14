@@ -134,36 +134,16 @@ class TestDevicesSettings(unittest.TestCase):
             participants = self.hangout.participants()
         compare(participants, ['Gilgamesh Bot', 'Lorem Impus', 'John Doe'])
 
-    # def test_get_video_devices(self):
-    #     raise
-    #     cams = self.hangout.get_video_devices()
-    #     self.assertTrue(len(cams) > 0)
+    def test_get_video_devices(self):
+        cams = self.hangout.get_video_devices()
+        self.assertTrue(len(cams) > 0)
 
-    # def test_set_video_devices(self):
-    #     raise
-    #     video_device = random.choice(self.hangout.get_video_devices())
-    #     self.hangout.set_video_devices(video_device)
-    #     self.hangout.navigate_to_devices_settings()
-    #     xpath = '//div[contains(@id, ".yt")]//span[@role="option"]'
-    #     current_device = \
-    #         self.hangout.browser.xpath(xpath).get_attribute('innerText')
-    #     compare(video_device, current_device)
-
-# class TestLogIn(unittest.TestCase):
-
-#     def test_valid_credentials(self):
-#         hangout = Hangouts()
-#         if not hangout.is_logged_in:
-#             hangout.login(
-#                 credentials['name'],
-#                 credentials['password'],
-#                 otp=credentials['otp'])
-#         hangout.start()
-
-#     def test_invalid_credentials(self):
-#         msg = 'Wasn\'t able to login. Check if credentials are correct.'
-#         hangout = Hangouts()
-#         with ShouldRaise(LoginError(msg)):
-#             hangout.login(
-#                 'DoeJohnBot@gmail.com',
-#                 'qwerty')
+    def test_set_video_devices(self):
+        video_device = random.choice(self.hangout.get_video_devices())
+        self.hangout.set_video_devices(video_device)
+        self.hangout.navigate_to_devices_settings()
+        current_device = \
+            self.hangout.browser.by_text(
+                'Video and Camera').parent.parent.get_attribute(
+                'innerText').split('\n')[0].strip()
+        compare(video_device, current_device)

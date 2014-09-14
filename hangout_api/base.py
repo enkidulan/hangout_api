@@ -36,8 +36,10 @@ class Hangouts(NavigationHelpers):
             self.display = SmartDisplay()
             self.display.start()
 
-        self.browser = selwrap.create(
-            browser, executable_path=executable_path or CHROMEDRV_PATH)
+        kwargs = {}
+        if browser == "chrome":
+            kwargs['executable_path'] = executable_path or CHROMEDRV_PATH
+        self.browser = selwrap.create(browser, **kwargs)
 
     def start(self, onair=False):
         """
@@ -106,28 +108,23 @@ class Hangouts(NavigationHelpers):
         # click save button
         self.click_on_devices_save_button()
 
-    # def get_video_devices(self, with_nodes=False):
-    #     raise
-    #     # self.open_mics_devices_list()
-    #     # TODO: add caching ??? do we need this? there
-    #     #       is self.video_devices prop
-    #     # get list of devices
-    #     # import pdb; pdb.set_trace()
-    #     # video_dev_xpath =
-    #'//div[@class="c-i c-i-Ed Hz"]/div/div[@class="c-k-t"]'
-    #     # video_devices = {
-    #     #     node.get_attribute('innerText'): node
-    #     #     for node in
-    #self.browser.find_elements_by_xpath(video_dev_xpath)}
-    #     # self.video_devices = list(video_devices.keys())
-    #     # if with_nodes:
-    #     #     return video_devices
-    #     # return self.video_devices
+    def get_video_devices(self, with_nodes=False):
+        self.navigate_to_devices_settings()
+        # click on MC list to make it load list of all devices
+        self.browser.by_text('Video and Camera').parent.click(timeout=0.5)
 
-    # def set_video_devices(self, name):
-    #     # TODO: make sure that browser is on needed context
-    #     self.get_video_devices(with_nodes=True)[name].click()
-    #     self.click_on_devices_save_button()
+        # get list of devices
+        xpath = '//div[@class="c-i c-i-Ed Iz"]/div/div[@class="c-k-t"]'
+        video_devices = {
+            node.get_attribute('innerText'): node
+            for node in self.browser.xpath(xpath, eager=True)}
+        if with_nodes:
+            return video_devices
+        return list(video_devices.keys())
+
+    def set_video_devices(self, device_name):
+        self.get_video_devices(with_nodes=True)[device_name].click()
+        self.click_on_devices_save_button()
 
     def _get_bandwidth_controooller(self):
         limit_bandwidth_xpath = '//div[text()="Limit Bandwidth"]'
