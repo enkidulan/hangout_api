@@ -5,10 +5,10 @@ import seleniumwrapper as selwrap
 from chromedriver import CHROMEDRV_PATH
 from .utils import NavigationHelpers, URLS
 from .exceptions import LoginError
-from .settings import BaseSettings
+from .settings import VideoSettings, MicrophoneSettings, AudioSettings, BandwidthSettings
 
 
-class Hangouts(NavigationHelpers, BaseSettings):
+class Hangouts(NavigationHelpers):
     """
     Base class that provide all bunch of options.
 
@@ -41,6 +41,11 @@ class Hangouts(NavigationHelpers, BaseSettings):
         if browser == "chrome":
             kwargs['executable_path'] = executable_path or CHROMEDRV_PATH
         self.browser = selwrap.create(browser, **kwargs)
+
+        self.video = VideoSettings(self)
+        self.microphone = MicrophoneSettings(self)
+        self.audio = AudioSettings(self)
+        self.bandwidth = BandwidthSettings(self)
 
     def start(self, onair=False):
         """

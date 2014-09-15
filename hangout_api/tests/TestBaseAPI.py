@@ -24,15 +24,14 @@ def hangouts_connection_manager(users_credentials, hangout_id):
             connections.append(hangout)
         yield connections
     finally:
-        # TODO: won't work sometimes
         for connection in connections:
             try:
-                del connection
+                connection.__del__()
             except:
                 pass
 
 
-class TestDevicesSettings(unittest.TestCase):
+class TestBaseAPI(unittest.TestCase):
 
     @classmethod
     def setup_class(self):
@@ -60,12 +59,12 @@ class TestDevicesSettings(unittest.TestCase):
             compare(user_icon.is_displayed(), True)
 
     def test_get_microphone_devices(self):
-        mics = self.hangout.get_microphone_devices()
+        mics = self.hangout.microphone.get_devices()
         self.assertTrue(len(mics) > 0)
 
     def test_set_microphone_devices(self):
-        mic_device = random.choice(self.hangout.get_microphone_devices())
-        self.hangout.set_microphone_devices(mic_device)
+        mic_device = random.choice(self.hangout.microphone.get_devices())
+        self.hangout.microphone.set_device(mic_device)
         self.hangout.navigate_to_devices_settings()
         current_device = \
             self.hangout.browser.xpath(
@@ -74,23 +73,23 @@ class TestDevicesSettings(unittest.TestCase):
         compare(mic_device, current_device)
 
     def test_set_bandwidth(self):
-        current_bandwidth = self.hangout.get_bandwidth()
+        current_bandwidth = self.hangout.bandwidth.get()
         desired_bandwidth = random.choice(
             [i for i in range(4) if i != current_bandwidth])
-        self.hangout.set_bandwidth(desired_bandwidth)
-        compare(desired_bandwidth, self.hangout.get_bandwidth())
+        self.hangout.bandwidth.set(desired_bandwidth)
+        compare(desired_bandwidth, self.hangout.bandwidth.get())
 
     def test_get_bandwidth(self):
-        current_bandwidth = self.hangout.get_bandwidth()
+        current_bandwidth = self.hangout.bandwidth.get()
         compare(current_bandwidth in [0, 1, 2, 3, 4], True)
 
     def test_get_audio_devices(self):
-        audio_devices = self.hangout.get_audio_devices()
+        audio_devices = self.hangout.audio.get_devices()
         self.assertTrue(len(audio_devices) > 0)
 
     def test_set_audio_devices(self):
-        audio_device = random.choice(self.hangout.get_audio_devices())
-        self.hangout.set_audio_devices(audio_device)
+        audio_device = random.choice(self.hangout.audio.get_devices())
+        self.hangout.audio.set_device(audio_device)
         self.hangout.navigate_to_devices_settings()
         current_audio_device = \
             self.hangout.browser.xpath(
@@ -100,21 +99,21 @@ class TestDevicesSettings(unittest.TestCase):
 
     def test_audio_mute_unmute(self):
         # set up in case if video was muted by previous test
-        self.hangout.unmute_audio()
+        self.hangout.audio.unmute()
 
-        compare(self.hangout.mute_audio(), True)
-        compare(self.hangout.mute_audio(), False)
-        compare(self.hangout.unmute_audio(), True)
-        compare(self.hangout.unmute_audio(), False)
+        compare(self.hangout.audio.mute(), True)
+        compare(self.hangout.audio.mute(), False)
+        compare(self.hangout.audio.unmute(), True)
+        compare(self.hangout.audio.unmute(), False)
 
     def test_video_mute_unmute(self):
         # set up in case if video was muted by previous test
-        self.hangout.unmute_video()
+        self.hangout.video.unmute()
 
-        compare(self.hangout.mute_video(), True)
-        compare(self.hangout.mute_video(), False)
-        compare(self.hangout.unmute_video(), True)
-        compare(self.hangout.unmute_video(), False)
+        compare(self.hangout.video.mute(), True)
+        compare(self.hangout.video.mute(), False)
+        compare(self.hangout.video.unmute(), True)
+        compare(self.hangout.video.unmute(), False)
 
     def test_invite(self):
         self.hangout.invite(['maxybot@gmail.com', 'test circle for call'])
@@ -135,12 +134,12 @@ class TestDevicesSettings(unittest.TestCase):
         compare(participants, ['Gilgamesh Bot', 'Lorem Impus', 'John Doe'])
 
     def test_get_video_devices(self):
-        cams = self.hangout.get_video_devices()
+        cams = self.hangout.video.get_devices()
         self.assertTrue(len(cams) > 0)
 
     def test_set_video_devices(self):
-        video_device = random.choice(self.hangout.get_video_devices())
-        self.hangout.set_video_devices(video_device)
+        video_device = random.choice(self.hangout.video.get_devices())
+        self.hangout.video.set_device(video_device)
         self.hangout.navigate_to_devices_settings()
         current_device = \
             self.hangout.browser.by_text(
