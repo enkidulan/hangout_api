@@ -1,5 +1,6 @@
 """
 Setting tab controllers.
+========================
 """
 
 
@@ -8,8 +9,30 @@ class BaseSettings():
     def __init__(self, base):
         self.base = base
 
+    def _devices_getter(self, device_xpath, devices_list_xpath, with_nodes):
+        self.base.navigate_to_devices_settings()
+        # click on MC list to make it load list of all devices
+        device_box = self.base.browser.xpath(device_xpath).parent
+        device_box.silent = True
+        if device_box.by_class('c-h-i-b-o', timeout=0.2):
+            # if this class present that means that there is no devices
+            # available to change, so lets return current text
+            return device_box.get_attribute('innerText').strip()
+        device_box.silent = False
+        device_box.click(timeout=0.5)
+        # get list of devices
+        devices = {
+            n.get_attribute('innerText'): n
+            for n in self.base.browser.xpath(devices_list_xpath, eager=True)}
+        if with_nodes:
+            return devices
+        return list(devices.keys())
+
 
 class BandwidthSettings(BaseSettings):
+    """
+    Bandwidth settings
+    """
 
     def _get_bandwidth_controooller(self):
         limit_bandwidth_xpath = '//div[text()="Limit Bandwidth"]'
@@ -43,6 +66,9 @@ class BandwidthSettings(BaseSettings):
 
 
 class VideoSettings(BaseSettings):
+    """
+    Video settings
+    """
 
     def mute(self):
         """
@@ -73,18 +99,11 @@ class VideoSettings(BaseSettings):
         return True
 
     def get_devices(self, with_nodes=False):
-        self.base.navigate_to_devices_settings()
-        # click on MC list to make it load list of all devices
-        self.base.browser.by_text('Video and Camera').parent.click(timeout=0.5)
-
-        # get list of devices
-        xpath = '//div[@class="c-i c-i-Ed Kz"]/div/div[@class="c-k-t"]'
-        video_devices = {
-            node.get_attribute('innerText'): node
-            for node in self.base.browser.xpath(xpath, eager=True)}
-        if with_nodes:
-            return video_devices
-        return list(video_devices.keys())
+        device_xpath = '//*[text()="Video and Camera"]'
+        devices_list_xpath = \
+            '//div[@class="c-i c-i-Ed Kz"]/div/div[@class="c-k-t"]'
+        return self._devices_getter(
+            device_xpath, devices_list_xpath, with_nodes)
 
     def set_device(self, device_name):
         self.get_devices(with_nodes=True)[device_name].click()
@@ -92,25 +111,16 @@ class VideoSettings(BaseSettings):
 
 
 class MicrophoneSettings(BaseSettings):
-
-    def open_mics_devices_list(self):
-        self.base.navigate_to_devices_settings()
-        # click on MC list to make it load list of all devices
-        self.base.browser.by_text('Microphone').parent.click(timeout=0.5)
+    """
+    Microphone settings
+    """
 
     def get_devices(self, with_nodes=False):
-        self.open_mics_devices_list()
-        # TODO: add caching
-        # if self.mics_list is not None:
-            # return self.mics_list.keys()
-        # get list of devices
-        xpath = '//div[@class="c-i c-i-Ed Hz"]/div/div[@class="c-k-t"]'
-        mics = {
-            node.get_attribute('innerText'): node
-            for node in self.base.browser.find_elements_by_xpath(xpath)}
-        if with_nodes:
-            return mics
-        return list(mics.keys())
+        device_xpath = '//*[text()="Microphone"]'
+        devices_list_xpath = \
+            '//div[@class="c-i c-i-Ed Hz"]/div/div[@class="c-k-t"]'
+        return self._devices_getter(
+            device_xpath, devices_list_xpath, with_nodes)
 
     def set_device(self, name):
         # TODO: make sure that browser is on needed context
@@ -120,6 +130,9 @@ class MicrophoneSettings(BaseSettings):
 
 
 class AudioSettings(BaseSettings):
+    """
+    Audio settings
+    """
 
     def unmute(self):
         """
@@ -150,18 +163,11 @@ class AudioSettings(BaseSettings):
         return True
 
     def get_devices(self, with_nodes=False):
-        self.base.navigate_to_devices_settings()
-        # click on MC list to make it load list of all devices
-        self.base.browser.by_class('iph_s_ao').click(timeout=0.5)
-
-        # get list of devices
-        xpath = '//div[@class="c-i c-i-Ed Iz"]/div/div[@class="c-k-t"]'
-        audio_devices = {
-            node.get_attribute('innerText'): node
-            for node in self.base.browser.xpath(xpath, eager=True)}
-        if with_nodes:
-            return audio_devices
-        return list(audio_devices.keys())
+        device_xpath = '//*[contains(@class, "iph_s_ao")]'
+        devices_list_xpath = \
+            '//div[@class="c-i c-i-Ed Iz"]/div/div[@class="c-k-t"]'
+        return self._devices_getter(
+            device_xpath, devices_list_xpath, with_nodes)
 
     def set_device(self, device_name):
         # TODO: make sure that browser is on needed context
