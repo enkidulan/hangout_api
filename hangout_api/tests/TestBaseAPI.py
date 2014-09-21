@@ -70,7 +70,7 @@ class TestBaseAPI(unittest.TestCase):
 
     def test_get_microphone_devices(self):
         mics = self.hangout.microphone.get_devices()
-        self.assertTrue(len(mics) > 0)
+        self.assertTrue(isinstance(mics, list) or isinstance(mics, str))
 
     def test_set_microphone_devices(self):
         mic_device = device_seter(
@@ -80,7 +80,7 @@ class TestBaseAPI(unittest.TestCase):
         current_device = \
             self.hangout.browser.xpath(
                 '//span[text()="Microphone"]').parent.get_attribute(
-                'innerText').strip()
+                'innerText').split('\n')[0].strip()
         compare(mic_device, current_device)
 
     def test_set_bandwidth(self):
@@ -96,7 +96,7 @@ class TestBaseAPI(unittest.TestCase):
 
     def test_get_audio_devices(self):
         audio_devices = self.hangout.audio.get_devices()
-        self.assertTrue(len(audio_devices) > 0)
+        self.assertTrue(isinstance(audio_devices, list) or isinstance(audio_devices, str))
 
     def test_set_audio_devices(self):
         audio_device = device_seter(
@@ -146,7 +146,7 @@ class TestBaseAPI(unittest.TestCase):
 
     def test_get_video_devices(self):
         cams = self.hangout.video.get_devices()
-        self.assertTrue(isinstance(cams, list) or isinstance(cams, unicode))
+        self.assertTrue(isinstance(cams, list) or isinstance(cams, str))
 
     def test_set_video_devices(self):
         video_device = device_seter(

@@ -17,7 +17,7 @@ class BaseSettings():
         if device_box.by_class('c-h-i-b-o', timeout=0.2):
             # if this class present that means that there is no devices
             # available to change, so lets return current text
-            return device_box.get_attribute('innerText').strip()
+            return device_box.get_attribute('innerText').split('\n')[0].strip()
         device_box.silent = False
         device_box.click(timeout=0.5)
         # get list of devices
