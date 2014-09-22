@@ -27,7 +27,7 @@ def hangouts_connection_manager(users_credentials, hangout_id):
     connections = []
     try:
         for credentials in users_credentials:
-            hangout = Hangouts()
+            hangout = Hangouts('firefox')
             hangout.browser.timeout = 15
             hangout.login(credentials[0], credentials[1])
             hangout.connect(hangout_id)
