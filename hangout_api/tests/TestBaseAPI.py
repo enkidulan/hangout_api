@@ -9,6 +9,9 @@ from time import sleep
 from contextlib import contextmanager
 
 
+def hangout_factory():
+    return Hangouts()
+
 credentials = load(open('credentials.yaml', 'r'))
 
 
@@ -27,7 +30,7 @@ def hangouts_connection_manager(users_credentials, hangout_id):
     connections = []
     try:
         for credentials in users_credentials:
-            hangout = Hangouts()
+            hangout = hangout_factory()
             hangout.browser.timeout = 15
             hangout.login(credentials[0], credentials[1])
             hangout.connect(hangout_id)
@@ -45,7 +48,7 @@ class TestBaseAPI(unittest.TestCase):
 
     @classmethod
     def setup_class(self):
-        self.hangout = Hangouts()
+        self.hangout = hangout_factory()
         self.hangout.browser.timeout = 15
         self.hangout.login(
             credentials['name'],
@@ -76,7 +79,7 @@ class TestBaseAPI(unittest.TestCase):
         mic_device = device_seter(
             self.hangout.microphone.get_devices,
             self.hangout.microphone.set_device)
-        self.hangout.navigate_to_devices_settings()
+        self.hangout.utils.navigate_to_devices_settings()
         current_device = \
             self.hangout.browser.xpath(
                 '//span[text()="Microphone"]').parent.get_attribute(
@@ -101,7 +104,7 @@ class TestBaseAPI(unittest.TestCase):
     def test_set_audio_devices(self):
         audio_device = device_seter(
             self.hangout.audio.get_devices, self.hangout.audio.set_device)
-        self.hangout.navigate_to_devices_settings()
+        self.hangout.utils.navigate_to_devices_settings()
         current_audio_device = \
             self.hangout.browser.xpath(
                 '//div[text()="Play test sound"]').parent.parent.get_attribute(
@@ -146,12 +149,12 @@ class TestBaseAPI(unittest.TestCase):
 
     def test_get_video_devices(self):
         cams = self.hangout.video.get_devices()
-        self.assertTrue(isinstance(cams, list) or isinstance(cams, unicode))
+        self.assertTrue(isinstance(cams, list) or isinstance(cams, str))
 
     def test_set_video_devices(self):
         video_device = device_seter(
             self.hangout.video.get_devices, self.hangout.video.set_device)
-        self.hangout.navigate_to_devices_settings()
+        self.hangout.utils.navigate_to_devices_settings()
         current_device = \
             self.hangout.browser.by_text(
                 'Video and Camera').parent.parent.get_attribute(

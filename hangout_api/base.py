@@ -3,12 +3,20 @@ from time import sleep
 from pyvirtualdisplay.smartdisplay import SmartDisplay
 import seleniumwrapper as selwrap
 from chromedriver import CHROMEDRV_PATH
-from .utils import NavigationHelpers, URLS
+from .utils import Utils, URLS
 from .exceptions import LoginError
-from .settings import VideoSettings, MicrophoneSettings, AudioSettings, BandwidthSettings
+# from .settings import (
+#     VideoSettings,
+#     MicrophoneSettings,
+#     AudioSettings,
+#     BandwidthSettings,
+# )
+
+from .interfaces import IModule
+from zope.component import getUtilitiesFor
 
 
-class Hangouts(NavigationHelpers):
+class Hangouts():
     """
     Base class that provide all bunch of options.
 
@@ -42,10 +50,14 @@ class Hangouts(NavigationHelpers):
             kwargs['executable_path'] = executable_path or CHROMEDRV_PATH
         self.browser = selwrap.create(browser, **kwargs)
 
-        self.video = VideoSettings(self)
-        self.microphone = MicrophoneSettings(self)
-        self.audio = AudioSettings(self)
-        self.bandwidth = BandwidthSettings(self)
+        self.utils = Utils(self.browser)
+        for name, instance in getUtilitiesFor(IModule):
+            setattr(self, name, instance(self.utils))
+
+        # self.video = VideoSettings(self.utils)
+        # self.microphone = MicrophoneSettings(self.utils)
+        # self.audio = AudioSettings(self.utils)
+        # self.bandwidth = BandwidthSettings(self.utils)
 
     def start(self, onair=False):
         """
@@ -65,7 +77,7 @@ class Hangouts(NavigationHelpers):
         # TODO: 'Google+' title
         self.browser.switch_to_window(self.browser.window_handles[0])
 
-        self.click_cancel_button_if_there_is_one(timeout=30)
+        self.utils.click_cancel_button_if_there_is_one(timeout=30)
 
         # setting hangout id property
         self.hangout_id = self.browser.current_url.replace(
@@ -103,7 +115,7 @@ class Hangouts(NavigationHelpers):
             self.browser.by_id('smsVerifyPin').click(timeout=0.5)
 
         # checking if log in was successful
-        if not self.is_logged_in:
+        if not self.utils.is_logged_in:
             raise LoginError(
                 'Wasn\'t able to login. Check if credentials are correct'
                 'and make sure that you have G+ account activated')
@@ -114,11 +126,11 @@ class Hangouts(NavigationHelpers):
             >>> hangout.invite("persona@gmail.com")
             >>> hangout.invite(["personb@gmail.com", "Circle Name A"])
         """
-        self.click_cancel_button_if_there_is_one()
+        self.utils.click_cancel_button_if_there_is_one()
         if not any(isinstance(participants, i) for i in (list, tuple)):
             participants = [participants, ]
         # click on Invite People button
-        self.click_menu_element('//div[@aria-label="Invite People"]')
+        self.utils.click_menu_element('//div[@aria-label="Invite People"]')
         input = self.browser.xpath(
             '//input[@placeholder="+ Add names, circles, or email addresses"]')
         input.send_keys("\n".join(participants) + "\n\n")
@@ -139,17 +151,12 @@ class Hangouts(NavigationHelpers):
         """
         Leave hangout. EQ to click on "Leave call" button.
         """
-        self.click_menu_element('//div[@aria-label="Leave call"]')
+        self.utils.click_menu_element('//div[@aria-label="Leave call"]')
 
     def __del__(self):
         # leaving the call first
         self.browser.silent = True
-        try:
-            self.leave_call()
-        except:
-            pass
-        try:
-            self.browser.quit()
-        finally:
-            if self.display is not None:
-                self.display.stop()
+        self.leave_call()
+        self.browser.quit()
+        if self.display is not None:
+            self.display.stop()

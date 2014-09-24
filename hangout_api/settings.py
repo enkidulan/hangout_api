@@ -2,6 +2,8 @@
 Setting tab controllers.
 ========================
 """
+from zope.component import provideUtility
+from .interfaces import IModule
 
 
 class BaseSettings():
@@ -64,6 +66,8 @@ class BandwidthSettings(BaseSettings):
         controller = self._get_bandwidth_controooller()
         return int(controller.get_attribute('aria-valuenow'))
 
+provideUtility(BandwidthSettings, IModule, 'bandwidth')
+
 
 class VideoSettings(BaseSettings):
     """
@@ -109,6 +113,8 @@ class VideoSettings(BaseSettings):
         self.get_devices(with_nodes=True)[device_name].click()
         self.base.click_on_devices_save_button()
 
+provideUtility(VideoSettings, IModule, 'video')
+
 
 class MicrophoneSettings(BaseSettings):
     """
@@ -127,6 +133,8 @@ class MicrophoneSettings(BaseSettings):
         self.get_devices(with_nodes=True)[name].click()
         # click save button
         self.base.click_on_devices_save_button()
+
+provideUtility(MicrophoneSettings, IModule, 'microphone')
 
 
 class AudioSettings(BaseSettings):
@@ -174,3 +182,5 @@ class AudioSettings(BaseSettings):
         self.get_devices(with_nodes=True)[device_name].click()
         # click save button
         self.base.click_on_devices_save_button()
+
+provideUtility(AudioSettings, IModule, 'audio')

@@ -1,4 +1,5 @@
 from easydict import EasyDict
+from time import sleep
 
 
 URLS = EasyDict(
@@ -10,11 +11,13 @@ URLS = EasyDict(
 )
 
 
-class NavigationHelpers():
+class Utils():
     """
     Batch of function to navigate through G+ Hangout to keep main API
     class cleaner
     """
+    def __init__(self, browser):
+        self.browser = browser
 
     def click_menu_element(self, xpath, func='xpath'):
         self.click_cancel_button_if_there_is_one()
@@ -48,8 +51,16 @@ class NavigationHelpers():
         Be careful this function analyzing current URL to determinate
         if user loged in or not.
         """
-        return self.browser.current_url.startswith(URLS.plus_main) or \
+        is_logged_in = lambda: \
+            self.browser.current_url.startswith(URLS.plus_main) or \
             self.browser.current_url.startswith(URLS.personalinfo)
+        try_num = 0
+        while try_num < 10:
+            if is_logged_in():
+                return True
+            sleep(0.1)
+            try_num += 1
+        return False
 
     def navigate_to_devices_settings(self):
         self.click_menu_element('MQ', func='by_class')

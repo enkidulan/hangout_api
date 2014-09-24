@@ -16,9 +16,14 @@ Install requirements
 
 .. code:: bash
 
-    $ sudo apt-get install python3-dev xvfb xserver-xephyr tightvncserver python-imaging scrot -y
+    $ sudo apt-get install git python3-dev xvfb python-imaging scrot -y
 
+**Google Talk Pluggin**
 
+.. code:: bash
+
+    $ wget https://dl.google.com/linux/direct/google-talkplugin_current_amd64.deb
+    $ sudo dpkg -i google-talkplugin_current_amd64.deb
 
 **Chrome:**
 
