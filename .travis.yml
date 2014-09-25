@@ -1,11 +1,13 @@
 ---
 before_install:
-    - sudo apt-get install -qq wget python-dev python3-dev 
+    - sudo apt-get install -qq wget python-dev python3-dev
     - sudo apt-get install -qq xserver-xephyr scrot xvfb tightvncserver
     - wget -q -O - https://dl-ssl.google.com/linux/linux_signing_key.pub | sudo apt-key add -
     - sudo sh -c 'echo "deb http://dl.google.com/linux/chrome/deb/ stable main" >> /etc/apt/sources.list.d/google.list'
     - sudo apt-get update
     - sudo apt-get install -qq google-chrome-stable
+    - wget -q https://dl.google.com/linux/direct/google-talkplugin_current_amd64.deb
+    - sudo dpkg -i google-talkplugin_current_amd64.deb
 install:
     - pip install setuptools --upgrade
     - python bootstrap.py -c travis.cfg
