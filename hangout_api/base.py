@@ -15,7 +15,7 @@ import seleniumwrapper as selwrap
 from chromedriver import CHROMEDRV_PATH
 from zope.component import getUtilitiesFor
 
-from .utils import Utils, URLS
+from .utils import Utils, URLS, Partisapant
 from .exceptions import LoginError
 from .interfaces import IModule
 
@@ -168,9 +168,10 @@ class Hangouts():
             >>> hangout.participants()
             ['John Doe', ...]
         """
-        xpath = '//div[@aria-label="Video call participants"]/div'
+        xpath = '//div[@data-userid]'
         participants = self.browser.xpath(xpath, eager=True)
-        return [p.get_attribute('aria-label').split('Open menu for ')[1]
+        return [Partisapant(p.get_attribute('aria-label')[5:-11],
+                            p.get_attribute('data-userid'))
                 for p in participants]
 
     def disconnect(self):

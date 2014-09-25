@@ -7,6 +7,10 @@ navigation helpers.
 
 from easydict import EasyDict
 from time import sleep
+from collections import namedtuple
+
+
+Partisapant = namedtuple('Partisapant', ['name', 'profile_id'])
 
 
 URLS = EasyDict(
