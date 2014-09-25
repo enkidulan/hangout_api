@@ -4,6 +4,15 @@ Hangout Call Setting Handlers
 """
 from zope.component import provideUtility
 from .interfaces import IModule
+from enum import Enum
+
+BANDWIDTH_LEVELS = Enum(
+    'Bandwidth', {
+        'Audio only': 0,
+        'Very Low': 1,
+        'Low': 2,
+        'Medium': 3,
+        'Auto HD': 4})
 
 
 class BaseSettings():  # pylint: disable=R0903
@@ -91,11 +100,11 @@ class BandwidthSettings(BaseSettings):
         .. code::
 
             >>> hangout.bandwidth.get()
-            3
+            <Bandwidth.Very Low: 1>
 
         """
         controller = self._get_bandwidth_controooller()
-        return int(controller.get_attribute('aria-valuenow'))
+        return BANDWIDTH_LEVELS(int(controller.get_attribute('aria-valuenow')))
 
 provideUtility(BandwidthSettings, IModule, 'bandwidth')
 

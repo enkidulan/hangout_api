@@ -2,6 +2,7 @@ import unittest
 from testfixtures import compare
 from hangout_api import Hangouts
 from hangout_api.utils import Partisapant
+from hangout_api.settings import BANDWIDTH_LEVELS
 # from hangout_api.exceptions import LoginError
 # from testfixtures import ShouldRaise
 from yaml import load
@@ -11,7 +12,7 @@ from contextlib import contextmanager
 
 
 def hangout_factory():
-    return Hangouts('firefox')
+    return Hangouts()
 
 credentials = load(open('credentials.yaml', 'r'))
 
@@ -92,11 +93,12 @@ class TestBaseAPI(unittest.TestCase):
         desired_bandwidth = random.choice(
             [i for i in range(4) if i != current_bandwidth])
         self.hangout.bandwidth.set(desired_bandwidth)
-        compare(desired_bandwidth, self.hangout.bandwidth.get())
+        compare(
+            BANDWIDTH_LEVELS(desired_bandwidth), self.hangout.bandwidth.get())
 
     def test_get_bandwidth(self):
         current_bandwidth = self.hangout.bandwidth.get()
-        compare(current_bandwidth in [0, 1, 2, 3, 4], True)
+        compare(current_bandwidth in BANDWIDTH_LEVELS, True)
 
     def test_get_audio_devices(self):
         audio_devices = self.hangout.audio.get_devices()
