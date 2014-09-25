@@ -3,43 +3,36 @@ from time import sleep
 from pyvirtualdisplay.smartdisplay import SmartDisplay
 import seleniumwrapper as selwrap
 from chromedriver import CHROMEDRV_PATH
+from zope.component import getUtilitiesFor
+
 from .utils import Utils, URLS
 from .exceptions import LoginError
-# from .settings import (
-#     VideoSettings,
-#     MicrophoneSettings,
-#     AudioSettings,
-#     BandwidthSettings,
-# )
-
 from .interfaces import IModule
-from zope.component import getUtilitiesFor
 
 
 class Hangouts():
     """
-    Base class that provide all bunch of options.
+    Main class for controlling hangout calls.
 
     """
-
-    # TODO: how to show self.display, self.browser and self.hangout_id in
-    #       docs?
 
     def __init__(self, browser="chrome", executable_path=None):
         """
         Initialization does two things:
             1. Makes sure that there is active X session.
-            2. Starts browser.
+            2. Starts the browser.
 
-        On initialization it stats X session if can't find 'DISPLAY' in
-        os.environ. For this purposes used *pyvirtualdisplay* package.
+        If 'DISPLAY' can't be found in os.environ than new X session starts.
+        Starting new session handels `PyVirtualDisplay`_.
+
+        .. _PyVirtualDisplay: http://ponty.github.io/PyVirtualDisplay/
 
         For handling browser used seleniumwrapper library.
 
         """
-        # lets start display in case if no is available
         self.hangout_id = None
 
+        # lets start display in case if no is available
         self.display = None
         if not os.environ.get('DISPLAY'):
             self.display = SmartDisplay()
@@ -54,14 +47,19 @@ class Hangouts():
         for name, instance in getUtilitiesFor(IModule):
             setattr(self, name, instance(self.utils))
 
-        # self.video = VideoSettings(self.utils)
-        # self.microphone = MicrophoneSettings(self.utils)
-        # self.audio = AudioSettings(self.utils)
-        # self.bandwidth = BandwidthSettings(self.utils)
-
     def start(self, onair=False):
         """
-        Start new hangout.
+        Start a new hangout.
+        After new hangout is created its id is stored in 'hangout_id' attribure
+
+        .. code::
+
+            >>> hangout.hangout_id
+            None
+            >>> hangout.start()
+            >>> hangout.hangout_id
+            'gs4pp6g62w65moctfqsvihzq2qa'
+
         """
         if not self.browser.current_url.startswith(URLS.hangouts_active_list):
             self.browser.get(URLS.hangouts_active_list)
@@ -74,7 +72,6 @@ class Hangouts():
         while len(self.browser.window_handles) <= 1:
             sleep(0.2)  # XXX: add waiting for second window to open
         self.browser.close()  # closing old window
-        # TODO: 'Google+' title
         self.browser.switch_to_window(self.browser.window_handles[0])
 
         self.utils.click_cancel_button_if_there_is_one(timeout=30)
@@ -86,20 +83,31 @@ class Hangouts():
     def connect(self, hangout_id):
         """
         Connect to an existing hangout.
-        Takes id of targeted hangout as argument
+        Takes id of targeted hangout as argument.
+        Also it sets hangout_id property:
+
+        .. code::
+
+            >>> hangout.hangout_id
+            None
+            >>> hangout.connect('gs4pp6g62w65moctfqsvihzq2qa')
+            >>> hangout.hangout_id
+            'gs4pp6g62w65moctfqsvihzq2qa'
+
+
         """
         self.hangout_id = hangout_id
         self.browser.get(URLS.hangout_session_base + hangout_id)
-        # there may be a big delay before 'Join' button appears, so we need
-        # to add longer timeout for this
+        # there may be a big delay before 'Join' button appears, so there is a
+        #  need wait longer than usual
         self.browser.by_text('Join', timeout=60).click(timeout=0.5)
 
     def login(self, username=None, password=None, otp=None):
         """
-        Log into google plus account.
+        Log in to google plus.
 
-        *opt* argument is one time password and is optional,
-        set it only if you're 2-factor authorization
+        *opt* argument is one time password and it's optional,
+        set it only if you're using 2-factor authorization.
 
         """
 
@@ -122,9 +130,13 @@ class Hangouts():
 
     def invite(self, participants):
         """
-        Invite person or circle to hangout
+        Invite person or circle to hangout:
+
+        .. code::
+
             >>> hangout.invite("persona@gmail.com")
             >>> hangout.invite(["personb@gmail.com", "Circle Name A"])
+
         """
         self.utils.click_cancel_button_if_there_is_one()
         if not any(isinstance(participants, i) for i in (list, tuple)):
@@ -138,7 +150,10 @@ class Hangouts():
 
     def participants(self):
         """
-        Returns list of current participants
+        Returns list of current participants:
+
+        .. code::
+
             >>> hangout.participants()
             ['John Doe', ...]
         """
@@ -149,14 +164,19 @@ class Hangouts():
 
     def leave_call(self):
         """
-        Leave hangout. EQ to click on "Leave call" button.
+        Leave hangout (equal on clicking on "Leave call" button). After
+        leaving the call you can create a new one or connect to existing.
         """
         self.utils.click_menu_element('//div[@aria-label="Leave call"]')
+        self.hangout_id = None
 
     def __del__(self):
         # leaving the call first
         self.browser.silent = True
-        self.leave_call()
-        self.browser.quit()
-        if self.display is not None:
-            self.display.stop()
+        try:
+            self.leave_call()
+        finally:
+            # and quiting browser and display
+            self.browser.quit()
+            if self.display is not None:
+                self.display.stop()
