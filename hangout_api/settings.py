@@ -33,7 +33,9 @@ class BaseSettings():
 
 class BandwidthSettings(BaseSettings):
     """
+
     Controlling bandwidth settings.
+
     Available bandwidth levels are:
         * 0 - Audio only
         * 1 - Very Low
@@ -84,6 +86,7 @@ provideUtility(BandwidthSettings, IModule, 'bandwidth')
 class VideoSettings(BaseSettings):
     """
     Controlling call video settings.
+    =================================
     """
 
     def mute(self):
@@ -183,6 +186,7 @@ provideUtility(VideoSettings, IModule, 'video')
 class MicrophoneSettings(BaseSettings):
     """
     Controlling call microphone settings.
+    ======================================
     """
 
     def get_devices(self, with_nodes=False):
@@ -236,7 +240,8 @@ provideUtility(MicrophoneSettings, IModule, 'microphone')
 
 class AudioSettings(BaseSettings):
     """
-    Controlling call audio settings
+    Controlling call audio settings.
+    ==================================
     """
 
     def unmute(self):
@@ -304,12 +309,12 @@ class AudioSettings(BaseSettings):
             '\u202aBuilt-in Audio Analog Stereo\u202c'
 
         If no audio devises available at all returns string
-        'No audio found':
+        'No speakers found':
 
         .. code::
 
             >>> hangout.audio.get_devices()
-            'No audio found'
+            'No speakers found'
 
         """
         device_xpath = '//*[contains(@class, "iph_s_ao")]'
