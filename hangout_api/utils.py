@@ -1,3 +1,10 @@
+"""
+Usefull code pices for HG API, like list if important URLs and
+navigation helpers.
+"""
+# pylint can't handle EasyDict properly
+# pylint: disable=E1101
+
 from easydict import EasyDict
 from time import sleep
 
@@ -20,6 +27,10 @@ class Utils():
         self.browser = browser
 
     def click_menu_element(self, xpath, func='xpath'):
+        """
+        Make items menu to show out if it is hidden and click on its element
+        provided by 'xpath' argumet
+        """
         self.click_cancel_button_if_there_is_one()
         menu_button = getattr(self.browser, func)(xpath)
         if not menu_button.is_displayed():
@@ -27,7 +38,12 @@ class Utils():
             self.browser.by_class('Za-Ja-m').click(timeout=0.5)
         menu_button.click(0.5)
 
+    # pylint: disable=C0103
     def click_cancel_button_if_there_is_one(self, timeout=0.5):
+        """
+        If somewhere on page is visible "cancel" or "close" button, this
+        method will click on it
+        """
         # this function close all menus and return browser to staring state
         origin_state = self.browser.silent
         self.browser.silent = True
@@ -47,7 +63,7 @@ class Utils():
     @property
     def is_logged_in(self):
         """
-        Returns True if loged in, otherwise returns False.
+        Returns True if user is loged in, otherwise returns False.
         Be careful this function analyzing current URL to determinate
         if user loged in or not.
         """
@@ -63,8 +79,14 @@ class Utils():
         return False
 
     def navigate_to_devices_settings(self):
+        """
+        Opens dialog box for device setting in HG call.
+        """
         self.click_menu_element('MQ', func='by_class')
 
     def click_on_devices_save_button(self):
+        """
+        Clicks on button with text "Save"
+        """
         xpath = '//div[text()="Save"]'
         self.browser.xpath(xpath).click(timeout=0.5)

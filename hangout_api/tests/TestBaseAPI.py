@@ -10,7 +10,7 @@ from contextlib import contextmanager
 
 
 def hangout_factory():
-    return Hangouts('firefox')
+    return Hangouts()
 
 credentials = load(open('credentials.yaml', 'r'))
 

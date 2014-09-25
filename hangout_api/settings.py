@@ -1,17 +1,26 @@
 """
-Setting tab controllers.
-========================
+Hangout Call Setting Handlers
+=============================
 """
 from zope.component import provideUtility
 from .interfaces import IModule
 
 
-class BaseSettings():
+class BaseSettings():  # pylint: disable=R0903
+    """
+    Base class that handling device setting
+    """
 
     def __init__(self, base):
         self.base = base
 
     def _devices_getter(self, device_xpath, devices_list_xpath, with_nodes):
+        """
+        Returns list of the devices based on device_xpath and
+        devices_list_xpath arguments. Because HG is build all DOM dynamically
+        there is need to make some actions before list of devices appear in
+        DOM, this method handles it and also parses list values.
+        """
         self.base.navigate_to_devices_settings()
         # click on MC list to make it load list of all devices
         device_box = self.base.browser.xpath(device_xpath).parent
@@ -45,6 +54,9 @@ class BandwidthSettings(BaseSettings):
     """
 
     def _get_bandwidth_controooller(self):
+        """
+        Returns selenium wrapper object for "Bandwidth" bar
+        """
         limit_bandwidth_xpath = '//div[text()="Limit Bandwidth"]'
         if not self.base.browser.xpath(limit_bandwidth_xpath).is_displayed():
             # no need to open bandwidth settings tab if it's opened already
@@ -334,7 +346,6 @@ class AudioSettings(BaseSettings):
             >>> hangout.audio.set_device('\u202aDefault\u202c')
 
         """
-        # TODO: make sure that browser is on needed context
         self.get_devices(with_nodes=True)[device_name].click()
         # click save button
         self.base.click_on_devices_save_button()

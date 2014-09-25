@@ -1,9 +1,18 @@
+"""
+Interfaces for Hangout API
+"""
+# pylint not working well with zope and don't get the Interface conception
+# pylint: disable=E0611,F0401,R0903
+
 from zope.interface import Interface
 
 
-class IRoot(Interface):
-    pass
-
-
 class IModule(Interface):
-    pass
+    """
+    Interface to register utils for hangout instance. Resisted class instance
+    will be reachable as Hangouts class property under the name you registered
+    it.
+    """
+
+    def __init__(self, base):
+        pass

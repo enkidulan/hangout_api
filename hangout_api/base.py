@@ -1,3 +1,13 @@
+"""
+Hangout API
+===========
+
+Main module of Hangout that provide base HG management and call settings
+management.
+
+"""
+# pylint can't handle EasyDict properly
+# pylint: disable=E1101
 import os.path
 from time import sleep
 from pyvirtualdisplay.smartdisplay import SmartDisplay
@@ -41,13 +51,14 @@ class Hangouts():
         kwargs = {}
         if browser == "chrome":
             kwargs['executable_path'] = executable_path or CHROMEDRV_PATH
+        # pylint: disable=W0142
         self.browser = selwrap.create(browser, **kwargs)
 
         self.utils = Utils(self.browser)
         for name, instance in getUtilitiesFor(IModule):
             setattr(self, name, instance(self.utils))
 
-    def start(self, onair=False):
+    def start(self):
         """
         Start a new hangout.
         After new hangout is created its id is stored in 'hangout_id' attribure
@@ -70,7 +81,7 @@ class Hangouts():
 
         # waiting until new window appears
         while len(self.browser.window_handles) <= 1:
-            sleep(0.2)  # XXX: add waiting for second window to open
+            sleep(0.2)
         self.browser.close()  # closing old window
         self.browser.switch_to_window(self.browser.window_handles[0])
 
@@ -143,9 +154,9 @@ class Hangouts():
             participants = [participants, ]
         # click on Invite People button
         self.utils.click_menu_element('//div[@aria-label="Invite People"]')
-        input = self.browser.xpath(
+        input_field = self.browser.xpath(
             '//input[@placeholder="+ Add names, circles, or email addresses"]')
-        input.send_keys("\n".join(participants) + "\n\n")
+        input_field.send_keys("\n".join(participants) + "\n\n")
         self.browser.by_text('Invite').click(timeout=0.5)
 
     def participants(self):
