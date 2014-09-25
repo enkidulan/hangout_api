@@ -161,12 +161,15 @@ class Hangouts():
 
     def participants(self):
         """
-        Returns list of current participants:
+        Returns list of namedtuples of current participants:
 
         .. code::
 
             >>> hangout.participants()
-            ['John Doe', ...]
+            [Partisapant(name='John Doe',
+                         profile_id='108775712935793912532'),
+             Partisapant(name='Lorem Impus',
+                         profile_id='115041713348329690244')]
         """
         xpath = '//div[@data-userid]'
         participants = self.browser.xpath(xpath, eager=True)
