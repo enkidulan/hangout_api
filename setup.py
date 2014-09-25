@@ -32,6 +32,8 @@ setup(name='hangout_api',
           'pyvirtualdisplay',
           'easydict',
           'chromedriver',
+          'zope.interface',
+          'zope.component',
           # -*- Extra requirements: -*-
       ],
       extras_require={
