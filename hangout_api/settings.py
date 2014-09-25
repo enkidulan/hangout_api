@@ -27,8 +27,13 @@ class BaseSettings():  # pylint: disable=R0903
         device_box.silent = True
         if device_box.by_class('c-h-i-b-o', timeout=0.2):
             # if this class present that means that there is no devices
-            # available to change, so lets return current text
-            return device_box.get_attribute('innerText').split('\n')[0].strip()
+            # available to change
+            device_name = device_box.get_attribute(
+                'innerText').split('\n')[0].strip()
+            # in case if there is no devices at all return empty list
+            if ' found' in device_name:
+                return []
+            return [device_name]
         device_box.silent = False
         device_box.click(timeout=0.5)
         # get list of devices
@@ -157,20 +162,6 @@ class VideoSettings(BaseSettings):
             >>> hangout.video.get_devices()
             ['USB2.0 PC CAMERA', 'HP Truevision HD']
 
-        In case if there only one device available returns string.
-
-        .. code::
-
-            >>> hangout.video.get_devices()
-            '\u202aHP Truevision HD (064e:e264)\u202c'
-
-        If no video devises available at all returns string 'No camera found':
-
-        .. code::
-
-            >>> hangout.video.get_devices()
-            'No camera found'
-
         """
         device_xpath = '//*[text()="Video and Camera"]'
         devices_list_xpath = \
@@ -209,22 +200,6 @@ class MicrophoneSettings(BaseSettings):
 
             >>> hangout.microphone.get_devices()
             ['\u202aDefault\u202c', '\u202aBuilt-in Audio Analog Stereo\u202c']
-
-        In case if there only one device available returns string.
-
-        .. code::
-
-            >>> hangout.microphone.get_devices()
-            '\u202aDefault\u202c'
-
-        If no microphone devises available at all returns string
-        'No microphone found':
-
-        .. code::
-
-            >>> hangout.microphone.get_devices()
-            'No microphone found'
-
         """
         device_xpath = '//*[text()="Microphone"]'
         devices_list_xpath = \
@@ -312,21 +287,6 @@ class AudioSettings(BaseSettings):
 
             >>> hangout.audio.get_devices()
             ['\u202aDefault\u202c', '\u202aBuilt-in Audio Analog Stereo\u202c']
-
-        In case if there only one device available returns string.
-
-        .. code::
-
-            >>> hangout.audio.get_devices()
-            '\u202aBuilt-in Audio Analog Stereo\u202c'
-
-        If no audio devises available at all returns string
-        'No speakers found':
-
-        .. code::
-
-            >>> hangout.audio.get_devices()
-            'No speakers found'
 
         """
         device_xpath = '//*[contains(@class, "iph_s_ao")]'

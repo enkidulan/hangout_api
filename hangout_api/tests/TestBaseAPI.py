@@ -73,7 +73,7 @@ class TestBaseAPI(unittest.TestCase):
 
     def test_get_microphone_devices(self):
         mics = self.hangout.microphone.get_devices()
-        self.assertTrue(isinstance(mics, list) or isinstance(mics, str))
+        self.assertTrue(isinstance(mics, list))
 
     def test_set_microphone_devices(self):
         mic_device = device_seter(
@@ -100,7 +100,7 @@ class TestBaseAPI(unittest.TestCase):
     def test_get_audio_devices(self):
         audio_devices = self.hangout.audio.get_devices()
         self.assertTrue(
-            isinstance(audio_devices, list) or isinstance(audio_devices, str))
+            isinstance(audio_devices, list))
 
     def test_set_audio_devices(self):
         audio_device = device_seter(
@@ -150,7 +150,7 @@ class TestBaseAPI(unittest.TestCase):
 
     def test_get_video_devices(self):
         cams = self.hangout.video.get_devices()
-        self.assertTrue(isinstance(cams, list) or isinstance(cams, str))
+        self.assertTrue(isinstance(cams, list))
 
     def test_set_video_devices(self):
         video_device = device_seter(

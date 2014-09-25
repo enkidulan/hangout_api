@@ -117,7 +117,7 @@ class Hangouts():
         """
         Log in to google plus.
 
-        *opt* argument is one time password and it's optional,
+        *otp* argument is one time password and it's optional,
         set it only if you're using 2-factor authorization.
 
         """
@@ -146,7 +146,7 @@ class Hangouts():
         .. code::
 
             >>> hangout.invite("persona@gmail.com")
-            >>> hangout.invite(["personb@gmail.com", "Circle Name A"])
+            >>> hangout.invite(["personb@gmail.com", "Public", "Friends"])
 
         """
         self.utils.click_cancel_button_if_there_is_one()
@@ -173,7 +173,7 @@ class Hangouts():
         return [p.get_attribute('aria-label').split('Open menu for ')[1]
                 for p in participants]
 
-    def leave_call(self):
+    def disconnect(self):
         """
         Leave hangout (equal on clicking on "Leave call" button). After
         leaving the call you can create a new one or connect to existing.
@@ -185,7 +185,7 @@ class Hangouts():
         # leaving the call first
         self.browser.silent = True
         try:
-            self.leave_call()
+            self.disconnect()
         finally:
             # and quiting browser and display
             self.browser.quit()
