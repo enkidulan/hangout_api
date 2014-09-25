@@ -99,7 +99,8 @@ class TestBaseAPI(unittest.TestCase):
 
     def test_get_audio_devices(self):
         audio_devices = self.hangout.audio.get_devices()
-        self.assertTrue(isinstance(audio_devices, list) or isinstance(audio_devices, str))
+        self.assertTrue(
+            isinstance(audio_devices, list) or isinstance(audio_devices, str))
 
     def test_set_audio_devices(self):
         audio_device = device_seter(
