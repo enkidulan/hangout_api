@@ -1,7 +1,26 @@
 from setuptools import setup, find_packages
 import os
+import sys
 
 version = '1.0'
+
+install_requires = [
+    'setuptools',
+    'selenium',
+    'seleniumwrapper',
+    'pyscreenshot',
+    'entrypoint2',
+    'Pillow',
+    'pyvirtualdisplay',
+    'easydict',
+    'chromedriver',
+    'zope.interface',
+    'zope.component',
+    # -*- Extra requirements: -*-
+]
+
+if sys.version[:3] < '3.4':
+    install_requires.append('enum34')
 
 setup(name='hangout_api',
       version=version,
@@ -22,20 +41,7 @@ setup(name='hangout_api',
       namespace_packages=[],
       include_package_data=True,
       zip_safe=False,
-      install_requires=[
-          'setuptools',
-          'selenium',
-          'seleniumwrapper',
-          'pyscreenshot',
-          'entrypoint2',
-          'Pillow',
-          'pyvirtualdisplay',
-          'easydict',
-          'chromedriver',
-          'zope.interface',
-          'zope.component',
-          # -*- Extra requirements: -*-
-      ],
+      install_requires=install_requires,
       extras_require={
           'tests': ['testfixtures',
                     'nose',
