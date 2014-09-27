@@ -81,17 +81,12 @@ class TestBaseAPI(unittest.TestCase):
         mic_device = device_seter(
             self.hangout.microphone.get_devices,
             self.hangout.microphone.set_device)
-        self.hangout.utils.navigate_to_devices_settings()
-        current_device = \
-            self.hangout.browser.xpath(
-                '//span[text()="Microphone"]').parent.get_attribute(
-                'innerText').split('\n')[0].strip()
-        compare(mic_device, current_device)
+        compare(mic_device, self.hangout.microphone.current_device)
 
     def test_set_bandwidth(self):
         current_bandwidth = self.hangout.bandwidth.get()
         desired_bandwidth = random.choice(
-            [i for i in range(4) if i != current_bandwidth])
+            [i for i in range(2, 4) if i != current_bandwidth])
         self.hangout.bandwidth.set(desired_bandwidth)
         compare(
             BANDWIDTH_LEVELS(desired_bandwidth), self.hangout.bandwidth.get())
@@ -108,30 +103,35 @@ class TestBaseAPI(unittest.TestCase):
     def test_set_audio_devices(self):
         audio_device = device_seter(
             self.hangout.audio.get_devices, self.hangout.audio.set_device)
-        self.hangout.utils.navigate_to_devices_settings()
-        current_audio_device = \
-            self.hangout.browser.xpath(
-                '//div[text()="Play test sound"]').parent.parent.get_attribute(
-                'innerText').split('\n')[0].strip()
-        compare(audio_device, current_audio_device)
+        compare(audio_device, self.hangout.audio.current_device)
 
-    def test_audio_mute_unmute(self):
-        # set up in case if video was muted by previous test
-        self.hangout.audio.unmute()
-
-        compare(self.hangout.audio.mute(), True)
-        compare(self.hangout.audio.mute(), False)
-        compare(self.hangout.audio.unmute(), True)
-        compare(self.hangout.audio.unmute(), False)
-
-    def test_video_mute_unmute(self):
+    def test_video_mute_unmute_ismuted(self):
         # set up in case if video was muted by previous test
         self.hangout.video.unmute()
 
+        compare(self.hangout.video.is_muted, False)
+
         compare(self.hangout.video.mute(), True)
         compare(self.hangout.video.mute(), False)
+
+        compare(self.hangout.video.is_muted, True)
+
         compare(self.hangout.video.unmute(), True)
         compare(self.hangout.video.unmute(), False)
+
+    def test_microphone_mute_unmute_ismuted(self):
+        # set up in case if microphone was muted by previous test
+        self.hangout.microphone.unmute()
+
+        compare(self.hangout.microphone.is_muted, False)
+
+        compare(self.hangout.microphone.mute(), True)
+        compare(self.hangout.microphone.mute(), False)
+
+        compare(self.hangout.microphone.is_muted, True)
+
+        compare(self.hangout.microphone.unmute(), True)
+        compare(self.hangout.microphone.unmute(), False)
 
     def test_invite(self):
         self.hangout.invite(['maxybot@gmail.com', 'test circle for call'])
@@ -165,9 +165,4 @@ class TestBaseAPI(unittest.TestCase):
     def test_set_video_devices(self):
         video_device = device_seter(
             self.hangout.video.get_devices, self.hangout.video.set_device)
-        self.hangout.utils.navigate_to_devices_settings()
-        current_device = \
-            self.hangout.browser.by_text(
-                'Video and Camera').parent.parent.get_attribute(
-                'innerText').split('\n')[0].strip()
-        compare(video_device, current_device)
+        compare(video_device, self.hangout.video.current_device)

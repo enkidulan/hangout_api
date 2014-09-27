@@ -9,3 +9,11 @@ class LoginError(BaseException):
     procedure
     """
     pass
+
+
+class NoSuchDeviceFound(BaseException):
+    """
+    Hangout Exception which rises in case if user tries to set not available
+    device
+    """
+    pass

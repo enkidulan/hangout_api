@@ -5,6 +5,7 @@ Hangout Call Setting Handlers
 from zope.component import provideUtility
 from .interfaces import IModule
 from enum import Enum
+from .exceptions import NoSuchDeviceFound
 
 BANDWIDTH_LEVELS = Enum(
     'Bandwidth', {
@@ -13,6 +14,10 @@ BANDWIDTH_LEVELS = Enum(
         'Low': 2,
         'Medium': 3,
         'Auto HD': 4})
+
+
+def names_cleaner(name):
+    return name.strip().replace('\u202a', '').replace('\u202c', '')
 
 
 class BaseSettings():  # pylint: disable=R0903
@@ -42,16 +47,66 @@ class BaseSettings():  # pylint: disable=R0903
             # in case if there is no devices at all return empty list
             if ' found' in device_name:
                 return []
-            return [device_name]
+            return [names_cleaner(device_name)]
         device_box.silent = False
         device_box.click(timeout=0.5)
         # get list of devices
         devices = {
-            n.get_attribute('innerText'): n
+            names_cleaner(n.get_attribute('innerText')): n
             for n in self.base.browser.xpath(devices_list_xpath, eager=True)}
         if with_nodes:
             return devices
         return list(devices.keys())
+
+    def _device_setter(self, device_name):
+        devices = self.get_devices(with_nodes=True)
+        if device_name not in devices:
+            raise NoSuchDeviceFound(
+                "Can't find device with name '%s'" % device_name)
+        if len(devices) == 1:
+            # there is no sense to set devise
+            # if no devices or only one device are available
+            return
+        self.get_devices(with_nodes=True)[device_name].click()
+        self.base.click_on_devices_save_button()
+
+    def _current_device_getter(self, text_selector, parrenty=2):
+        self.base.navigate_to_devices_settings()
+        base_element = self.base.browser.by_text(text_selector)
+        for i in range(parrenty):
+            base_element = base_element.parent
+        return names_cleaner(
+            base_element.get_attribute('innerText').split('\n')[0])
+
+
+class MutingHandler():
+
+    def __init__(self, base, base_text, mute_label, unmute_label):
+        self.base = base
+        self.base_text = base_text
+        self.mute_label = mute_label
+        self.unmute_label = unmute_label
+        self.xpath = '//div[contains(@aria-label, "%s")]' % self.base_text
+
+    def get_mute_button_label(self):
+        self.base.click_cancel_button_if_there_is_one()
+        mute_button = self.base.browser.xpath(self.xpath)
+        return mute_button.get_attribute('aria-label')
+
+    def is_muted(self):
+        return self.get_mute_button_label() == self.unmute_label
+
+    def mute(self):
+        if self.get_mute_button_label() == self.unmute_label:
+            return False
+        self.base.click_menu_element(self.xpath)
+        return True
+
+    def unmute(self):
+        if self.get_mute_button_label() == self.mute_label:
+            return False
+        self.base.click_menu_element(self.xpath)
+        return True
 
 
 class BandwidthSettings(BaseSettings):
@@ -115,6 +170,29 @@ class VideoSettings(BaseSettings):
     =================================
     """
 
+    def __init__(self, base):
+        self.base = base
+        self.muting_handler = MutingHandler(
+            base=base,
+            base_text='Turn camera',
+            mute_label='Turn camera off',
+            unmute_label='Turn camera on')
+
+    @property
+    def is_muted(self):
+        """
+        Returns True if video is muted, otherwise returns True
+
+        .. code::
+
+            >>> hangout.video.is_mutes()
+            False
+            >>> hangout.video.mute()
+            >>> hangout.video.is_mutes()
+            True
+        """
+        return self.muting_handler.is_muted()
+
     def mute(self):
         """
         Mute video device. Returns:
@@ -131,13 +209,7 @@ class VideoSettings(BaseSettings):
             False
 
         """
-        self.base.click_cancel_button_if_there_is_one()
-        xpath = '//div[contains(@aria-label, "Turn camera")]'
-        mute_button = self.base.browser.xpath(xpath)
-        if mute_button.get_attribute('aria-label') == 'Turn camera on':
-            return False
-        self.base.click_menu_element(xpath)
-        return True
+        return self.muting_handler.mute()
 
     def unmute(self):
         """
@@ -154,13 +226,7 @@ class VideoSettings(BaseSettings):
             >>> hangout.video.unmute()
             False
         """
-        self.base.click_cancel_button_if_there_is_one()
-        xpath = '//div[contains(@aria-label, "Turn camera")]'
-        mute_button = self.base.browser.xpath(xpath)
-        if mute_button.get_attribute('aria-label') == 'Turn camera off':
-            return False
-        self.base.click_menu_element(xpath)
-        return True
+        return self.muting_handler.unmute()
 
     def get_devices(self, with_nodes=False):
         """
@@ -189,8 +255,11 @@ class VideoSettings(BaseSettings):
             >>> hangout.video.set_device('HP Truevision HD')
 
         """
-        self.get_devices(with_nodes=True)[device_name].click()
-        self.base.click_on_devices_save_button()
+        return self._device_setter(device_name)
+
+    @property
+    def current_device(self):
+        return self._current_device_getter('Video and Camera')
 
 provideUtility(VideoSettings, IModule, 'video')
 
@@ -201,6 +270,65 @@ class MicrophoneSettings(BaseSettings):
     ======================================
     """
 
+    def __init__(self, base):
+        self.base = base
+        self.muting_handler = MutingHandler(
+            base=base,
+            base_text='ute microphone',
+            mute_label='Mute microphone',
+            unmute_label='Unmute microphone')
+
+    @property
+    def is_muted(self):
+        """
+        Returns True if microphone is muted, otherwise returns False
+
+        .. code::
+
+            >>> hangout.microphone.is_mutes()
+            False
+            >>> hangout.microphone.mute()
+            >>> hangout.microphone.is_mutes()
+            True
+        """
+        return self.muting_handler.is_muted()
+
+    def unmute(self):
+        """
+        Un-mute microphone device. Returns:
+            * True - microphone went from muted to un-muted
+            * False - microphone was already un-muted
+
+        .. code::
+
+            >>> hangout.microphone.mute()
+
+            >>> hangout.microphone.unmute()
+            True
+            >>> hangout.microphone.unmute()
+            False
+
+        """
+        return self.muting_handler.unmute()
+
+    def mute(self):
+        """
+        Mute microphone device. Returns:
+            * True - microphone went from un-muted to muted
+            * False - microphone was already muted
+
+        .. code::
+
+            >>> hangout.microphone.unmute()
+
+            >>> hangout.microphone.mute()
+            True
+            >>> hangout.microphone.mute()
+            False
+
+        """
+        return self.muting_handler.mute()
+
     def get_devices(self, with_nodes=False):
         """
         Returns list of available microphone devices:
@@ -208,7 +336,7 @@ class MicrophoneSettings(BaseSettings):
         .. code::
 
             >>> hangout.microphone.get_devices()
-            ['\u202aDefault\u202c', '\u202aBuilt-in Audio Analog Stereo\u202c']
+            ['Default', 'Built-in Audio Analog Stereo']
         """
         device_xpath = '//*[text()="Microphone"]'
         devices_list_xpath = \
@@ -216,20 +344,22 @@ class MicrophoneSettings(BaseSettings):
         return self._devices_getter(
             device_xpath, devices_list_xpath, with_nodes)
 
-    def set_device(self, name):
+    def set_device(self, device_name):
         """
         Set device by its name:
 
         .. code::
 
             >>> hangout.microphone.get_devices()
-            ['\u202aDefault\u202c', '\u202aBuilt-in Audio Analog Stereo\u202c']
-            >>> hangout.microphone.set_device('\u202aDefault\u202c')
+            ['Default', 'Built-in Audio Analog Stereo']
+            >>> hangout.microphone.set_device('Default')
 
         """
-        self.get_devices(with_nodes=True)[name].click()
-        # click save button
-        self.base.click_on_devices_save_button()
+        return self._device_setter(device_name)
+
+    @property
+    def current_device(self):
+        return self._current_device_getter('Microphone', parrenty=1)
 
 provideUtility(MicrophoneSettings, IModule, 'microphone')
 
@@ -240,54 +370,6 @@ class AudioSettings(BaseSettings):
     ==================================
     """
 
-    def unmute(self):
-        """
-        Un-mute audio device. Returns:
-            * True - Audio went from muted to un-muted
-            * False - Audio was already un-muted
-
-        .. code::
-
-            >>> hangout.audio.mute()
-
-            >>> hangout.audio.unmute()
-            True
-            >>> hangout.audio.unmute()
-            False
-
-        """
-        self.base.click_cancel_button_if_there_is_one()
-        xpath = '//div[contains(@aria-label, "ute microphone")]'
-        mute_button = self.base.browser.xpath(xpath)
-        if mute_button.get_attribute('aria-label') == 'Mute microphone':
-            return False
-        self.base.click_menu_element(xpath)
-        return True
-
-    def mute(self):
-        """
-        Mute audio device. Returns:
-            * True - Audio went from un-muted to muted
-            * False - Audio was already muted
-
-        .. code::
-
-            >>> hangout.audio.unmute()
-
-            >>> hangout.audio.mute()
-            True
-            >>> hangout.audio.mute()
-            False
-
-        """
-        self.base.click_cancel_button_if_there_is_one()
-        xpath = '//div[contains(@aria-label, "ute microphone")]'
-        mute_button = self.base.browser.xpath(xpath)
-        if mute_button.get_attribute('aria-label') == 'Unmute microphone':
-            return False
-        self.base.click_menu_element(xpath)
-        return True
-
     def get_devices(self, with_nodes=False):
         """
         Returns list of available audio devices:
@@ -295,7 +377,7 @@ class AudioSettings(BaseSettings):
         .. code::
 
             >>> hangout.audio.get_devices()
-            ['\u202aDefault\u202c', '\u202aBuilt-in Audio Analog Stereo\u202c']
+            ['Default', 'Built-in Audio Analog Stereo']
 
         """
         device_xpath = '//*[contains(@class, "iph_s_ao")]'
@@ -311,12 +393,14 @@ class AudioSettings(BaseSettings):
         .. code::
 
             >>> hangout.audio.get_devices()
-            ['\u202aDefault\u202c', '\u202aBuilt-in Audio Analog Stereo\u202c']
-            >>> hangout.audio.set_device('\u202aDefault\u202c')
+            ['Default', 'Built-in Audio Analog Stereo']
+            >>> hangout.audio.set_device('Default')
 
         """
-        self.get_devices(with_nodes=True)[device_name].click()
-        # click save button
-        self.base.click_on_devices_save_button()
+        return self._device_setter(device_name)
+
+    @property
+    def current_device(self):
+        return self._current_device_getter('Play test sound')
 
 provideUtility(AudioSettings, IModule, 'audio')
