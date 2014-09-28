@@ -3,7 +3,6 @@ from testfixtures import compare
 from hangout_api.utils import Partisapant
 from time import sleep
 from .utils import (
-    hangout_factory,
     credentials,
     hangouts_connection_manager,
 )
