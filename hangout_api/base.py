@@ -26,7 +26,7 @@ class Hangouts():
 
     """
 
-    def __init__(self, browser="chrome", executable_path=None):
+    def __init__(self, executable_path=None):
         """
         Initialization does two things:
             1. Makes sure that there is active X session.
@@ -48,11 +48,14 @@ class Hangouts():
             self.display = SmartDisplay()
             self.display.start()
 
-        kwargs = {}
-        if browser == "chrome":
-            kwargs['executable_path'] = executable_path or CHROMEDRV_PATH
+        kwargs = {'executable_path': executable_path or CHROMEDRV_PATH}
+        if 'TRAVIS' in os.environ:
+            print('setting "--no-sandbox" for chrome for TRAVIS')
+            from selenium.webdriver.chrome.options import Options
+            kwargs['chrome_options'] = Options()
+            kwargs['chrome_options'].add_argument('--no-sandbox')
         # pylint: disable=W0142
-        self.browser = selwrap.create(browser, **kwargs)
+        self.browser = selwrap.create('chrome', **kwargs)
 
         self.utils = Utils(self.browser)
         for name, instance in getUtilitiesFor(IModule):
