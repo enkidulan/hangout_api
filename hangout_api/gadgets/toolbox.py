@@ -1,0 +1,83 @@
+from zope.component import provideUtility
+from ..interfaces import IModule
+from .utils import gadget_context_handler
+
+
+class ToolBox():
+
+    def __init__(self, base):
+        self.base = base
+        self.mirrored = False
+
+    def set_text(self, node, text):
+        # TODO: move it some were else, this don't belong here
+        if isinstance(node, str):
+            node = self.base.browser.xpath(node)
+        node.clear()
+        node.send_keys(text)
+
+    @gadget_context_handler('Hangout Toolbox')
+    def lower_third(self, name, tags=None, logo=None, color=None):
+
+        self.base.browser.xpath(
+            '//img[contains(@src, "lower_24.png")]').click(timeout=0.5)
+
+        self.set_text('//input[@placeholder="Enter Display Name"]', name)
+
+        if tags is not None:
+            self.set_text('//input[@placeholder="Enter Tagline"]', tags)
+
+        if logo:
+            self.base.browser.xpath(
+                '//button[@title="Choose Logo"]').parent.xpath(
+                    '//input[@type="file"]').send_keys(logo)
+
+        if color:
+            self.base.browser.by_class(
+                'color-picker-container').click(timeout=0.5)
+            self.set_text('//*[@class="goog-hsv-palette-sm-input"]', color)
+
+    @gadget_context_handler('Hangout Toolbox')
+    def lower_third_active(self, value=None):
+
+        self.base.browser.xpath(
+            '//img[contains(@src, "lower_24.png")]').click(timeout=0.5)
+        active_button = self.base.browser.by_class('goog-switch-text')
+        is_active = active_button.get_attribute('innerText') == 'ON'
+        if value is None:
+            return is_active
+        if (not value and is_active) or (value and not is_active):
+            active_button.click(timeout=0.5)
+
+    @gadget_context_handler('Hangout Toolbox')
+    def custom_overlay(self, image):
+        raise NotImplemented(
+            "Can't find a way to set image")
+        self.base.browser.xpath(
+            '//img[contains(@src, "lower_24.png")]').click(timeout=0.5)
+        self.base.browser.by_text("Custom Upload").click(timeout=0.5)
+        self.base.browser.execute_script('return gapi.hangout.getParticipants()')
+        # [{'isInBroadcast': False, 'displayIndex': 0, 'hasAppEnabled': True, 'person': {'ga': {}, 'image': {'url': 'https://lh4.googleusercontent.com/-0kSw9uMXP5k/AAAAAAAAAAI/AAAAAAAAAAA/LwckzN_NnhE/s96-c/photo.jpg'}, 'id': '108775712935793912532', 'displayName': 'John Doe'}, 'id': 'hangoutDB2B3950_ephemeral.id.google.com^5240b98e80a710', 'isBroadcaster': False, 'hasCamera': True, 'hasMicrophone': True, 'locale': 'en', 'ga': {}}]
+
+    @gadget_context_handler('Hangout Toolbox')
+    def custom_overlay_active(self, value=None):
+        self.base.browser.xpath(
+            '//img[contains(@src, "lower_24.png")]').click(timeout=0.5)
+        active_button = self.base.browser.xpath(
+            '//div[@class="custom-upload"]//*[@class="goog-switch-text"]')
+        is_active = active_button.get_attribute('innerText') == 'ON'
+        if value is None:
+            return is_active
+        if (not value and is_active) or (value and not is_active):
+            active_button.click(timeout=0.5)
+
+    def video_mirror_active(self, value=None):
+        if value is None:
+            return self.mirrored
+        self.base.browser.execute_script(
+            'gapi.hangout.av.setLocalParticipantVideoMirrored(%s);'
+            % str(value).lower())
+        self.mirrored = value
+
+
+provideUtility(ToolBox, IModule, 'toolbox')

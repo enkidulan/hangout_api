@@ -185,6 +185,7 @@ class Hangouts():
         Leave hangout (equal on clicking on "Leave call" button). After
         leaving the call you can create a new one or connect to existing.
         """
+        self.utils.click_cancel_button_if_there_is_one()
         self.utils.click_menu_element('//div[@aria-label="Leave call"]')
         self.hangout_id = None
 

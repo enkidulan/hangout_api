@@ -48,6 +48,7 @@ class Utils():
         If somewhere on page is visible "cancel" or "close" button, this
         method will click on it
         """
+        self.browser.switch_to_default_content()
         # this function close all menus and return browser to staring state
         origin_state = self.browser.silent
         self.browser.silent = True
