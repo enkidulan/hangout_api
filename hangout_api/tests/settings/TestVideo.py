@@ -47,4 +47,6 @@ class TestVideoSetting(unittest.TestCase):
     def test_set_video_devices(self):
         video_device = device_seter(
             self.hangout.video.get_devices, self.hangout.video.set_device)
+        if video_device is None:
+            self.skipTest('No devices to set')
         compare(video_device, self.hangout.video.current_device)

@@ -22,4 +22,6 @@ class TestAudioSettings(unittest.TestCase):
     def test_set_audio_devices(self):
         audio_device = device_seter(
             self.hangout.audio.get_devices, self.hangout.audio.set_device)
+        if audio_device is None:
+            self.skipTest('No devices to set')
         compare(audio_device, self.hangout.audio.current_device)

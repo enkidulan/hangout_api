@@ -12,6 +12,8 @@ credentials = load(open('credentials.yaml', 'r'))
 
 def device_seter(dev_getter, dev_setter):
     device = dev_getter()
+    if not device:
+        return
     if isinstance(device, list):
         # we can't set device if there is no devices to choose
         # TODO: maybe it would be better to skip this test if no devices

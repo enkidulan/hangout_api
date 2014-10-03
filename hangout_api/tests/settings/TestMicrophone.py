@@ -23,6 +23,8 @@ class TestMicrophoneSettings(unittest.TestCase):
         mic_device = device_seter(
             self.hangout.microphone.get_devices,
             self.hangout.microphone.set_device)
+        if mic_device is None:
+            self.skipTest('No devices to set')
         compare(mic_device, self.hangout.microphone.current_device)
 
     def test_microphone_mute_unmute_ismuted(self):
