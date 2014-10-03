@@ -1,5 +1,6 @@
 import unittest
 from testfixtures import compare
+from hangout_api.exceptions import NoSuchDeviceFound
 from ..utils import (
     hangout_factory,
     credentials,
@@ -29,7 +30,10 @@ class TestMicrophoneSettings(unittest.TestCase):
 
     def test_microphone_mute_unmute_ismuted(self):
         # set up in case if microphone was muted by previous test
-        self.hangout.microphone.unmute()
+        try:
+            self.hangout.microphone.unmute()
+        except NoSuchDeviceFound:
+            self.skipTest('No devices to set')
 
         compare(self.hangout.microphone.is_muted, False)
 

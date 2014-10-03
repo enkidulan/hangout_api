@@ -81,16 +81,32 @@ class BaseSettings():  # pylint: disable=R0903
 
 class MutingHandler():
 
-    def __init__(self, base, base_text, mute_label, unmute_label):
+    def __init__(self, base, base_text, mute_label, unmute_label, no_device):
         self.base = base
         self.base_text = base_text
         self.mute_label = mute_label
         self.unmute_label = unmute_label
         self.xpath = '//div[contains(@aria-label, "%s")]' % self.base_text
+        self.no_device_xpath = '//div[contains(@aria-label, "%s")]' % no_device
 
     def get_mute_button_label(self):
         self.base.click_cancel_button_if_there_is_one()
-        mute_button = self.base.browser.xpath(self.xpath)
+        self.base.browser.silent = True
+        try:
+            mute_button = self.base.browser.xpath(self.xpath)
+        finally:
+            self.base.browser.silent = False
+        if mute_button is None:
+            self.base.browser.silent = True
+            try:
+                no_device = self.base.browser.xpath(
+                    self.no_device_xpath, timeout=0.5)
+            finally:
+                self.base.browser.silent = False
+            if no_device:
+                raise NoSuchDeviceFound('No device found')
+            # raising original exception
+            self.base.browser.xpath(self.xpath, timeout=0.5)
         return mute_button.get_attribute('aria-label')
 
     def is_muted(self):
@@ -176,7 +192,8 @@ class VideoSettings(BaseSettings):
             base=base,
             base_text='Turn camera',
             mute_label='Turn camera off',
-            unmute_label='Turn camera on')
+            unmute_label='Turn camera on',
+            no_device='Camera not detected')
 
     @property
     def is_muted(self):
@@ -276,7 +293,8 @@ class MicrophoneSettings(BaseSettings):
             base=base,
             base_text='ute microphone',
             mute_label='Mute microphone',
-            unmute_label='Unmute microphone')
+            unmute_label='Unmute microphone',
+            no_device='Microphone not detected')
 
     @property
     def is_muted(self):

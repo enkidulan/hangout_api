@@ -1,5 +1,6 @@
 import unittest
 from testfixtures import compare
+from hangout_api.exceptions import NoSuchDeviceFound
 from ..utils import (
     hangout_factory,
     credentials,
@@ -28,7 +29,11 @@ class TestVideoSetting(unittest.TestCase):
 
     def test_video_mute_unmute_ismuted(self):
         # set up in case if video was muted by previous test
-        self.hangout.video.unmute()
+
+        try:
+            self.hangout.video.unmute()
+        except NoSuchDeviceFound:
+            self.skipTest('No devices to set')
 
         compare(self.hangout.video.is_muted, False)
 
