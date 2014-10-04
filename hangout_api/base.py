@@ -15,7 +15,7 @@ import seleniumwrapper as selwrap
 from chromedriver import CHROMEDRV_PATH
 from zope.component import getUtilitiesFor
 
-from .utils import Utils, URLS, Partisapant
+from .utils import Utils, URLS, Participant
 from .exceptions import LoginError
 from .interfaces import IModule
 
@@ -169,14 +169,14 @@ class Hangouts():
         .. code::
 
             >>> hangout.participants()
-            [Partisapant(name='John Doe',
+            [Participant(name='John Doe',
                          profile_id='108775712935793912532'),
-             Partisapant(name='Lorem Impus',
+             Participant(name='Lorem Impus',
                          profile_id='115041713348329690244')]
         """
         xpath = '//div[@data-userid]'
         participants = self.browser.xpath(xpath, eager=True)
-        return [Partisapant(p.get_attribute('aria-label')[5:-11],
+        return [Participant(p.get_attribute('aria-label')[5:-11],
                             p.get_attribute('data-userid'))
                 for p in participants]
 

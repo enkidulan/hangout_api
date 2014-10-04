@@ -1,6 +1,6 @@
 import unittest
 from testfixtures import compare
-from hangout_api.utils import Partisapant
+from hangout_api.utils import Participant
 from time import sleep
 from .utils import (
     credentials,
@@ -44,9 +44,9 @@ class TestBaseAPI(unittest.TestCase):
             participants = self.hangout.participants()
         compare(
             participants,
-            [Partisapant(name='John Doe',
+            [Participant(name='John Doe',
                          profile_id='108775712935793912532'),
-             Partisapant(name='Lorem Impus',
+             Participant(name='Lorem Impus',
                          profile_id='115041713348329690244'),
-             Partisapant(name='Gilgamesh Bot',
+             Participant(name='Gilgamesh Bot',
                          profile_id='108572696173264293426')])
