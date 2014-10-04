@@ -30,6 +30,16 @@ class Utils():
     def __init__(self, browser):
         self.browser = browser
 
+    def set_text(self, node, text):
+        """
+        Helper to remove text from input and then set text to it.
+        Takes xpath or selenium node and text.
+        """
+        if isinstance(node, str):
+            node = self.browser.xpath(node)
+        node.clear()
+        node.send_keys(text)
+
     def click_menu_element(self, xpath, func='xpath'):
         """
         Make items menu to show out if it is hidden and click on its element

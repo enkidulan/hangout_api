@@ -17,6 +17,9 @@ BANDWIDTH_LEVELS = Enum(
 
 
 def names_cleaner(name):
+    """
+    Helper function to clean up string from 'thml' symbols
+    """
     return name.strip().replace('\u202a', '').replace('\u202c', '')
 
 
@@ -27,6 +30,12 @@ class BaseSettings():  # pylint: disable=R0903
 
     def __init__(self, base):
         self.base = base
+
+    def get_devices(self, with_nodes=False):
+        """
+        Return devices list
+        """
+        raise NotImplementedError()
 
     def _devices_getter(self, device_xpath, devices_list_xpath, with_nodes):
         """
@@ -59,6 +68,11 @@ class BaseSettings():  # pylint: disable=R0903
         return list(devices.keys())
 
     def _device_setter(self, device_name):
+        """
+        Devices setter that can handle special cases when only 1 device is
+        available or no devices at all. In case if device can not be set raise
+        NoSuchDeviceFound exception
+        """
         devices = self.get_devices(with_nodes=True)
         if device_name not in devices:
             raise NoSuchDeviceFound(
@@ -71,16 +85,22 @@ class BaseSettings():  # pylint: disable=R0903
         self.base.click_on_devices_save_button()
 
     def _current_device_getter(self, text_selector, parrenty=2):
+        """
+        Returns currently used device
+        """
         self.base.navigate_to_devices_settings()
         base_element = self.base.browser.by_text(text_selector)
-        for i in range(parrenty):
+        for _ in range(parrenty):
             base_element = base_element.parent
         return names_cleaner(
             base_element.get_attribute('innerText').split('\n')[0])
 
 
 class MutingHandler():
-
+    """
+    Handler to interact with mute buttons, like "Mute Video".
+    """
+    # pylint: disable=R0913
     def __init__(self, base, base_text, mute_label, unmute_label, no_device):
         self.base = base
         self.base_text = base_text
@@ -90,6 +110,10 @@ class MutingHandler():
         self.no_device_xpath = '//div[contains(@aria-label, "%s")]' % no_device
 
     def get_mute_button_label(self):
+        """
+        Returns current text of 'mute' button. In case if muting is not
+        available (no device found) raises NoSuchDeviceFound
+        """
         self.base.click_cancel_button_if_there_is_one()
         self.base.browser.silent = True
         try:
@@ -110,15 +134,24 @@ class MutingHandler():
         return mute_button.get_attribute('aria-label')
 
     def is_muted(self):
+        """
+        Returns True if muted otherwise False
+        """
         return self.get_mute_button_label() == self.unmute_label
 
     def mute(self):
+        """
+        Mutes device
+        """
         if self.get_mute_button_label() == self.unmute_label:
             return False
         self.base.click_menu_element(self.xpath)
         return True
 
     def unmute(self):
+        """
+        Un-mutes device
+        """
         if self.get_mute_button_label() == self.mute_label:
             return False
         self.base.click_menu_element(self.xpath)
@@ -137,7 +170,7 @@ class BandwidthSettings(BaseSettings):
         * 3 - Medium
         * 4 - Auto HD
     """
-
+    # pylint: disable=W0223
     def _get_bandwidth_controooller(self):
         """
         Returns selenium wrapper object for "Bandwidth" bar
@@ -175,6 +208,7 @@ class BandwidthSettings(BaseSettings):
 
         """
         controller = self._get_bandwidth_controooller()
+        # pylint: disable=E1102
         return BANDWIDTH_LEVELS(int(controller.get_attribute('aria-valuenow')))
 
 provideUtility(BandwidthSettings, IModule, 'bandwidth')
@@ -187,7 +221,7 @@ class VideoSettings(BaseSettings):
     """
 
     def __init__(self, base):
-        self.base = base
+        super(VideoSettings, self).__init__(base)
         self.muting_handler = MutingHandler(
             base=base,
             base_text='Turn camera',
@@ -276,6 +310,15 @@ class VideoSettings(BaseSettings):
 
     @property
     def current_device(self):
+        """
+        Returns current device:
+
+        .. code::
+
+            >>> hangout.video.current_device()
+            'HP Truevision HD'
+
+        """
         return self._current_device_getter('Video and Camera')
 
 provideUtility(VideoSettings, IModule, 'video')
@@ -288,7 +331,7 @@ class MicrophoneSettings(BaseSettings):
     """
 
     def __init__(self, base):
-        self.base = base
+        super(MicrophoneSettings, self).__init__(base)
         self.muting_handler = MutingHandler(
             base=base,
             base_text='ute microphone',
@@ -377,6 +420,15 @@ class MicrophoneSettings(BaseSettings):
 
     @property
     def current_device(self):
+        """
+        Returns current device:
+
+        .. code::
+
+            >>> hangout.microphone.current_device()
+            'Built-in Audio Analog Stereo'
+
+        """
         return self._current_device_getter('Microphone', parrenty=1)
 
 provideUtility(MicrophoneSettings, IModule, 'microphone')
@@ -419,6 +471,15 @@ class AudioSettings(BaseSettings):
 
     @property
     def current_device(self):
+        """
+        Returns current device:
+
+        .. code::
+
+            >>> hangout.audio.current_device()
+            'Default'
+
+        """
         return self._current_device_getter('Play test sound')
 
 provideUtility(AudioSettings, IModule, 'audio')
