@@ -18,7 +18,7 @@ Install requirements
 
     $ sudo apt-get install git python3-dev xvfb python-imaging scrot -y
 
-**Google Talk Pluggin**
+**Google Talk Plug-In**
 
 .. code:: bash
 
