@@ -3,7 +3,7 @@ API for Tollbox Hangout PlugIn
 """
 from zope.component import provideUtility
 from ..interfaces import IModule
-from .utils import gadget_context_handler
+from hangout_api.gadgets.utils import gadget_context_handler
 
 
 class ToolBox():
