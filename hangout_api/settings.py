@@ -171,7 +171,7 @@ class BandwidthSettings(BaseSettings):
         * 4 - Auto HD
     """
     # pylint: disable=W0223
-    def _get_bandwidth_controooller(self):
+    def _get_bandwidth_controller(self):
         """
         Returns selenium wrapper object for "Bandwidth" bar
         """
@@ -192,7 +192,7 @@ class BandwidthSettings(BaseSettings):
             >>> hangout.bandwidth.set(2)
 
         """
-        controller = self._get_bandwidth_controooller()
+        controller = self._get_bandwidth_controller()
         levels = controller.by_class('Sa-IU-HT', eager=True)
         # setting levels
         levels[bandwidth].click(timeout=0.5)
@@ -207,7 +207,7 @@ class BandwidthSettings(BaseSettings):
             <Bandwidth.Very Low: 1>
 
         """
-        controller = self._get_bandwidth_controooller()
+        controller = self._get_bandwidth_controller()
         # pylint: disable=E1102
         return BANDWIDTH_LEVELS(int(controller.get_attribute('aria-valuenow')))
 
