@@ -1,6 +1,7 @@
 """
 Helpers for handling Hangout PlugIns (gadgets)
 """
+from hangout_api.utils import tries_n_time_until_true
 
 
 def get_loaded_gadgets_list(browser, desire_gadget_name=None):
@@ -39,10 +40,8 @@ def open_toolbox_app(self, gadget_name):
         self.base.browser.by_class('Za-Ja-m').click(timeout=0.5)
         self.base.browser.xpath(
             '//div[@aria-label="%s"]' % gadget_name).click(timeout=0.5)
-        cnt = 10
-        while cnt:
-            gadget_id = get_loaded_gadgets_list(self.base.browser, gadget_name)
-            cnt -= 1
+        gadget_id = tries_n_time_until_true(
+            lambda: get_loaded_gadgets_list(self.base.browser, gadget_name))
     self.base.browser.switch_to_frame(gadget_id)
 
 

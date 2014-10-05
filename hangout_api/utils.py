@@ -22,6 +22,16 @@ URLS = EasyDict(
 )
 
 
+def tries_n_time_until_true(func, try_num=10):
+    while try_num:
+        val = func()
+        if val:
+            return val
+        sleep(0.1)
+        try_num -= 1
+    return False
+
+
 class Utils(object):
     """
     Batch of function to navigate through G+ Hangout to keep main API
@@ -85,13 +95,7 @@ class Utils(object):
         is_logged_in = lambda: \
             self.browser.current_url.startswith(URLS.plus_main) or \
             self.browser.current_url.startswith(URLS.personalinfo)
-        try_num = 0
-        while try_num < 10:
-            if is_logged_in():
-                return True
-            sleep(0.1)
-            try_num += 1
-        return False
+        return tries_n_time_until_true(is_logged_in)
 
     def navigate_to_devices_settings(self):
         """

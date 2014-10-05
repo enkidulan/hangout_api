@@ -35,7 +35,4 @@ def hangouts_connection_manager(users_credentials, hangout_id):
         yield connections
     finally:
         for connection in connections:
-            try:
-                connection.__del__()
-            except:
-                pass
+            del connection
