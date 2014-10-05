@@ -22,7 +22,7 @@ URLS = EasyDict(
 )
 
 
-class Utils():
+class Utils(object):
     """
     Batch of function to navigate through G+ Hangout to keep main API
     class cleaner

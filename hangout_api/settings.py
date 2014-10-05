@@ -20,10 +20,11 @@ def names_cleaner(name):
     """
     Helper function to clean up string from 'thml' symbols
     """
+    # pylint: disable=W1402
     return name.strip().replace('\u202a', '').replace('\u202c', '')
 
 
-class BaseSettings():  # pylint: disable=R0903
+class BaseSettings(object):  # pylint: disable=R0903
     """
     Base class that handling device setting
     """
@@ -96,7 +97,7 @@ class BaseSettings():  # pylint: disable=R0903
             base_element.get_attribute('innerText').split('\n')[0])
 
 
-class MutingHandler():
+class MutingHandler(object):
     """
     Handler to interact with mute buttons, like "Mute Video".
     """

@@ -6,7 +6,7 @@ from ..interfaces import IModule
 from hangout_api.gadgets.utils import gadget_context_handler
 
 
-class ToolBox():
+class ToolBox(object):
     """
     Tollbox Hangout API
     """

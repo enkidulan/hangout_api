@@ -20,7 +20,7 @@ from .exceptions import LoginError
 from .interfaces import IModule
 
 
-class Hangouts():
+class Hangouts(object):
     """
     Main class for controlling hangout calls.
 
@@ -50,7 +50,6 @@ class Hangouts():
 
         kwargs = {'executable_path': executable_path or CHROMEDRV_PATH}
         if 'TRAVIS' in os.environ:
-            print('setting "--no-sandbox" for chrome for TRAVIS')
             from selenium.webdriver.chrome.options import Options
             kwargs['chrome_options'] = Options()
             kwargs['chrome_options'].add_argument('--no-sandbox')
