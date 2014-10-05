@@ -1,7 +1,7 @@
 """
 Helpers for handling Hangout PlugIns (gadgets)
 """
-from hangout_api.utils import tries_n_time_until_true
+from hangout_api.utils import tries_n_time_until_true, silence_contextmanager
 
 
 def get_loaded_gadgets_list(browser, desire_gadget_name=None):
@@ -9,12 +9,9 @@ def get_loaded_gadgets_list(browser, desire_gadget_name=None):
     Returns list of currently loaded gadgets.
     """
     browser.switch_to_default_content()
-    browser.silent = True
-    try:
+    with silence_contextmanager(browser):
         gadgets = browser.xpath(
             '//iframe[contains(@id, "__gadget_")]', eager=True, timeout=1)
-    finally:
-        browser.silent = False
     if not gadgets:
         return
     gadget_name_to_iframe_id = {}

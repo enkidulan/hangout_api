@@ -8,6 +8,7 @@ navigation helpers.
 from easydict import EasyDict
 from time import sleep
 from collections import namedtuple
+from contextlib import contextmanager
 
 
 Participant = namedtuple('Participant', ['name', 'profile_id'])
@@ -20,6 +21,16 @@ URLS = EasyDict(
     personalinfo='https://www.google.com/settings/personalinfo',
     service_login='https://accounts.google.com/ServiceLogin',
 )
+
+
+@contextmanager
+def silence_contextmanager(node):
+    origin = node.silent
+    node.silent = True
+    try:
+        yield
+    finally:
+        node.silent = origin
 
 
 def tries_n_time_until_true(func, try_num=10):
@@ -70,16 +81,12 @@ class Utils(object):
         """
         self.browser.switch_to_default_content()
         # this function close all menus and return browser to staring state
-        origin_state = self.browser.silent
-        self.browser.silent = True
         xpath = '//*[text()="Cancel" or text()="Close"]'
-        try:
+        with silence_contextmanager(self.browser):
             # We're looking for text because are id's are hangable
             # and something weird is going on about css selectors
             cancel_buttons = self.browser.xpath(
                 xpath, timeout=timeout, eager=True)
-        finally:
-            self.browser.silent = origin_state
         if cancel_buttons is not None:
             for cancel_button in cancel_buttons:
                 if cancel_button.is_displayed():

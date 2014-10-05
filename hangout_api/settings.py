@@ -6,6 +6,7 @@ from zope.component import provideUtility
 from .interfaces import IModule
 from enum import Enum
 from .exceptions import NoSuchDeviceFound
+from hangout_api.utils import silence_contextmanager
 
 BANDWIDTH_LEVELS = Enum(
     'Bandwidth', {
@@ -48,17 +49,16 @@ class BaseSettings(object):  # pylint: disable=R0903
         self.base.navigate_to_devices_settings()
         # click on MC list to make it load list of all devices
         device_box = self.base.browser.xpath(device_xpath).parent
-        device_box.silent = True
-        if device_box.by_class('c-h-i-b-o', timeout=0.2):
-            # if this class present that means that there is no devices
-            # available to change
-            device_name = device_box.get_attribute(
-                'innerText').split('\n')[0].strip()
-            # in case if there is no devices at all return empty list
-            if ' found' in device_name:
-                return []
-            return [names_cleaner(device_name)]
-        device_box.silent = False
+        with silence_contextmanager(device_box):
+            if device_box.by_class('c-h-i-b-o', timeout=0.2):
+                # if this class present that means that there is no devices
+                # available to change
+                device_name = device_box.get_attribute(
+                    'innerText').split('\n')[0].strip()
+                # in case if there is no devices at all return empty list
+                if ' found' in device_name:
+                    return []
+                return [names_cleaner(device_name)]
         device_box.click(timeout=0.5)
         # get list of devices
         devices = {
@@ -116,18 +116,12 @@ class MutingHandler(object):
         available (no device found) raises NoSuchDeviceFound
         """
         self.base.click_cancel_button_if_there_is_one()
-        self.base.browser.silent = True
-        try:
+        with silence_contextmanager(self.base.browser):
             mute_button = self.base.browser.xpath(self.xpath)
-        finally:
-            self.base.browser.silent = False
         if mute_button is None:
-            self.base.browser.silent = True
-            try:
+            with silence_contextmanager(self.base.browser):
                 no_device = self.base.browser.xpath(
                     self.no_device_xpath, timeout=0.5)
-            finally:
-                self.base.browser.silent = False
             if no_device:
                 raise NoSuchDeviceFound('No device found')
             # raising original exception
