@@ -25,9 +25,12 @@ Read the `Python Hangout API`_.
 Preinstall requirements
 ***********************
 
-    1. Hangout API is using Google **Chrome browser**, so make sure you have it
-       installed. To install Chrome on debian based distributions you can use
-       following command:
+Chrome browser
+==============
+
+Hangout API is using Google Chrome browse, so make sure you have it
+installed. To install Chrome on debian based distributions you can use
+following command:
 
             .. code:: bash
 
@@ -36,9 +39,11 @@ Preinstall requirements
                 sudo apt-get update
                 sudo apt-get install google-chrome-stable -y
 
+PyVirtualDisplay requirements
+==============================
 
-    2. Make sure that **PyVirtualDisplay_ requirements** are installed.
-       In most cases it will be enough to run command:
+Make sure that **PyVirtualDisplay_ requirements** are installed.
+In most cases it will be enough to run command:
 
         .. code:: bash
 
