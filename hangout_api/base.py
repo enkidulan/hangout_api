@@ -9,15 +9,14 @@ management.
 # pylint can't handle EasyDict properly
 # pylint: disable=E1101
 import os.path
-from time import sleep
 from pyvirtualdisplay.smartdisplay import SmartDisplay
 import seleniumwrapper as selwrap
 from chromedriver import CHROMEDRV_PATH
 from zope.component import getUtilitiesFor
 
-from .utils import Utils, URLS, Participant
+from .utils import Utils, URLS, Participant, tries_n_time_until_true
 from .exceptions import LoginError
-from .interfaces import IModule
+from .interfaces import IModule, IOnAirModule
 
 
 class Hangouts(object):
@@ -41,6 +40,7 @@ class Hangouts(object):
 
         """
         self.hangout_id = None
+        self.on_air = None
 
         # lets start display in case if no is available
         self.display = None
@@ -60,7 +60,7 @@ class Hangouts(object):
         for name, instance in getUtilitiesFor(IModule):
             setattr(self, name, instance(self.utils))
 
-    def start(self):
+    def start(self, on_air=None):
         """
         Start a new hangout.
         After new hangout is created its id is stored in 'hangout_id' attribure
@@ -74,20 +74,50 @@ class Hangouts(object):
             'gs4pp6g62w65moctfqsvihzq2qa'
 
         """
-        if not self.browser.current_url.startswith(URLS.hangouts_active_list):
-            self.browser.get(URLS.hangouts_active_list)
 
-        self.browser.by_class('opd').click(timeout=0.5)
-        # G+ opens new window for new hangout, so we need to switch selenium to
-        # it
+        # onair
+        if on_air is not None:
+            self.on_air = on_air
+            self.browser.get(URLS.onair)
+            self.browser.by_text('Start a Hangout On Air').click(0.5)
+            # Setting name
+            self.browser.xpath(
+                '//input[@aria-label="Give it a name"]').send_keys(
+                    on_air['name'])
+            # cleaning 'share' field
+            self.browser.xpath(
+                '//input[@aria-label="Add more people"]').send_keys(
+                    '\b\b\b' + on_air['attendies'] + ',')
+            self.browser.xpath(
+                '//*[@guidedhelpid="shareboxcontrols"]//*[text()="Share"]').click(0.5)
+            # on event page, redirecting can take some time
+            self.browser.xpath(
+                '//div[@data-tooltip="Start the Hangout On Air"]',
+                timeout=60).click(0.5)
+            for name, instance in getUtilitiesFor(IOnAirModule):
+                setattr(self, name, instance(self.utils))
+
+        else:
+            if not self.browser.current_url.startswith(URLS.hangouts_active_list):
+                self.browser.get(URLS.hangouts_active_list)
+            # G+ opens new window for new hangout, so we need to switch selenium to
+            # it
+            self.browser.by_class('opd').click(timeout=0.5)
 
         # waiting until new window appears
-        while len(self.browser.window_handles) <= 1:
-            sleep(0.2)
+        tries_n_time_until_true(
+            lambda: len(self.browser.window_handles) <= 1, try_num=100)
+
         self.browser.close()  # closing old window
         self.browser.switch_to_window(self.browser.window_handles[0])
 
         self.utils.click_cancel_button_if_there_is_one(timeout=30)
+
+        if self.on_air:
+            #  waiting for broadcasting to be ready
+            broadcast_button = self.browser.by_text(
+                'Start broadcast', timeout=60)
+            tries_n_time_until_true(broadcast_button.is_displayed, try_num=600)
 
         # setting hangout id property
         self.hangout_id = self.browser.current_url.replace(
@@ -187,6 +217,11 @@ class Hangouts(object):
         self.utils.click_cancel_button_if_there_is_one()
         self.utils.click_menu_element('//div[@aria-label="Leave call"]')
         self.hangout_id = None
+        if self.on_air is not None:
+            # removing properties that is available only for OnAir
+            for name, _ in getUtilitiesFor(IOnAirModule):
+                delattr(self, name)
+        self.on_air = None
 
     def __del__(self):
         # leaving the call first

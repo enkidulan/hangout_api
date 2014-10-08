@@ -17,6 +17,7 @@ Participant = namedtuple('Participant', ['name', 'profile_id'])
 URLS = EasyDict(
     hangout_session_base='https://plus.google.com/hangouts/_/',
     hangouts_active_list='https://plus.google.com/hangouts/active',
+    onair='https://plus.google.com/hangouts/onair',
     plus_main='https://plus.google.com/',
     personalinfo='https://www.google.com/settings/personalinfo',
     service_login='https://accounts.google.com/ServiceLogin',
@@ -81,7 +82,7 @@ class Utils(object):
         """
         self.browser.switch_to_default_content()
         # this function close all menus and return browser to staring state
-        xpath = '//*[text()="Cancel" or text()="Close"]'
+        xpath = '//*[text()="Cancel" or text()="Close" or text()="Skip"]'
         with silence_contextmanager(self.browser):
             # We're looking for text because are id's are hangable
             # and something weird is going on about css selectors

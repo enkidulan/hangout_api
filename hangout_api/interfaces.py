@@ -16,3 +16,14 @@ class IModule(Interface):
 
     def __init__(self, base):
         pass
+
+
+class IOnAirModule(Interface):
+    """
+    Interface to register utils for hangout instance. Resisted class instance
+    will be reachable as Hangouts class property under the name you registered
+    it.
+    """
+
+    def __init__(self, base):
+        pass
