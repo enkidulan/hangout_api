@@ -11,7 +11,7 @@ Hangout API
 .. DANGER::
    This package is under heavy development
 
-Read the `Python Hangout API`_.
+Read the `Python Hangout API documentation`_.
 
 
 Preinstall requirements
@@ -34,7 +34,7 @@ following command:
 PyVirtualDisplay requirements
 -------------------------------
 
-Make sure that **PyVirtualDisplay_ requirements** are installed.
+Make sure that `PyVirtualDisplay requirements`_ are installed.
 In most cases it will be enough to run command:
 
         .. code:: bash
@@ -42,5 +42,5 @@ In most cases it will be enough to run command:
             $ sudo apt-get install python-dev python-imaging xvfb scrot -y
 
 
-.. _Python Hangout API: http://python-hangout-api.readthedocs.org
-.. _PyVirtualDisplay: https://pypi.python.org/pypi/PyVirtualDisplay
+.. _Python Hangout API documentation: http://python-hangout-api.readthedocs.org
+.. _PyVirtualDisplay requirements: https://pypi.python.org/pypi/PyVirtualDisplay
