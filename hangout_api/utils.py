@@ -26,6 +26,9 @@ URLS = EasyDict(
 
 @contextmanager
 def silence_contextmanager(node):
+    """
+    Context manager to preform operations 'silently'
+    """
     origin = node.silent
     node.silent = True
     try:
@@ -35,6 +38,10 @@ def silence_contextmanager(node):
 
 
 def tries_n_time_until_true(func, try_num=10):
+    """
+    Helper that repeats some action unlit its returns something
+    different from  False or None. Returns Function result
+    """
     while try_num:
         val = func()
         if val:

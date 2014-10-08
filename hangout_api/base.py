@@ -88,8 +88,8 @@ class Hangouts(object):
             self.browser.xpath(
                 '//input[@aria-label="Add more people"]').send_keys(
                     '\b\b\b' + on_air['attendies'] + ',')
-            self.browser.xpath(
-                '//*[@guidedhelpid="shareboxcontrols"]//*[text()="Share"]').click(0.5)
+            xpath = '//*[@guidedhelpid="shareboxcontrols"]//*[text()="Share"]'
+            self.browser.xpath(xpath).click(0.5)
             # on event page, redirecting can take some time
             self.browser.xpath(
                 '//div[@data-tooltip="Start the Hangout On Air"]',
@@ -98,10 +98,11 @@ class Hangouts(object):
                 setattr(self, name, instance(self.utils))
 
         else:
-            if not self.browser.current_url.startswith(URLS.hangouts_active_list):
+            if not self.browser.current_url.startswith(
+                    URLS.hangouts_active_list):
                 self.browser.get(URLS.hangouts_active_list)
-            # G+ opens new window for new hangout, so we need to switch selenium to
-            # it
+            # G+ opens new window for new hangout, so we need to
+            # switch selenium to it
             self.browser.by_class('opd').click(timeout=0.5)
 
         # waiting until new window appears

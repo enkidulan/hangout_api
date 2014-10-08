@@ -18,11 +18,19 @@ def get_loaded_gadgets_list(browser, desire_gadget_name=None):
     for gadget in gadgets:
         gadget_id = gadget.get_attribute('id')
         browser.switch_to_frame(gadget_id)
-        gadget_name = browser.by_class(
-            'header-text').get_attribute('innerText')
+        try:
+            gadget_text = browser.xpath(
+                '//body').get_attribute('innerText')
+        finally:
+            browser.switch_to_default_content()
+        if not gadget_text:
+            continue
+        gadget_name = gadget_text.split('\n', 1)[0]
         gadget_name_to_iframe_id[gadget_id] = gadget_name
-        browser.switch_to_default_content()
-        if gadget_name == desire_gadget_name:
+        # There is no sufficient way to get PlugIn name, but usually
+        # plugins innerText starts with PlugIn name, so
+        # we cat try to guess...
+        if gadget_name.startswith(desire_gadget_name):
             return gadget_id
     return None if desire_gadget_name else gadget_name_to_iframe_id
 
