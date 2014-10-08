@@ -17,8 +17,6 @@ python:
 - 3.3
 - 3.4
 language: python
-before_script:
-- export DISPLAY=:99.0
 script:
 - bin/pep8 hangout_api
 - bin/pylint hangout_api --ignore=tests
