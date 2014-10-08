@@ -19,8 +19,6 @@ python:
 language: python
 before_script:
 - export DISPLAY=:99.0
-- sh -e /etc/init.d/xvfb start
-- ls bin/
 script:
 - bin/pep8 hangout_api
 - bin/pylint hangout_api --ignore=tests
