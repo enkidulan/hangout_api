@@ -8,7 +8,7 @@ from .utils import tries_n_time_until_true
 from hangout_api.gadgets.utils import gadget_context_handler
 
 
-class Broadcast:
+class Broadcast(object):
     """
     Broadcast plugin for OnAir
     """
@@ -49,7 +49,7 @@ class Broadcast:
 provideUtility(Broadcast, IOnAirModule, 'broadcast')
 
 
-class Cameraman:
+class Cameraman(object):
     """
     Cameraman plugin for OnAir
     """
