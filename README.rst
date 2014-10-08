@@ -1,33 +1,28 @@
 Hangout API
 ============
 
-
 .. image:: https://travis-ci.org/enkidulan/hangout_api.svg?branch=master
-
     :target: https://travis-ci.org/enkidulan/hangout_api?branch=master
-
 .. image:: https://coveralls.io/repos/enkidulan/hangout_api/badge.png?branch=master
-
     :target: https://coveralls.io/r/enkidulan/hangout_api?branch=master
-
 
 **Python API for controlling Google+ Hangouts**
 
 .. DANGER::
    This package is under heavy development
 
-
-
 Read the `Python Hangout API`_.
 
 
-***********************
 Preinstall requirements
-***********************
+=======================
 
-    1. Hangout API is using Google **Chrome browser**, so make sure you have it
-       installed. To install Chrome on debian based distributions you can use
-       following command:
+Chrome browser
+---------------
+
+Hangout API is using Google Chrome browse, so make sure you have it
+installed. To install Chrome on debian based distributions you can use
+following command:
 
             .. code:: bash
 
@@ -36,9 +31,11 @@ Preinstall requirements
                 sudo apt-get update
                 sudo apt-get install google-chrome-stable -y
 
+PyVirtualDisplay requirements
+-------------------------------
 
-    2. Make sure that **PyVirtualDisplay_ requirements** are installed.
-       In most cases it will be enough to run command:
+Make sure that **PyVirtualDisplay_ requirements** are installed.
+In most cases it will be enough to run command:
 
         .. code:: bash
 
