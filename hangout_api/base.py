@@ -20,6 +20,11 @@ from .interfaces import IModule, IOnAirModule
 
 
 def _create_hangout_event(browser, name, attendees):
+    """
+    Creates hangout event on google plus. As arguments takes event name and
+    attendees string, also should be provided with 'browser' object where
+    visitor is logged in
+    """
     browser.get(URLS.onair)
     browser.by_text('Start a Hangout On Air').click(0.5)
     # Setting name
@@ -92,7 +97,8 @@ class Hangouts(object):
             self.on_air = on_air
             if isinstance(on_air, dict):
                 # in case if on_air is a dict create new hangout event
-                _create_hangout_event(self.browser, **on_air)
+                _create_hangout_event(
+                    self.browser, on_air['name'], on_air['attendees'])
             else:
                 # otherwise (hangout is a string) go to event page
                 self.browser.get(on_air)

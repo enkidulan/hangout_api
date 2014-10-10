@@ -21,7 +21,7 @@ python:
 language: python
 script:
 - bin/pep8 hangout_api
-- bin/pylint hangout_api --ignore=tests
+- bin/pylint hangout_api --ignore=tests --disable=duplicate-code
 - bin/nosetests hangout_api --no-skip --with-xcoverage --cover-package=hangout_api --cover-tests
 after_success:
 - bin/coveralls

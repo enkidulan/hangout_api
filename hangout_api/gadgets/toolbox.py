@@ -90,5 +90,3 @@ class ToolBox(object):
             'gapi.hangout.av.setLocalParticipantVideoMirrored(%s);'
             % str(value).lower())
         self.mirrored = value
-
-

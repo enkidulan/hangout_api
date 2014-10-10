@@ -1,3 +1,6 @@
+"""
+API for Cameraman Hangout PlugIn
+"""
 from hangout_api.gadgets.utils import gadget_context_handler
 
 

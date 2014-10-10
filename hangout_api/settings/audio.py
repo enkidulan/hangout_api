@@ -1,7 +1,12 @@
+"""
+Hangout API for audio
+"""
+
 from hangout_api.settings.utils import BaseSettings
 
 
 class AudioSettings(BaseSettings):
+    # pylint: disable=duplicate-code
     """
     Controlling call audio settings.
     ==================================

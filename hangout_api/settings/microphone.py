@@ -1,7 +1,12 @@
+"""
+Hangout API for Microphone
+"""
+
 from hangout_api.settings.utils import BaseSettings, MutingHandler
 
 
 class MicrophoneSettings(BaseSettings):
+    # pylint: disable=duplicate-code
     """
     Controlling call microphone settings.
     ======================================

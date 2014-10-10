@@ -1,3 +1,7 @@
+"""
+Base classes and utilities for working with hangouts settings
+"""
+
 from hangout_api.exceptions import NoSuchDeviceFound
 from hangout_api.utils import silence_contextmanager, names_cleaner
 

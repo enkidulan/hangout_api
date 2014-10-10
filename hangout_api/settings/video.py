@@ -1,3 +1,7 @@
+"""
+Hangout API for Video
+"""
+
 from hangout_api.settings.utils import BaseSettings, MutingHandler
 
 

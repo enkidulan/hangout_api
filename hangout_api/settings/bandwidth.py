@@ -1,3 +1,7 @@
+"""
+Hangout API for bandwidth
+"""
+
 from enum import Enum
 from hangout_api.settings.utils import BaseSettings
 
@@ -11,6 +15,7 @@ BANDWIDTH_LEVELS = Enum(
 
 
 class BandwidthSettings(BaseSettings):
+    # pylint: disable=duplicate-code
     """
 
     Controlling bandwidth settings.

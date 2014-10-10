@@ -1,3 +1,8 @@
+"""
+Hangout API for OnAir Broadcast
+"""
+# pylint: disable=R0801
+
 from hangout_api.utils import tries_n_time_until_true
 
 
