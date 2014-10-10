@@ -7,6 +7,8 @@ from selenium.webdriver.chrome.options import Options
 
 
 def hangout_factory():
+    if os.environ.get('DISPLAY'):
+        del os.environ['DISPLAY']
     chrome_options = Options()
     if 'TRAVIS' in os.environ:
         chrome_options.add_argument('--no-sandbox')
