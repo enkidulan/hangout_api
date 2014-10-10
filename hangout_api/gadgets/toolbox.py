@@ -1,8 +1,6 @@
 """
 API for Tollbox Hangout PlugIn
 """
-from zope.component import provideUtility
-from ..interfaces import IModule
 from hangout_api.gadgets.utils import gadget_context_handler
 
 
@@ -94,4 +92,3 @@ class ToolBox(object):
         self.mirrored = value
 
 
-provideUtility(ToolBox, IModule, 'toolbox')

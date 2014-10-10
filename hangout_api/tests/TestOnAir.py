@@ -5,6 +5,7 @@ from time import sleep
 from .utils import (
     credentials,
     hangouts_connection_manager,
+    hangout_factory
 )
 from hangout_api import Hangouts
 
@@ -17,11 +18,7 @@ class TestBroadcast(unittest.TestCase):
             'name': 'test',
             'attendies': 'Friends',
         }
-        self.hangout = Hangouts()
-        self.hangout.login(
-            credentials['name'],
-            credentials['password'],
-            otp=credentials['otp'])
+        self.hangout = hangout_factory()
         self.hangout.start(on_air=self.on_air)
 
     @classmethod
