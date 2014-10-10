@@ -24,6 +24,14 @@ URLS = EasyDict(
 )
 
 
+def names_cleaner(name):
+    """
+    Helper function to clean up string from 'thml' symbols
+    """
+    # pylint: disable=W1402
+    return name.strip().replace('\u202a', '').replace('\u202c', '')
+
+
 @contextmanager
 def silence_contextmanager(node):
     """

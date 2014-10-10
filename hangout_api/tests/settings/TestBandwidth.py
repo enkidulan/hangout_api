@@ -1,7 +1,7 @@
 import unittest
 from testfixtures import compare
 import random
-from hangout_api.settings import BANDWIDTH_LEVELS
+from hangout_api.settings.bandwidth import BANDWIDTH_LEVELS
 from ..utils import (
     hangout_factory,
     credentials,
