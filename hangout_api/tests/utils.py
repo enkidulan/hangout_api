@@ -2,10 +2,15 @@ from hangout_api import Hangouts
 from yaml import load
 import random
 from contextlib import contextmanager
+import os
+from selenium.webdriver.chrome.options import Options
 
 
 def hangout_factory():
-    return Hangouts()
+    chrome_options = Options()
+    if 'TRAVIS' in os.environ:
+        chrome_options.add_argument('--no-sandbox')
+    return Hangouts(chrome_options=chrome_options)
 
 credentials = load(open('credentials.yaml', 'r'))
 
