@@ -8,6 +8,8 @@ before_install:
 - sudo sh -c 'echo "deb http://dl.google.com/linux/chrome/deb/ stable main" >> /etc/apt/sources.list.d/google.list'
 - sudo apt-get update
 - sudo apt-get install -qq google-chrome-stable
+- sudo apt-get install -qq v4l2loopback-utils
+- sudo modprobe v4l2loopback devices=3
 install:
 - pip install setuptools --upgrade
 - python bootstrap.py -c travis.cfg
