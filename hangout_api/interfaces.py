@@ -13,8 +13,10 @@ class IModule(Interface):
     will be reachable as Hangouts class property under the name you registered
     it.
     """
-    def __init__(self, base):
-        pass
+    # def __init__(self, base):
+    #     pass
+
+    pass
 
 
 class IOnAirModule(Interface):
@@ -23,5 +25,7 @@ class IOnAirModule(Interface):
     will be reachable as Hangouts class property under the name you registered
     it.
     """
-    def __init__(self, base):
-        pass
+    # def __init__(self, base):
+    #     pass
+
+    pass
