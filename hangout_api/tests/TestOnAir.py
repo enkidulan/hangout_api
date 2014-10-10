@@ -16,7 +16,7 @@ class TestBroadcast(unittest.TestCase):
     def setup_class(self):
         self.on_air = {
             'name': 'test',
-            'attendies': 'Friends',
+            'attendees': 'Friends',
         }
         self.hangout = hangout_factory()
         self.hangout.start(on_air=self.on_air)
@@ -42,7 +42,7 @@ class TestCameraman(unittest.TestCase):
     def setup_class(self):
         self.on_air = {
             'name': 'test',
-            'attendies': 'Friends',
+            'attendees': 'Friends',
         }
         self.hangout = Hangouts()
         self.hangout.login(

@@ -19,6 +19,20 @@ from .exceptions import LoginError
 from .interfaces import IModule, IOnAirModule
 
 
+def _create_hangout_event(browser, name, attendees):
+    browser.get(URLS.onair)
+    browser.by_text('Start a Hangout On Air').click(0.5)
+    # Setting name
+    browser.xpath(
+        '//input[@aria-label="Give it a name"]').send_keys(name)
+    # cleaning 'share' field and send attendees list there
+    browser.xpath(
+        '//input[@aria-label="Add more people"]').send_keys(
+            '\b\b\b' + attendees + ',')
+    browser.xpath(
+        '//*[@guidedhelpid="shareboxcontrols"]//*[text()="Share"]').click(0.5)
+
+
 class Hangouts(object):
     """
     Main class for controlling hangout calls.
@@ -76,18 +90,12 @@ class Hangouts(object):
         # onair
         if on_air is not None:
             self.on_air = on_air
-            self.browser.get(URLS.onair)
-            self.browser.by_text('Start a Hangout On Air').click(0.5)
-            # Setting name
-            self.browser.xpath(
-                '//input[@aria-label="Give it a name"]').send_keys(
-                    on_air['name'])
-            # cleaning 'share' field
-            self.browser.xpath(
-                '//input[@aria-label="Add more people"]').send_keys(
-                    '\b\b\b' + on_air['attendies'] + ',')
-            xpath = '//*[@guidedhelpid="shareboxcontrols"]//*[text()="Share"]'
-            self.browser.xpath(xpath).click(0.5)
+            if isinstance(on_air, dict):
+                # in case if on_air is a dict create new hangout event
+                _create_hangout_event(self.browser, **on_air)
+            else:
+                # otherwise (hangout is a string) go to event page
+                self.browser.get(on_air)
             # on event page, redirecting can take some time
             self.browser.xpath(
                 '//div[@data-tooltip="Start the Hangout On Air"]',
