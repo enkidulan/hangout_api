@@ -4,7 +4,10 @@ Helpers for handling Hangout PlugIns (gadgets)
 from hangout_api.utils import tries_n_time_until_true, silence_contextmanager
 
 
-def gues_gadget_name(browser):
+def guess_gadget_name(browser):
+    """
+    function that tries to guess gadget name by analyzing its text
+    """
     text = browser.xpath('//body').get_attribute('innerText')[:50]
     return text.strip().split('\n', 1)[0].strip()
 
@@ -24,7 +27,7 @@ def get_loaded_gadgets_list(browser, desire_gadget_name=None):
         gadget_id = gadget.get_attribute('id')
         browser.switch_to_frame(gadget_id)
         try:
-            gadget_name = gues_gadget_name(browser)
+            gadget_name = guess_gadget_name(browser)
         finally:
             browser.switch_to_default_content()
         if not gadget_name:
@@ -42,7 +45,7 @@ def open_app(self, gadget_name):
     """
     Opens Hangout PlugIn by provided name.
     """
-    if gues_gadget_name(self.base.browser).startswith(gadget_name):
+    if guess_gadget_name(self.base.browser).startswith(gadget_name):
         return
     self.base.click_cancel_button_if_there_is_one()
     gadget_id = get_loaded_gadgets_list(self.base.browser, gadget_name)

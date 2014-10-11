@@ -14,7 +14,13 @@ import seleniumwrapper as selwrap
 from chromedriver import CHROMEDRV_PATH
 from zope.component import getUtilitiesFor
 
-from .utils import Utils, URLS, Participant, tries_n_time_until_true, names_cleaner
+from .utils import (
+    Utils,
+    URLS,
+    Participant,
+    tries_n_time_until_true,
+    names_cleaner,
+)
 from .exceptions import LoginError
 from .interfaces import IModule, IOnAirModule
 
