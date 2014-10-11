@@ -51,6 +51,10 @@ coverage.xml
 
 # Sphinx documentation
 docs/_build/
+build/
 
-# chrome driver
-hangout_api/CHROMEDRIVER
+# unencrypted credentials file
+tests/resources/credentials.yaml
+
+# coverage
+cover/

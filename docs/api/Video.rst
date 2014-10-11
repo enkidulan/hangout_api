@@ -2,5 +2,5 @@
 Video Settings
 **************
 
-.. autoclass:: hangout_api.settings.VideoSettings
+.. automodule:: hangout_api.settings.video
    :members:

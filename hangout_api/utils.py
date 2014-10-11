@@ -86,8 +86,8 @@ class Utils(object):
         menu_button = getattr(self.browser, func)(xpath)
         if not menu_button.is_displayed():
             # if menu buttons is hidden make them displayed
-            self.browser.by_class('Za-Ja-m').click(timeout=0.5)
-        menu_button.click(0.5)
+            self.browser.by_class('Za-Ja-m').click(timeout=1)
+        menu_button.click(2)
 
     # pylint: disable=C0103
     def click_cancel_button_if_there_is_one(self, timeout=0.5):

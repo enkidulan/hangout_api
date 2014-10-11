@@ -7,14 +7,17 @@ from selenium.webdriver.chrome.options import Options
 
 
 def hangout_factory():
-    # if os.environ.get('DISPLAY'):
-    #     del os.environ['DISPLAY']
+    if os.environ.get('DISPLAY'):
+        del os.environ['DISPLAY']
     chrome_options = Options()
     if 'TRAVIS' in os.environ:
         chrome_options.add_argument('--no-sandbox')
     return Hangouts(chrome_options=chrome_options)
 
-credentials = load(open('credentials.yaml', 'r'))
+
+credentials = load(open(
+    os.path.join(os.path.dirname(__file__), 'resources', 'credentials.yaml'),
+    'r'))
 
 
 def device_seter(dev_getter, dev_setter):

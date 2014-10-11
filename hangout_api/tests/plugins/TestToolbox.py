@@ -3,9 +3,9 @@ import unittest
 from testfixtures import compare
 
 
-HERE = os.path.dirname(os.path.abspath(__file__))
+TESTS_PATH = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 IMAGE_NAME = 'sample_image_for_testing.jpg'
-IMAGE_PATH = os.path.join(HERE, IMAGE_NAME)
+IMAGE_PATH = os.path.join(TESTS_PATH, 'resources', IMAGE_NAME)
 
 
 class TestToolboxApp(unittest.TestCase):

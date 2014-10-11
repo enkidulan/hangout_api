@@ -2,5 +2,5 @@
 Microphone Settings
 *******************
 
-.. autoclass:: hangout_api.settings.MicrophoneSettings
+.. automodule:: hangout_api.settings.microphone
    :members:

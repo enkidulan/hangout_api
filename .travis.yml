@@ -1,5 +1,5 @@
 before_install:
-- openssl aes-256-cbc -k "$super_secret_password" -in credentials.yaml.enc -out credentials.yaml -d
+- openssl aes-256-cbc -k "$super_secret_password" -in hangout_api/tests/resources/credentials.yaml.enc -out hangout_api/tests/resources/credentials.yaml -d
   -in credentials.yaml.enc -out credentials.yaml -d
 - sudo apt-get install -qq wget python-dev python3-dev
 - sudo apt-get install -qq xserver-xephyr scrot xvfb tightvncserver

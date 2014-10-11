@@ -2,5 +2,5 @@
 Bandwidth Settings
 ******************
 
-.. autoclass:: hangout_api.settings.BandwidthSettings
+.. automodule:: hangout_api.settings.bandwidth
    :members:

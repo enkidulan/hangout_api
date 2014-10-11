@@ -2,5 +2,5 @@
 Audio Settings
 **************
 
-.. autoclass:: hangout_api.settings.AudioSettings
+.. automodule:: hangout_api.settings.audio
    :members:
