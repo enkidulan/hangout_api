@@ -14,7 +14,7 @@ import seleniumwrapper as selwrap
 from chromedriver import CHROMEDRV_PATH
 from zope.component import getUtilitiesFor
 
-from .utils import Utils, URLS, Participant, tries_n_time_until_true
+from .utils import Utils, URLS, Participant, tries_n_time_until_true, names_cleaner
 from .exceptions import LoginError
 from .interfaces import IModule, IOnAirModule
 
@@ -156,7 +156,14 @@ class Hangouts(object):
         self.browser.get(URLS.hangout_session_base + hangout_id)
         # there may be a big delay before 'Join' button appears, so there is a
         #  need wait longer than usual
-        self.browser.by_text('Join', timeout=60).click(timeout=0.5)
+        join_button = self.browser.xpath(
+            '//*[text()="Join" or text()="Okay, got it!"]', timeout=40)
+        button_text = names_cleaner(join_button.get_attribute('innerText'))
+        if button_text == 'Okay, got it!':
+            # to join hangout we need to set agreement checkbox
+            self.browser.xpath('//*[@role="presentation"]').click(timeout=0.5)
+            join_button.click(timeout=5)
+        self.browser.by_text('Join', timeout=40).click(timeout=0.5)
 
     def login(self, username=None, password=None, otp=None):
         """

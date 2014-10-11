@@ -29,7 +29,7 @@ def names_cleaner(name):
     Helper function to clean up string from 'thml' symbols
     """
     # pylint: disable=W1402
-    return name.strip().replace('\u202a', '').replace('\u202c', '')
+    return name.replace('\u202a', '').replace('\u202c', '').strip()
 
 
 @contextmanager

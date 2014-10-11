@@ -4,6 +4,9 @@ HANGOUT = None
 
 
 def setup_package():
+    on_air = {
+        'name': 'test',
+        'attendees': 'Friends'}
     global HANGOUT
     HANGOUT = hangout_factory()
     HANGOUT.browser.timeout = 15
@@ -11,7 +14,7 @@ def setup_package():
         credentials['name'],
         credentials['password'],
         otp=credentials['otp'])
-    HANGOUT.start()
+    HANGOUT.start(on_air=on_air)
 
 
 def teardown_package():

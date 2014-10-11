@@ -37,8 +37,9 @@ class TestBaseAPI(unittest.TestCase):
 
     def test_invite(self):
         self.hangout.invite(['maxybot@gmail.com', 'test circle for call'])
-        waiting_message = self.hangout.browser.by_text(
-            'Waiting for people to join this video call...')
+        xpath = '//*[text()="Invitation posted"'\
+                'or text()="Waiting for people to join this video call..."]'
+        waiting_message = self.hangout.browser.xpath(xpath)
         compare(waiting_message.is_displayed(), True)
 
     def test_participants(self):

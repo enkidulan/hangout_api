@@ -4,6 +4,11 @@ Helpers for handling Hangout PlugIns (gadgets)
 from hangout_api.utils import tries_n_time_until_true, silence_contextmanager
 
 
+def gues_gadget_name(browser):
+    text = browser.xpath('//body').get_attribute('innerText')[:50]
+    return text.strip().split('\n', 1)[0].strip()
+
+
 def get_loaded_gadgets_list(browser, desire_gadget_name=None):
     """
     Returns list of currently loaded gadgets.
@@ -19,13 +24,11 @@ def get_loaded_gadgets_list(browser, desire_gadget_name=None):
         gadget_id = gadget.get_attribute('id')
         browser.switch_to_frame(gadget_id)
         try:
-            gadget_text = browser.xpath(
-                '//body').get_attribute('innerText')
+            gadget_name = gues_gadget_name(browser)
         finally:
             browser.switch_to_default_content()
-        if not gadget_text:
+        if not gadget_name:
             continue
-        gadget_name = gadget_text.split('\n', 1)[0]
         gadget_name_to_iframe_id[gadget_id] = gadget_name
         # There is no sufficient way to get PlugIn name, but usually
         # plugins innerText starts with PlugIn name, so
@@ -35,16 +38,20 @@ def get_loaded_gadgets_list(browser, desire_gadget_name=None):
     return None if desire_gadget_name else gadget_name_to_iframe_id
 
 
-def open_toolbox_app(self, gadget_name):
+def open_app(self, gadget_name):
     """
     Opens Hangout PlugIn by provided name.
     """
+    if gues_gadget_name(self.base.browser).startswith(gadget_name):
+        return
     self.base.click_cancel_button_if_there_is_one()
     gadget_id = get_loaded_gadgets_list(self.base.browser, gadget_name)
     if not gadget_id or not self.base.browser.by_id(gadget_id).is_displayed():
-        self.base.browser.by_class('Za-Ja-m').click(timeout=0.5)
-        self.base.browser.xpath(
-            '//div[@aria-label="%s"]' % gadget_name).click(timeout=0.5)
+        gadget_icon = self.base.browser.xpath(
+            '//div[@aria-label="%s"]' % gadget_name)
+        if gadget_icon.location['x'] < 0:
+            self.base.browser.by_class('Za-Ja-m').click(timeout=0.5)
+        gadget_icon.click(timeout=1)
         gadget_id = tries_n_time_until_true(
             lambda: get_loaded_gadgets_list(self.base.browser, gadget_name))
     self.base.browser.switch_to_frame(gadget_id)
@@ -57,7 +64,7 @@ def gadget_context_handler(gadget_name):
     """
     def decorator(function):  # pylint: disable=C0111
         def wrapper(self, *args, **kwargs):  # pylint: disable=C0111
-            open_toolbox_app(self, gadget_name)
+            open_app(self, gadget_name)
             return function(self, *args, **kwargs)
         return wrapper
     return decorator

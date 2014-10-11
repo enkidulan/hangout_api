@@ -1,25 +1,21 @@
 import unittest
 from testfixtures import compare
-from hangout_api.utils import Participant
-from time import sleep
-from .utils import (
-    credentials,
-    hangouts_connection_manager,
-    hangout_factory
-)
-from hangout_api import Hangouts
 
 
 class TestBroadcast(unittest.TestCase):
 
     @classmethod
     def setup_class(self):
-        self.on_air = {
+        from .utils import hangout_factory, credentials
+        on_air = {
             'name': 'test',
-            'attendees': 'Friends',
-        }
+            'attendees': 'Friends'}
         self.hangout = hangout_factory()
-        self.hangout.start(on_air=self.on_air)
+        self.hangout.login(
+            credentials['name'],
+            credentials['password'],
+            otp=credentials['otp'])
+        self.hangout.start(on_air=on_air)
 
     @classmethod
     def teardown_class(self):
@@ -29,9 +25,9 @@ class TestBroadcast(unittest.TestCase):
         compare(self.hangout.broadcast.is_on(), False)
         self.hangout.broadcast.start()
         compare(self.hangout.broadcast.is_on(), True)
+        compare(len(self.hangout.broadcast.embed_url()) > 20, True)
         self.hangout.broadcast.stop()
         compare(self.hangout.broadcast.is_on(), False)
-        compare(len(self.hangout.broadcast.embed_url()) > 20, True)
         self.hangout.disconnect()
         compare(getattr(self.hangout, 'broadcast', None), None)
 
@@ -40,16 +36,8 @@ class TestCameraman(unittest.TestCase):
 
     @classmethod
     def setup_class(self):
-        self.on_air = {
-            'name': 'test',
-            'attendees': 'Friends',
-        }
-        self.hangout = Hangouts()
-        self.hangout.login(
-            credentials['name'],
-            credentials['password'],
-            otp=credentials['otp'])
-        self.hangout.start(on_air=self.on_air)
+        from hangout_api.tests import HANGOUT
+        self.hangout = HANGOUT
 
     @classmethod
     def teardown_class(self):
