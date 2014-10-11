@@ -6,7 +6,7 @@ HANGOUT = None
 def setup_package():
     on_air = {
         'name': 'test',
-        'attendees': 'Friends'}
+        'attendees': ['Friends', ]}
     global HANGOUT
     HANGOUT = hangout_factory()
     HANGOUT.browser.timeout = 15

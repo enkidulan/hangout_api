@@ -28,7 +28,7 @@ from .interfaces import IModule, IOnAirModule
 def _create_hangout_event(browser, name, attendees):
     """
     Creates hangout event on google plus. As arguments takes event name and
-    attendees string, also should be provided with 'browser' object where
+    attendees list, also should be provided with 'browser' object where
     visitor is logged in
     """
     browser.get(URLS.onair)
@@ -39,9 +39,12 @@ def _create_hangout_event(browser, name, attendees):
     # cleaning 'share' field and send attendees list there
     browser.xpath(
         '//input[@aria-label="Add more people"]').send_keys(
-            '\b\b\b' + attendees + ',')
+            '\b\b\b' + ','.join(attendees) + ',')
     browser.xpath(
         '//*[@guidedhelpid="shareboxcontrols"]//*[text()="Share"]').click(0.5)
+    # waiting for redirecting to OnAir event page to be complete
+    browser.xpath('//div[@data-tooltip="Start the Hangout On Air"]', timeout=60)
+    return browser.current_url
 
 
 class Hangouts(object):
@@ -127,8 +130,8 @@ class Hangouts(object):
         tries_n_time_until_true(
             lambda: len(self.browser.window_handles) <= 1, try_num=100)
 
-        self.browser.close()  # closing old window
-        self.browser.switch_to_window(self.browser.window_handles[0])
+        # self.browser.close()  # closing old window
+        self.browser.switch_to_window(self.browser.window_handles[-1])
 
         self.utils.click_cancel_button_if_there_is_one(timeout=30)
 
@@ -247,13 +250,17 @@ class Hangouts(object):
             # removing properties that is available only for OnAir
             for name, _ in getUtilitiesFor(IOnAirModule):
                 delattr(self, name)
-        self.on_air = None
+            self.on_air = None
+        # waiting until hangout windows closes
+        tries_n_time_until_true(
+            lambda: len(self.browser.window_handles) == 1, try_num=100)
+        self.browser.switch_to_window(self.browser.window_handles[-1])
 
     def __del__(self):
         # leaving the call first
-        self.browser.silent = True
         try:
-            self.disconnect()
+            if self.hangout_id:
+                self.disconnect()
         finally:
             # and quiting browser and display
             self.browser.quit()
