@@ -9,7 +9,6 @@ def setup_package():
         'attendees': ['Friends', ]}
     global HANGOUT
     HANGOUT = hangout_factory()
-    HANGOUT.browser.timeout = 15
     HANGOUT.login(
         credentials['name'],
         credentials['password'],

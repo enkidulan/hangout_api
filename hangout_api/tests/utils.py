@@ -12,7 +12,9 @@ def hangout_factory():
     chrome_options = Options()
     if 'TRAVIS' in os.environ:
         chrome_options.add_argument('--no-sandbox')
-    return Hangouts(chrome_options=chrome_options)
+    hangout = Hangouts(chrome_options=chrome_options)
+    hangout.browser.timeout = 60
+    return hangout
 
 
 credentials = load(open(
@@ -38,7 +40,6 @@ def hangouts_connection_manager(users_credentials, hangout_id):
     try:
         for credentials in users_credentials:
             hangout = hangout_factory()
-            hangout.browser.timeout = 15
             hangout.login(credentials[0], credentials[1])
             hangout.connect(hangout_id)
             connections.append(hangout)
