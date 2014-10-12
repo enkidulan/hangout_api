@@ -43,7 +43,8 @@ def _create_hangout_event(browser, name, attendees):
     browser.xpath(
         '//*[@guidedhelpid="shareboxcontrols"]//*[text()="Share"]').click(0.5)
     # waiting for redirecting to OnAir event page to be complete
-    browser.xpath('//div[@data-tooltip="Start the Hangout On Air"]', timeout=60)
+    browser.xpath(
+        '//div[@data-tooltip="Start the Hangout On Air"]', timeout=60)
     return browser.current_url
 
 
