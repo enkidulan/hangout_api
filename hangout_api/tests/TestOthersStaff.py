@@ -51,4 +51,3 @@ class TestHangoutsStart(unittest.TestCase):
         compare(self.hangout.hangout_id is None, False)
         compare(self.hangout.on_air, url)
         self.hangout.disconnect()
-
