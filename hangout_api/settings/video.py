@@ -28,7 +28,8 @@ class VideoSettings(BaseSettings):
             val = was_called and 'Turn camera on' or 'Turn camera off'
             was_called = not was_called
             return val
-        hangout.video.muting_handler.get_mute_button_label = get_mute_button_label
+        hangout.video.muting_handler.get_mute_button_label = \
+            get_mute_button_label
 
     """
 

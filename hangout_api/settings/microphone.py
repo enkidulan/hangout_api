@@ -29,7 +29,8 @@ class MicrophoneSettings(BaseSettings):
             val = was_called and 'Unmute microphone' or 'Mute microphone'
             was_called = not was_called
             return val
-        hangout.microphone.muting_handler.get_mute_button_label = get_mute_button_label
+        hangout.microphone.muting_handler.get_mute_button_label = \
+            get_mute_button_label
 
 
     """

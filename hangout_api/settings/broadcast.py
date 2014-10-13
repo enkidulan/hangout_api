@@ -16,7 +16,10 @@ class Broadcast(object):
         from hangout_api.tests.doctests_utils import  (
             DummyHangout, DummySelenium)
 
-        DummySelenium.get_attribute = lambda *args: '<iframe width="560" height="315" src="//www.youtube.com/embed/bVEV9ODxbYs" frameborder="0" allowfullscreen></iframe>'
+        insert_code = \
+            '<iframe width="560" height="315" src="..." frameborder="0"'\
+            ' allowfullscreen></iframe>'
+        DummySelenium.get_attribute = lambda *args: insert_code
 
         hangout = DummyHangout(
             name='broadcast',
@@ -59,7 +62,7 @@ class Broadcast(object):
         .. doctest:: Broadcast
 
             >>> hangout.broadcast.embed_url()
-            '<iframe width="560" height="315" src="//www.youtube.com/embed/bVEV9ODxbYs" frameborder="0" allowfullscreen></iframe>'
+            '<iframe width="560" height="315" src="..."></iframe>'
 
         """
         self.base.browser.by_text('Links').click(0.5)
