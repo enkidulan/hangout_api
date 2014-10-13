@@ -16,9 +16,7 @@ class Broadcast(object):
         from hangout_api.tests.doctests_utils import  (
             DummyHangout, DummySelenium)
 
-        insert_code = \
-            '<iframe width="560" height="315" src="..." frameborder="0"'\
-            ' allowfullscreen></iframe>'
+        insert_code = '<iframe width="560" height="315" src="..."></iframe>'
         DummySelenium.get_attribute = lambda *args: insert_code
 
         hangout = DummyHangout(
