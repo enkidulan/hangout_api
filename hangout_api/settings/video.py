@@ -9,6 +9,27 @@ class VideoSettings(BaseSettings):
     """
     Controlling call video settings.
     =================================
+
+    .. testsetup:: VideoSettings
+
+        from hangout_api.settings.video import VideoSettings
+        from hangout_api.tests.doctests_utils import DummyHangout
+
+        hangout = DummyHangout(
+            name='video',
+            klass=VideoSettings,
+            getter=['USB2.0 PC CAMERA', 'HP Truevision HD'],
+            setter=None,
+            current='USB2.0 PC CAMERA')
+        global was_called
+        was_called = False
+        def get_mute_button_label(*args):
+            global was_called
+            val = was_called and 'Turn camera on' or 'Turn camera off'
+            was_called = not was_called
+            return val
+        hangout.video.muting_handler.get_mute_button_label = get_mute_button_label
+
     """
 
     def __init__(self, base):
@@ -25,12 +46,9 @@ class VideoSettings(BaseSettings):
         """
         Returns True if video is muted, otherwise returns True
 
-        .. code::
+        .. doctest:: VideoSettings
 
-            >>> hangout.video.is_mutes()
-            False
-            >>> hangout.video.mute()
-            >>> hangout.video.is_mutes()
+            >>> hangout.video.is_muted in (True, False)
             True
         """
         return self.muting_handler.is_muted()
@@ -41,10 +59,10 @@ class VideoSettings(BaseSettings):
             * True - Video went from un-muted to muted
             * False - Video was already muted
 
-        .. code::
+        .. doctest:: VideoSettings
 
             >>> hangout.video.unmute()
-
+            True
             >>> hangout.video.mute()
             True
             >>> hangout.video.mute()
@@ -59,14 +77,15 @@ class VideoSettings(BaseSettings):
             * True - Video went from muted to un-muted
             * False - Video was already un-muted
 
-        .. code::
+        .. doctest:: VideoSettings
 
             >>> hangout.video.mute()
-
+            True
             >>> hangout.video.unmute()
             True
             >>> hangout.video.unmute()
             False
+
         """
         return self.muting_handler.unmute()
 
@@ -74,7 +93,7 @@ class VideoSettings(BaseSettings):
         """
         Returns list of available video devices:
 
-        .. code::
+        .. doctest:: VideoSettings
 
             >>> hangout.video.get_devices()
             ['USB2.0 PC CAMERA', 'HP Truevision HD']
@@ -90,7 +109,7 @@ class VideoSettings(BaseSettings):
         """
         Set device by its name:
 
-        .. code::
+        .. doctest:: VideoSettings
 
             >>> hangout.video.get_devices()
             ['USB2.0 PC CAMERA', 'HP Truevision HD']
@@ -104,10 +123,10 @@ class VideoSettings(BaseSettings):
         """
         Returns current device:
 
-        .. code::
+        .. doctest:: VideoSettings
 
-            >>> hangout.video.current_device()
-            'HP Truevision HD'
+            >>> hangout.video.current_device
+            'USB2.0 PC CAMERA'
 
         """
         return self._current_device_getter('Video and Camera')

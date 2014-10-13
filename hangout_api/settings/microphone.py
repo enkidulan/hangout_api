@@ -10,6 +10,28 @@ class MicrophoneSettings(BaseSettings):
     """
     Controlling call microphone settings.
     ======================================
+
+    .. testsetup:: MicrophoneSettings
+
+        from hangout_api.settings.microphone import MicrophoneSettings
+        from hangout_api.tests.doctests_utils import DummyHangout
+
+        hangout = DummyHangout(
+            name='microphone',
+            klass=MicrophoneSettings,
+            getter=['Default', 'usb001: microphone device'],
+            setter=None,
+            current='Default')
+        global was_called
+        was_called = False
+        def get_mute_button_label(*args):
+            global was_called
+            val = was_called and 'Unmute microphone' or 'Mute microphone'
+            was_called = not was_called
+            return val
+        hangout.microphone.muting_handler.get_mute_button_label = get_mute_button_label
+
+
     """
 
     def __init__(self, base):
@@ -26,13 +48,11 @@ class MicrophoneSettings(BaseSettings):
         """
         Returns True if microphone is muted, otherwise returns False
 
-        .. code::
+        .. doctest:: MicrophoneSettings
 
-            >>> hangout.microphone.is_mutes()
-            False
-            >>> hangout.microphone.mute()
-            >>> hangout.microphone.is_mutes()
+            >>> hangout.microphone.is_muted in (True, False)
             True
+
         """
         return self.muting_handler.is_muted()
 
@@ -42,10 +62,10 @@ class MicrophoneSettings(BaseSettings):
             * True - microphone went from muted to un-muted
             * False - microphone was already un-muted
 
-        .. code::
+        .. doctest:: MicrophoneSettings
 
             >>> hangout.microphone.mute()
-
+            True
             >>> hangout.microphone.unmute()
             True
             >>> hangout.microphone.unmute()
@@ -60,10 +80,10 @@ class MicrophoneSettings(BaseSettings):
             * True - microphone went from un-muted to muted
             * False - microphone was already muted
 
-        .. code::
+        .. doctest:: MicrophoneSettings
 
             >>> hangout.microphone.unmute()
-
+            True
             >>> hangout.microphone.mute()
             True
             >>> hangout.microphone.mute()
@@ -76,10 +96,10 @@ class MicrophoneSettings(BaseSettings):
         """
         Returns list of available microphone devices:
 
-        .. code::
+        .. doctest:: MicrophoneSettings
 
             >>> hangout.microphone.get_devices()
-            ['Default', 'Built-in Audio Analog Stereo']
+            ['Default', 'usb001: microphone device']
         """
         device_xpath = '//*[text()="Microphone"]'
         devices_list_xpath = \
@@ -91,10 +111,10 @@ class MicrophoneSettings(BaseSettings):
         """
         Set device by its name:
 
-        .. code::
+        .. doctest:: MicrophoneSettings
 
             >>> hangout.microphone.get_devices()
-            ['Default', 'Built-in Audio Analog Stereo']
+            ['Default', 'usb001: microphone device']
             >>> hangout.microphone.set_device('Default')
 
         """
@@ -105,10 +125,10 @@ class MicrophoneSettings(BaseSettings):
         """
         Returns current device:
 
-        .. code::
+        .. doctest:: MicrophoneSettings
 
-            >>> hangout.microphone.current_device()
-            'Built-in Audio Analog Stereo'
+            >>> hangout.microphone.current_device
+            'Default'
 
         """
         return self._current_device_getter('Microphone', parrenty=1)

@@ -10,13 +10,26 @@ class AudioSettings(BaseSettings):
     """
     Controlling call audio settings.
     ==================================
+
+    .. testsetup:: AudioSettings
+
+        from hangout_api.settings.audio import AudioSettings
+        from hangout_api.tests.doctests_utils import DummyHangout
+
+        hangout = DummyHangout(
+            name='audio',
+            klass=AudioSettings,
+            getter=['Default', 'Built-in Audio Analog Stereo'],
+            setter=None,
+            current='Default')
+
     """
 
     def get_devices(self, with_nodes=False):
         """
         Returns list of available audio devices:
 
-        .. code::
+        .. doctest:: AudioSettings
 
             >>> hangout.audio.get_devices()
             ['Default', 'Built-in Audio Analog Stereo']
@@ -32,7 +45,7 @@ class AudioSettings(BaseSettings):
         """
         Set device by its name:
 
-        .. code::
+        .. doctest:: AudioSettings
 
             >>> hangout.audio.get_devices()
             ['Default', 'Built-in Audio Analog Stereo']
@@ -46,9 +59,9 @@ class AudioSettings(BaseSettings):
         """
         Returns current device:
 
-        .. code::
+        .. doctest:: AudioSettings
 
-            >>> hangout.audio.current_device()
+            >>> hangout.audio.current_device
             'Default'
 
         """

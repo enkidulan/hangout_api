@@ -26,6 +26,19 @@ class BandwidthSettings(BaseSettings):
         * 2 - Low
         * 3 - Medium
         * 4 - Auto HD
+
+    .. testsetup:: BandwidthSettings
+
+        from hangout_api.settings.bandwidth import (
+            BandwidthSettings, BANDWIDTH_LEVELS)
+        from hangout_api.tests.doctests_utils import  (
+            DummyHangout, DummySelenium)
+
+        hangout = DummyHangout(
+            name='bandwidth',
+            klass=BandwidthSettings)
+        DummySelenium.get_attribute = lambda *args: 1
+        hangout.bandwidth._get_bandwidth_controller = lambda: DummySelenium()
     """
     # pylint: disable=W0223
     def _get_bandwidth_controller(self):
@@ -44,7 +57,7 @@ class BandwidthSettings(BaseSettings):
         """
         Set bandwidth setting for hangout
 
-        .. code::
+        .. doctest:: BandwidthSettings
 
             >>> hangout.bandwidth.set(2)
 
@@ -58,7 +71,7 @@ class BandwidthSettings(BaseSettings):
         """
         Get bandwidth setting for hangout.
 
-        .. code::
+        .. doctest:: BandwidthSettings
 
             >>> hangout.bandwidth.get()
             <Bandwidth.Very Low: 1>

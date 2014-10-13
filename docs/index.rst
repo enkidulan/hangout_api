@@ -17,13 +17,15 @@ It has simple modular structure:
   * :doc:`api/Video`
   * :doc:`api/Bandwidth`
 
+On Air API:
+* :doc:`api/Broadcast`
 
-.. Contents:
+Contents:
 
-.. .. toctree::
-..    :maxdepth: 2
+.. toctree::
+   :maxdepth: 2
 
-..    api_documentation
+   api_documentation
 
 
 How to use Hangout API
@@ -31,8 +33,7 @@ How to use Hangout API
 
 .. testsetup:: base_api
 
-    from yaml import load
-    credentials = load(open('credentials.yaml', 'r'))
+    from hangout_api.tests.utils import credentials
     email = credentials['name']
     password = credentials['password']
 
@@ -58,13 +59,13 @@ Now you can invite people:
 
 Or change call setting, like bandwidth, audio, etc:
 
-    .. doctest:: base_api
+    .. .. doctest:: base_api
 
-        >>> hangout.bandwidth.get()
-        5
-        >>> hangout.bandwidth.set(3)
-        >>> hangout.microphone.mute()
-        >>> hangout.video.set('USB2.0 PC CAMERA')
+    ..     >>> hangout.bandwidth.get()
+    ..     5
+    ..     >>> hangout.bandwidth.set(3)
+    ..     >>> hangout.microphone.mute()
+    ..     >>> hangout.video.set('USB2.0 PC CAMERA')
 
 Indices and tables
 ==================

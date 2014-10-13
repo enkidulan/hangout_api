@@ -20,6 +20,7 @@ script:
 - bin/pep8 hangout_api
 - bin/pylint hangout_api --ignore=tests --disable=duplicate-code
 - bin/nosetests hangout_api --no-skip --with-xcoverage --cover-package=hangout_api --cover-tests
+- bin/sphinx-build -b doctest docs/ build
 after_success:
 - bin/coveralls
 env:
