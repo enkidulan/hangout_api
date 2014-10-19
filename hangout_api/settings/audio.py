@@ -5,6 +5,21 @@ Hangout API for audio
 from hangout_api.settings.utils import BaseSettings
 
 
+class AudioDevice(object):
+    """
+    Class that represents audio devise. More like marker than actual class.
+    """
+    # pylint: disable=too-few-public-methods
+    def __init__(self, name):
+        self.name = name
+
+    def __eq__(self, other):
+        return self.name == other.name
+
+    def __repr__(self):
+        return "<AudioDevice: %r>" % self.name
+
+
 class AudioSettings(BaseSettings):
     # pylint: disable=duplicate-code
     """
@@ -13,17 +28,20 @@ class AudioSettings(BaseSettings):
 
     .. testsetup:: AudioSettings
 
-        from hangout_api.settings.audio import AudioSettings
+        from hangout_api.settings.audio import AudioSettings, AudioDevice
         from hangout_api.tests.doctests_utils import DummyHangout
 
         hangout = DummyHangout(
             name='audio',
             klass=AudioSettings,
-            getter=['Default', 'Built-in Audio Analog Stereo'],
+            getter=[
+                AudioDevice('Default'),
+                AudioDevice('Built-in Audio Analog Stereo')],
             setter=None,
-            current='Default')
+            current=AudioDevice('Default'))
 
     """
+    device_class = AudioDevice
 
     def get_devices(self, with_nodes=False):
         """
@@ -32,7 +50,7 @@ class AudioSettings(BaseSettings):
         .. doctest:: AudioSettings
 
             >>> hangout.audio.get_devices()
-            ['Default', 'Built-in Audio Analog Stereo']
+            [<AudioDevice: 'Default'>, ...]
 
         """
         device_xpath = '//*[contains(@class, "iph_s_ao")]'
@@ -48,7 +66,7 @@ class AudioSettings(BaseSettings):
         .. doctest:: AudioSettings
 
             >>> hangout.audio.get_devices()
-            ['Default', 'Built-in Audio Analog Stereo']
+            [<AudioDevice: 'Default'>, ...]
             >>> hangout.audio.set_device('Default')
 
         """
@@ -62,7 +80,7 @@ class AudioSettings(BaseSettings):
         .. doctest:: AudioSettings
 
             >>> hangout.audio.current_device
-            'Default'
+            <AudioDevice: 'Default'>
 
         """
         return self._current_device_getter('Play test sound')

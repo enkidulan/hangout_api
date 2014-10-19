@@ -5,6 +5,21 @@ Hangout API for Microphone
 from hangout_api.settings.utils import BaseSettings, MutingHandler
 
 
+class MicrophoneDevice(object):
+    """
+    Class that represents microphone devise. More like marker than actual class
+    """
+    # pylint: disable=too-few-public-methods
+    def __init__(self, name):
+        self.name = name
+
+    def __eq__(self, other):
+        return self.name == other.name
+
+    def __repr__(self):
+        return "<MicrophoneDevice: %r>" % self.name
+
+
 class MicrophoneSettings(BaseSettings):
     # pylint: disable=duplicate-code
     """
@@ -13,15 +28,18 @@ class MicrophoneSettings(BaseSettings):
 
     .. testsetup:: MicrophoneSettings
 
-        from hangout_api.settings.microphone import MicrophoneSettings
+        from hangout_api.settings.microphone import (
+            MicrophoneSettings, MicrophoneDevice)
         from hangout_api.tests.doctests_utils import DummyHangout
 
         hangout = DummyHangout(
             name='microphone',
             klass=MicrophoneSettings,
-            getter=['Default', 'usb001: microphone device'],
+            getter=[
+                MicrophoneDevice('Default'),
+                MicrophoneDevice('usb001: microphone device')],
             setter=None,
-            current='Default')
+            current=MicrophoneDevice('Default'))
         global was_called
         was_called = False
         def get_mute_button_label(*args):
@@ -34,6 +52,7 @@ class MicrophoneSettings(BaseSettings):
 
 
     """
+    device_class = MicrophoneDevice
 
     def __init__(self, base):
         super(MicrophoneSettings, self).__init__(base)
@@ -100,7 +119,7 @@ class MicrophoneSettings(BaseSettings):
         .. doctest:: MicrophoneSettings
 
             >>> hangout.microphone.get_devices()
-            ['Default', 'usb001: microphone device']
+            [<MicrophoneDevice: 'Default'>, ...]
         """
         device_xpath = '//*[text()="Microphone"]'
         devices_list_xpath = \
@@ -115,7 +134,7 @@ class MicrophoneSettings(BaseSettings):
         .. doctest:: MicrophoneSettings
 
             >>> hangout.microphone.get_devices()
-            ['Default', 'usb001: microphone device']
+            [<MicrophoneDevice: 'Default'>, ...]
             >>> hangout.microphone.set_device('Default')
 
         """
@@ -129,7 +148,7 @@ class MicrophoneSettings(BaseSettings):
         .. doctest:: MicrophoneSettings
 
             >>> hangout.microphone.current_device
-            'Default'
+            <MicrophoneDevice: 'Default'>
 
         """
         return self._current_device_getter('Microphone', parrenty=1)

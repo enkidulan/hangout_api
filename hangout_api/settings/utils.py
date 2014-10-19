@@ -10,6 +10,7 @@ class BaseSettings(object):  # pylint: disable=R0903
     """
     Base class that handling device setting
     """
+    device_class = NotImplementedError
 
     def __init__(self, base):
         self.base = base
@@ -20,7 +21,8 @@ class BaseSettings(object):  # pylint: disable=R0903
         """
         raise NotImplementedError()
 
-    def _devices_getter(self, device_xpath, devices_list_xpath, with_nodes):
+    def _devices_getter(
+            self, device_xpath, devices_list_xpath, with_nodes):
         """
         Returns list of the devices based on device_xpath and
         devices_list_xpath arguments. Because HG is build all DOM dynamically
@@ -39,7 +41,7 @@ class BaseSettings(object):  # pylint: disable=R0903
                 # in case if there is no devices at all return empty list
                 if ' found' in device_name:
                     return []
-                return [names_cleaner(device_name)]
+                return [self.device_class(names_cleaner(device_name))]
         device_box.click(timeout=0.5)
         # get list of devices
         devices = {
@@ -47,7 +49,8 @@ class BaseSettings(object):  # pylint: disable=R0903
             for n in self.base.browser.xpath(devices_list_xpath, eager=True)}
         if with_nodes:
             return devices
-        return list(devices.keys())
+        # pylint: disable=bad-builtin
+        return list(map(self.device_class, devices.keys()))
 
     def _device_setter(self, device_name):
         """
@@ -55,14 +58,17 @@ class BaseSettings(object):  # pylint: disable=R0903
         available or no devices at all. In case if device can not be set raise
         NoSuchDeviceFound exception
         """
+        if isinstance(device_name, self.device_class):
+            device_name = device_name.name
         devices = self.get_devices(with_nodes=True)
-        if device_name not in devices:
-            raise NoSuchDeviceFound(
-                "Can't find device with name '%s'" % device_name)
         if len(devices) == 1:
             # there is no sense to set devise
             # if no devices or only one device are available
             return
+        # pylint: disable=bad-builtin
+        if device_name not in devices:
+            raise NoSuchDeviceFound(
+                "Can't find device with name '%s'" % device_name)
         self.get_devices(with_nodes=True)[device_name].click()
         self.base.click_on_devices_save_button()
 
@@ -74,8 +80,9 @@ class BaseSettings(object):  # pylint: disable=R0903
         base_element = self.base.browser.by_text(text_selector)
         for _ in range(parrenty):
             base_element = base_element.parent
-        return names_cleaner(
+        device_name = names_cleaner(
             base_element.get_attribute('innerText').split('\n')[0])
+        return self.device_class(device_name)
 
 
 class MutingHandler(object):

@@ -5,6 +5,21 @@ Hangout API for Video
 from hangout_api.settings.utils import BaseSettings, MutingHandler
 
 
+class VideoDevice(object):
+    """
+    Class that represents video devise. More like marker than actual class.
+    """
+    # pylint: disable=too-few-public-methods
+    def __init__(self, name):
+        self.name = name
+
+    def __eq__(self, other):
+        return self.name == other.name
+
+    def __repr__(self):
+        return "<VideoDevice: %r>" % self.name
+
+
 class VideoSettings(BaseSettings):
     """
     Controlling call video settings.
@@ -12,15 +27,16 @@ class VideoSettings(BaseSettings):
 
     .. testsetup:: VideoSettings
 
-        from hangout_api.settings.video import VideoSettings
+        from hangout_api.settings.video import VideoSettings, VideoDevice
         from hangout_api.tests.doctests_utils import DummyHangout
 
         hangout = DummyHangout(
             name='video',
             klass=VideoSettings,
-            getter=['USB2.0 PC CAMERA', 'HP Truevision HD'],
+            getter=[VideoDevice('USB2.0 PC CAMERA'),
+                    VideoDevice('HP Truevision HD')],
             setter=None,
-            current='USB2.0 PC CAMERA')
+            current=VideoDevice('USB2.0 PC CAMERA'))
         global was_called
         was_called = False
         def get_mute_button_label(*args):
@@ -32,6 +48,7 @@ class VideoSettings(BaseSettings):
             get_mute_button_label
 
     """
+    device_class = VideoDevice
 
     def __init__(self, base):
         super(VideoSettings, self).__init__(base)
@@ -97,7 +114,7 @@ class VideoSettings(BaseSettings):
         .. doctest:: VideoSettings
 
             >>> hangout.video.get_devices()
-            ['USB2.0 PC CAMERA', 'HP Truevision HD']
+            [<VideoDevice: 'USB2.0 PC CAMERA'>, ...]
 
         """
         device_xpath = '//*[text()="Video and Camera"]'
@@ -113,7 +130,7 @@ class VideoSettings(BaseSettings):
         .. doctest:: VideoSettings
 
             >>> hangout.video.get_devices()
-            ['USB2.0 PC CAMERA', 'HP Truevision HD']
+            [<VideoDevice: 'USB2.0 PC CAMERA'>, ...]
             >>> hangout.video.set_device('HP Truevision HD')
 
         """
@@ -127,7 +144,7 @@ class VideoSettings(BaseSettings):
         .. doctest:: VideoSettings
 
             >>> hangout.video.current_device
-            'USB2.0 PC CAMERA'
+            <VideoDevice: 'USB2.0 PC CAMERA'>
 
         """
         return self._current_device_getter('Video and Camera')
