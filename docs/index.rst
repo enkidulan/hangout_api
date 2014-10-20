@@ -34,6 +34,7 @@ How to use Hangout API
 .. testsetup:: base_api
 
     from hangout_api.tests.utils import credentials
+    from hangout_api.tests.utils import hangout_factory as Hangouts
     email = credentials['name']
     password = credentials['password']
 
@@ -42,19 +43,18 @@ How to use Hangout API
     del hangout
 
 
-First of all you need to log in and start new or connect to existing hangout:
+First of all you need to log in to start new or connect to existing hangout:
 
     .. doctest:: base_api
 
-        >>> from hangout_api import Hangouts
         >>> hangout = Hangouts()
         >>> hangout.login(email, password)
-        >>> hangout.start()
 
-Now you can invite people:
+Now you can start new or connect and invite people:
 
     .. doctest:: base_api
 
+        >>> hangout.start()
         >>> hangout.invite(['maxybot@gmail.com', 'test circle for call'])
 
 Or change call setting, like bandwidth, audio, etc:
