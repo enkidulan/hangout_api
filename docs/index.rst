@@ -62,15 +62,15 @@ Now you can start new or connect and invite people:
         >>> hangout.start()
         >>> hangout.invite(['maxybot@gmail.com', 'test circle for call'])
 
-Or change call setting, like bandwidth, audio, etc:
+.. Or change call setting, like bandwidth, audio, etc:
 
-    .. doctest:: base_api
+..     .. doctest:: base_api
 
-        >>> hangout.bandwidth.get()
-        5
-        >>> hangout.bandwidth.set(3)
-        >>> hangout.microphone.mute()
-    ..     >>> hangout.video.set('USB2.0 PC CAMERA')
+..         >>> hangout.bandwidth.get()
+..         5
+..         >>> hangout.bandwidth.set(3)
+..         >>> hangout.microphone.mute()
+..     ..     >>> hangout.video.set('USB2.0 PC CAMERA')
 
 Indices and tables
 ==================
