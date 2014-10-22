@@ -1,3 +1,4 @@
+import os.environ
 import unittest
 from testfixtures import compare
 from hangout_api.tests.utils import (
@@ -22,6 +23,8 @@ class TestControlRoom(unittest.TestCase):
         del self.participant
 
     def test_audio(self):
+        if 'TRAVIS' in os.environ:
+            self.skipTest('Skip this test on travis')
 
         self.hangout.controlroom.audio('Lorem Impus', False)
 
@@ -34,6 +37,9 @@ class TestControlRoom(unittest.TestCase):
         compare(self.hangout.controlroom.audio('Lorem Impus', ), False)
 
     def test_video(self):
+        if 'TRAVIS' in os.environ:
+            self.skipTest('Skip this test on travis')
+
         self.hangout.controlroom.video('Lorem Impus', False)
 
         compare(self.hangout.controlroom.video('Lorem Impus', True), True)
