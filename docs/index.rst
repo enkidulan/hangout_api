@@ -36,40 +36,40 @@ Contents:
 How to use Hangout API
 ============================================
 
-.. .. testsetup:: base_api
+.. testsetup:: base_api
 
-..     from hangout_api.tests.utils import credentials
-..     from hangout_api.tests.utils import hangout_factory as Hangouts
-..     email = credentials['name']
-..     password = credentials['password']
+    from hangout_api.tests.utils import credentials
+    from hangout_api.tests.utils import hangout_factory as Hangouts
+    email = credentials['name']
+    password = credentials['password']
 
-.. .. testcleanup:: base_api
+.. testcleanup:: base_api
 
-..     del hangout
+    del hangout
 
 
-.. First of all you need to log in to start new or connect to existing hangout:
+First of all you need to log in to start new or connect to existing hangout:
 
-..     .. doctest:: base_api
+    .. doctest:: base_api
 
-..         >>> hangout = Hangouts()
-..         >>> hangout.login(email, password)
+        >>> hangout = Hangouts()
+        >>> hangout.login(email, password)
 
-.. Now you can start new or connect and invite people:
+Now you can start new or connect and invite people:
 
-..     .. doctest:: base_api
+    .. doctest:: base_api
 
-..         >>> hangout.start()
-..         >>> hangout.invite(['maxybot@gmail.com', 'test circle for call'])
+        >>> hangout.start()
+        >>> hangout.invite(['maxybot@gmail.com', 'test circle for call'])
 
-.. Or change call setting, like bandwidth, audio, etc:
+Or change call setting, like bandwidth, audio, etc:
 
-..     .. .. doctest:: base_api
+    .. .. doctest:: base_api
 
-..     ..     >>> hangout.bandwidth.get()
-..     ..     5
-..     ..     >>> hangout.bandwidth.set(3)
-..     ..     >>> hangout.microphone.mute()
+    ..     >>> hangout.bandwidth.get()
+    ..     5
+    ..     >>> hangout.bandwidth.set(3)
+    ..     >>> hangout.microphone.mute()
 ..     ..     >>> hangout.video.set('USB2.0 PC CAMERA')
 
 Indices and tables

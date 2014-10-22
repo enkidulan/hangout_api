@@ -22,9 +22,10 @@ class ControlRoom(object):
 
     .. testsetup:: ControlRoom
 
-        from hangout_api.gadgets.control_room import (ControlRoom)
-        from hangout_api.tests.doctests_utils import (
-            DummyHangout, DummySelenium)
+        from hangout_api.gadgets.control_room import ControlRoom
+        from hangout_api.tests.doctests_utils import DummyHangout
+
+
 
         from hangout_api.gadgets import utils
         utils.open_app = lambda *args: None
@@ -33,13 +34,13 @@ class ControlRoom(object):
         global call_num
         call_num = 0
 
-        def get_attribute(*args):
+        def _status_getter_setter(*args):
             global call_num
             if call_num == 6:
                 call_num = 0
             call_num += 1
-            return[False, True, True, True, False, False][call_num - 1]
-        DummySelenium.get_attribute = get_attribute
+            return[True, True, False, True, False, False][call_num - 1]
+        ControlRoom._status_getter_setter = _status_getter_setter
 
         hangout = DummyHangout(
             name='controlroom',

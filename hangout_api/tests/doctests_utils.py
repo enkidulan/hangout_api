@@ -24,6 +24,10 @@ class DummySelenium():
     def is_displayed(*args):
         return random.choice([True, False])
 
+    @property
+    def parent(self):
+        return DummySelenium()
+
 
 class DummyBase():
     browser = DummySelenium()
