@@ -1,4 +1,4 @@
-import os.environ
+import os
 import unittest
 from testfixtures import compare
 from hangout_api.tests.utils import (
