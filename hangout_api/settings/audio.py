@@ -8,6 +8,23 @@ from hangout_api.settings.utils import BaseSettings
 class AudioDevice(object):
     """
     Class that represents audio devise. More like marker than actual class.
+
+    .. testsetup:: AudioDevice
+
+        from hangout_api.settings.audio import AudioDevice
+
+    .. doctest:: AudioDevice
+
+        >>> device_1 = AudioDevice('audio 1')
+        >>> device_1.name
+        'audio 1'
+        >>> device_1
+        <AudioDevice: 'audio 1'>
+        >>> device_1 == AudioDevice('audio 2')
+        False
+        >>> device_1 == AudioDevice('audio 1')
+        True
+
     """
     # pylint: disable=too-few-public-methods
     def __init__(self, name):
