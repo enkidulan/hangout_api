@@ -8,6 +8,23 @@ from hangout_api.settings.utils import BaseSettings, MutingHandler
 class MicrophoneDevice(object):
     """
     Class that represents microphone devise. More like marker than actual class
+
+    .. testsetup:: MicrophoneDevice
+
+        from hangout_api.settings.microphone import MicrophoneDevice
+
+    .. doctest:: MicrophoneDevice
+
+        >>> device_1 = MicrophoneDevice('microphone 1')
+        >>> device_1.name
+        'microphone 1'
+        >>> device_1
+        <MicrophoneDevice: 'microphone 1'>
+        >>> device_1 == MicrophoneDevice('microphone 2')
+        False
+        >>> device_1 == MicrophoneDevice('microphone 1')
+        True
+
     """
     # pylint: disable=too-few-public-methods
     def __init__(self, name):

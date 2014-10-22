@@ -8,6 +8,23 @@ from hangout_api.settings.utils import BaseSettings, MutingHandler
 class VideoDevice(object):
     """
     Class that represents video devise. More like marker than actual class.
+
+    .. testsetup:: VideoDevice
+
+        from hangout_api.settings.video import VideoDevice
+
+    .. doctest:: VideoDevice
+
+        >>> device_1 = VideoDevice('video 1')
+        >>> device_1.name
+        'video 1'
+        >>> device_1
+        <VideoDevice: 'video 1'>
+        >>> device_1 == VideoDevice('video 2')
+        False
+        >>> device_1 == VideoDevice('video 1')
+        True
+
     """
     # pylint: disable=too-few-public-methods
     def __init__(self, name):
