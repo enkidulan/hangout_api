@@ -38,7 +38,6 @@ class BandwidthSettings(BaseSettings):
             name='bandwidth',
             klass=BandwidthSettings)
         DummySelenium.get_attribute = lambda *args: 1
-        hangout.bandwidth._get_bandwidth_controller = lambda: DummySelenium()
     """
     # pylint: disable=W0223
     def _get_bandwidth_controller(self):
