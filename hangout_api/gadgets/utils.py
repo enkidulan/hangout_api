@@ -1,6 +1,7 @@
 """
 Helpers for handling Hangout PlugIns (gadgets)
 """
+from functools import wraps
 from hangout_api.utils import tries_n_time_until_true, silence_contextmanager
 
 
@@ -66,6 +67,7 @@ def gadget_context_handler(gadget_name):
     Make sure that current browser context is set to work with provided PlugIn
     """
     def decorator(function):  # pylint: disable=C0111
+        @wraps(function)
         def wrapper(self, *args, **kwargs):  # pylint: disable=C0111
             open_app(self, gadget_name)
             return function(self, *args, **kwargs)
