@@ -40,11 +40,18 @@ class ControlRoom(object):
                 call_num = 0
             call_num += 1
             return[True, True, False, True, False, False][call_num - 1]
+        origin = ControlRoom._status_getter_setter
         ControlRoom._status_getter_setter = _status_getter_setter
 
         hangout = DummyHangout(
             name='controlroom',
             klass=ControlRoom)
+
+        # dummy hack to increase coverage
+        origin(hangout.controlroom, '%s', '', True)
+        origin(hangout.controlroom, '%s', '', None)
+        origin(hangout.controlroom, '%s', '', False)
+
 
     """
 
@@ -54,6 +61,7 @@ class ControlRoom(object):
     def _status_getter_setter(self, xpath, participant_name, mute):
         """
         Helper function that handles turning on and off ControlRoom properties
+
         """
         controller = self.base.browser.xpath(xpath % participant_name)
         status = get_status(controller)

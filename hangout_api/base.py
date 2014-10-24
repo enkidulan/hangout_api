@@ -52,22 +52,45 @@ class Hangouts(object):
     """
     Main class for controlling hangout calls.
 
+    Initialization does two things:
+        1. Makes sure that there is active X session.
+        2. Starts the browser.
+
+    If 'DISPLAY' can't be found in os.environ than new X session starts.
+    Starting new session handels `PyVirtualDisplay`_.
+
+    .. _PyVirtualDisplay: http://ponty.github.io/PyVirtualDisplay/
+
+    For handling browser used seleniumwrapper library.
+
+    .. testsetup:: HangoutsBase
+
+        import os
+        os.environ['DISPLAY'] = '1'
+        from hangout_api import Hangouts
+        from hangout_api.tests.doctests_utils import DummySelenium
+        import seleniumwrapper
+
+        def get_attribute(self, name):
+            if name == 'aria-label':
+                return '     John Doe           '
+            elif name == 'data-userid':
+                return '108775712935'
+            else:
+                return 'hello'
+
+        DummySelenium.get_attribute = get_attribute
+        seleniumwrapper.create = DummySelenium
+
+
+    .. doctest:: HangoutsBase
+
+        >>> hangout = Hangouts()
+
+
     """
 
     def __init__(self, executable_path=None, chrome_options=None):
-        """
-        Initialization does two things:
-            1. Makes sure that there is active X session.
-            2. Starts the browser.
-
-        If 'DISPLAY' can't be found in os.environ than new X session starts.
-        Starting new session handels `PyVirtualDisplay`_.
-
-        .. _PyVirtualDisplay: http://ponty.github.io/PyVirtualDisplay/
-
-        For handling browser used seleniumwrapper library.
-
-        """
         self.hangout_id = None
         self.on_air = None
 
@@ -92,13 +115,20 @@ class Hangouts(object):
         Start a new hangout.
         After new hangout is created its id is stored in 'hangout_id' attribure
 
-        .. code::
+        .. doctest:: HangoutsBase
 
             >>> hangout.hangout_id
-            None
             >>> hangout.start()
             >>> hangout.hangout_id
             'gs4pp6g62w65moctfqsvihzq2qa'
+
+        To start OnAir just pass on_air argument to 'start' method.
+
+        .. doctest:: HangoutsBase
+
+             >>> hangout.start(
+             ...   on_air={'name':'My OnAir', 'attendees':['Friends']})
+             >>> hangout.start(on_air='https://plus.google.com/events/df34...')
 
         """
 
@@ -152,13 +182,11 @@ class Hangouts(object):
         Takes id of targeted hangout as argument.
         Also it sets hangout_id property:
 
-        .. code::
+        .. doctest:: HangoutsBase
 
+            >>> hangout.connect('fnar4989hf9834h')
             >>> hangout.hangout_id
-            None
-            >>> hangout.connect('gs4pp6g62w65moctfqsvihzq2qa')
-            >>> hangout.hangout_id
-            'gs4pp6g62w65moctfqsvihzq2qa'
+            'fnar4989hf9834h'
 
 
         """
@@ -175,12 +203,17 @@ class Hangouts(object):
             join_button.click(timeout=5)
         self.browser.by_text('Join', timeout=40).click(timeout=0.5)
 
-    def login(self, username=None, password=None, otp=None):
+    def login(self, username, password, otp=None):
         """
         Log in to google plus.
 
         *otp* argument is one time password and it's optional,
         set it only if you're using 2-factor authorization.
+
+        .. doctest:: HangoutsBase
+
+            >>> hangout.login('user@gmail.com', 'password')
+            >>> hangout.login('user_1@gmail.com', 'password', otp='123456')
 
         """
 
@@ -205,7 +238,7 @@ class Hangouts(object):
         """
         Invite person or circle to hangout:
 
-        .. code::
+        .. doctest:: HangoutsBase
 
             >>> hangout.invite("persona@gmail.com")
             >>> hangout.invite(["personb@gmail.com", "Public", "Friends"])
@@ -225,13 +258,10 @@ class Hangouts(object):
         """
         Returns list of namedtuples of current participants:
 
-        .. code::
+        .. doctest:: HangoutsBase
 
             >>> hangout.participants()
-            [Participant(name='John Doe',
-                         profile_id='108775712935793912532'),
-             Participant(name='Lorem Impus',
-                         profile_id='115041713348329690244')]
+            [Participant(name='John Doe', profile_id='108775712935'), ...]
         """
         xpath = '//div[@data-userid]'
         participants = self.browser.xpath(xpath, eager=True)
@@ -243,6 +273,11 @@ class Hangouts(object):
         """
         Leave hangout (equal on clicking on "Leave call" button). After
         leaving the call you can create a new one or connect to existing.
+
+        .. doctest:: HangoutsBase
+
+            >>> hangout.disconnect()
+
         """
         self.utils.click_cancel_button_if_there_is_one()
         self.utils.click_menu_element('//div[@aria-label="Leave call"]')

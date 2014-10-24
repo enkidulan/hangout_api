@@ -7,6 +7,19 @@ from hangout_api.gadgets.utils import gadget_context_handler
 class ToolBox(object):
     """
     Tollbox Hangout API
+
+    .. testsetup:: ToolBox
+
+        from hangout_api.gadgets.toolbox import ToolBox
+        from hangout_api.tests.doctests_utils import (
+            DummyHangout, DummySelenium)
+
+        DummySelenium.get_attribute = lambda *args: 'hello'
+
+        hangout = DummyHangout(
+            name='toolbox',
+            klass=ToolBox)
+
     """
 
     def __init__(self, base):
@@ -16,7 +29,15 @@ class ToolBox(object):
     @gadget_context_handler('Hangout Toolbox')
     def lower_third(self, name, tags=None, logo=None, color=None):
         """
-        Lower Third, allows to set name, tags, logo and color
+        Lower Third, allows to set name, tags, logo and color. Only name is
+        required all other fields are optional.
+
+        .. doctest:: ToolBox
+
+            >>> hangout.toolbox.lower_third('Joe Dohn')
+            >>> hangout.toolbox.lower_third('Joe Dohn', tags='python, QA')
+            >>> hangout.toolbox.lower_third(
+            ...     'Joe Dohn', color="#55bbgg", logo='/home/.../my_logo.jpg')
         """
 
         self.base.browser.xpath(
@@ -39,17 +60,47 @@ class ToolBox(object):
                 '//*[@class="goog-hsv-palette-sm-input"]', color)
 
     @gadget_context_handler('Hangout Toolbox')
-    def lower_third_active(self, value=None):
+    def lower_third_active(self, active=None):
         """
-        Returns or sets lower third status
+        Returns or sets lower third status:
+
+        .. testsetup:: ToolBox2
+
+            from hangout_api.gadgets.toolbox import ToolBox
+            from hangout_api.tests.doctests_utils import (
+                DummyHangout, DummySelenium)
+
+            global call_num
+            call_num = 0
+
+            def get_attribute(*args):
+                global call_num
+                call_num += 1
+                return [None, 'OFF', None, 'ON'][call_num - 1]
+
+            DummySelenium.get_attribute = get_attribute
+
+            hangout = DummyHangout(
+                name='toolbox',
+                klass=ToolBox)
+
+        .. doctest:: ToolBox2
+
+            >>> hangout.toolbox.lower_third_active(False)
+            >>> hangout.toolbox.lower_third_active()
+            False
+            >>> hangout.toolbox.lower_third_active(True)
+            >>> hangout.toolbox.lower_third_active()
+            True
+
         """
         self.base.browser.xpath(
             '//img[contains(@src, "lower_24.png")]').click(timeout=0.5)
         active_button = self.base.browser.by_class('goog-switch-text')
         is_active = active_button.get_attribute('innerText') == 'ON'
-        if value is None:
+        if active is None:
             return is_active
-        if (not value and is_active) or (value and not is_active):
+        if (not active and is_active) or (active and not is_active):
             active_button.click(timeout=0.5)
 
     # @gadget_context_handler('Hangout Toolbox')
@@ -83,6 +134,16 @@ class ToolBox(object):
     def video_mirror_active(self, value=None):
         """
         Returns or sets Video Mirror status.
+
+        .. doctest:: ToolBox
+
+            >>> hangout.toolbox.video_mirror_active(False)
+            >>> hangout.toolbox.video_mirror_active()
+            False
+            >>> hangout.toolbox.video_mirror_active(True)
+            >>> hangout.toolbox.video_mirror_active()
+            True
+
         """
         if value is None:
             return self.mirrored
