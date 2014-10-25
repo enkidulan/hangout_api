@@ -1,4 +1,5 @@
-ignore-patterns:
-    - (^|/)docs(/|$)
+ignore-paths:
     - setup.py
     - hangout_api/__init__.py
+    - bootstrap.py
+    - docs/conf.py
