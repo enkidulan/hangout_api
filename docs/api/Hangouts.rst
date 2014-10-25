@@ -2,5 +2,5 @@
 Base hangouts management
 ************************
 
-.. autoclass:: hangout_api.base.Hangouts
+.. automodule:: hangout_api.base
    :members:

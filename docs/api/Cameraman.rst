@@ -1,6 +1,6 @@
-******************
-Cameraman Settings
-******************
+********************
+Cameraman PlugIn API
+********************
 
 module
 

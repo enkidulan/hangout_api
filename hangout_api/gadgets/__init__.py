@@ -10,4 +10,4 @@ from .control_room import ControlRoom
 
 provideUtility(Cameraman, IOnAirModule, 'cameraman')
 provideUtility(ToolBox, IModule, 'toolbox')
-provideUtility(ControlRoom, IModule, 'controlroom')
+provideUtility(ControlRoom, IOnAirModule, 'controlroom')
