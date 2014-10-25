@@ -64,7 +64,8 @@ def open_app(self, gadget_name):
 def gadget_context_handler(gadget_name):
     """
     Decorator context handler for gadgets.
-    Make sure that current browser context is set to work with provided PlugIn
+    It makes sure that current browser context is set to work with
+    provided PlugIn.
     """
     def decorator(function):  # pylint: disable=C0111
         @wraps(function)

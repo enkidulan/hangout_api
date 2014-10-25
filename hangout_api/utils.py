@@ -64,6 +64,14 @@ class Utils(object):
     Batch of function to navigate through G+ Hangout to keep main API
     class cleaner
     """
+    browser = None
+    """
+    Instance of the `seleniumwrapper`_ library
+
+    .. _seleniumwrapper: https://pypi.python.org/pypi/seleniumwrapper/
+
+    """
+
     def __init__(self, browser):
         self.browser = browser
 

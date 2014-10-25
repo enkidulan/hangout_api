@@ -10,28 +10,16 @@ Hangout API is python API for google hangouts build on top of selenium library.
 It provides ability to create new hangouts, connect to existing calls,
 invite people to call and manage call settings.
 
-Settings API:
-  * :doc:`api/Hangouts`
-  * :doc:`api/Audio`
-  * :doc:`api/Microphone`
-  * :doc:`api/Video`
-  * :doc:`api/Bandwidth`
-
-On Air API:
-  * :doc:`api/Broadcast`
-
-PlugIns API:
-  * :doc:`api/Cameraman`
-  * :doc:`api/Toolbox`
-  * :doc:`api/ControlRoom`
-
 Contents:
 
-.. toctree::
-   :maxdepth: 2
+  .. toctree::
+    :glob:
 
-   api_documentation
+    api/*
 
+Also you can read `developers notes`_
+
+.. _developers notes: DevelopersNotes.html
 
 How to use Hangout API
 ============================================
@@ -60,7 +48,7 @@ Now you can start new or connect and invite people:
     .. doctest:: base_api
 
         >>> hangout.start()
-        >>> hangout.invite(['maxybot@gmail.com', 'test circle for call'])
+        >>> hangout.invite(['maxybot@gmail.com', 'Friends'])
 
 .. Or change call setting, like bandwidth, audio, etc:
 
