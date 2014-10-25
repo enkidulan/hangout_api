@@ -40,6 +40,7 @@ class TestToolboxApp(unittest.TestCase):
 
     def test_lower_third_active(self):
         self.hangout.toolbox.lower_third_active(True)
+        self.hangout.toolbox.lower_third_active(True)
         compare(self.hangout.toolbox.lower_third_active(), True)
 
         self.hangout.toolbox.lower_third_active(False)
@@ -76,3 +77,10 @@ class TestToolboxApp(unittest.TestCase):
         compare(self.hangout.toolbox.video_mirror_active(), False)
         self.hangout.toolbox.video_mirror_active(True)
         compare(self.hangout.toolbox.video_mirror_active(), True)
+
+    def test_load_presets(self):
+        name = 'my default presets'
+        self.hangout.toolbox.load_presets(name)
+        xpath = '//*[text()="%s"]/..//div[contains(@class, "icn-toggle")'\
+                ' and contains(@class, "enabled")]' % name
+        compare(self.hangout.browser.xpath(xpath) is not None, True)

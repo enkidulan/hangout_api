@@ -131,6 +131,7 @@ class ToolBox(object):
     #     if (not value and is_active) or (value and not is_active):
     #         active_button.click(timeout=0.5)
 
+    @gadget_context_handler('Hangout Toolbox')
     def video_mirror_active(self, value=None):
         """
         Returns or sets Video Mirror status.
@@ -151,3 +152,19 @@ class ToolBox(object):
             'gapi.hangout.av.setLocalParticipantVideoMirrored(%s);'
             % str(value).lower())
         self.mirrored = value
+
+    @gadget_context_handler('Hangout Toolbox')
+    def load_presets(self, name):
+        """
+        Loads saved Presets by its name.
+
+        .. doctest:: ToolBox
+
+            >>> hangout.toolbox.load_presets('my presets')
+
+        """
+        self.base.browser.xpath(
+            '//img[contains(@src, "lower_24.png")]').click(timeout=0.5)
+        enable_button = self.base.browser.xpath(
+            '//*[text()="%s"]/..//div[contains(@class, "icn-toggle")]' % name)
+        enable_button.click(timeout=0.5)
