@@ -3,8 +3,16 @@ Hangout API
 
 .. image:: https://travis-ci.org/enkidulan/hangout_api.svg?branch=master
     :target: https://travis-ci.org/enkidulan/hangout_api?branch=master
+    :alt: Tests
 .. image:: https://coveralls.io/repos/enkidulan/hangout_api/badge.png?branch=master
     :target: https://coveralls.io/r/enkidulan/hangout_api?branch=master
+    :alt: Code Coverage
+.. image:: https://readthedocs.org/projects/python-hangout-api/badge/?version=latest
+    :target: https://readthedocs.org/projects/python-hangout-api/?badge=latest
+    :alt: Documentation Status
+.. image:: https://landscape.io/github/enkidulan/hangout_api/master/landscape.png
+   :target: https://landscape.io/github/enkidulan/hangout_api/master
+   :alt: Code Health
 
 **Python API for controlling Google+ Hangouts**
 

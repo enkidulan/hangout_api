@@ -1,0 +1,4 @@
+ignore-patterns:
+    - (^|/)docs(/|$)
+    - setup.py
+    - hangout_api/__init__.py
