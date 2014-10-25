@@ -299,6 +299,8 @@ class Hangouts(object):
                 self.disconnect()
         finally:
             # and quiting browser and display
-            self.browser.quit()
-            if self.display is not None:
-                self.display.stop()
+            try:
+                self.browser.quit()
+            finally:
+                if self.display is not None:
+                    self.display.stop()
