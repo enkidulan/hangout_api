@@ -80,6 +80,13 @@ Indices and tables
 * :ref:`modindex`
 * :ref:`search`
 
+.. toctree::
+   :glob:
+   :hidden:
+
+   api/*
+   DevelopersNotes.rst
+
 .. _hangout:  api/Hangouts.html#hangout_api.base.Hangouts
 .. _hangout.audio: api/Audio.html#hangout_api.settings.audio.AudioSettings
 .. _hangout.video: api/Video.html#hangout_api.settings.video.VideoSettings
