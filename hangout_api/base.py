@@ -15,6 +15,10 @@ from chromedriver import CHROMEDRV_PATH
 from zope.component import getUtilitiesFor
 from retrying import retry
 
+from selenium.webdriver.remote.remote_connection import LOGGER
+import logging
+LOGGER.setLevel(logging.WARNING)  # reducing selenium verbosity
+
 from .utils import (
     Utils,
     URLS,
@@ -150,7 +154,7 @@ class Hangouts(object):
             # on event page, redirecting can take some time
             self.browser.xpath(
                 '//div[@data-tooltip="Start the Hangout On Air"]',
-                timeout=120).click(TIMEOUTS.fast)
+                timeout=TIMEOUTS.extralong).click(TIMEOUTS.fast)
             for name, instance in getUtilitiesFor(IOnAirModule):
                 setattr(self, name, instance(self.utils))
 
@@ -202,7 +206,8 @@ class Hangouts(object):
         # there may be a big delay before 'Join' button appears, so there is a
         #  need wait longer than usual
         join_button = self.browser.xpath(
-            '//*[text()="Join" or text()="Okay, got it!"]', timeout=40)
+            '//*[text()="Join" or text()="Okay, got it!"]',
+            timeout=TIMEOUTS.long)
         button_text = names_cleaner(join_button.get_attribute('innerText'))
         if button_text == 'Okay, got it!':
             # to join hangout we need to set agreement checkbox
@@ -262,8 +267,12 @@ class Hangouts(object):
         self.utils.click_menu_element('//div[@aria-label="Invite People"]')
         input_field = self.browser.xpath(
             '//input[@placeholder="+ Add names, circles, or email addresses"]')
-        input_field.send_keys("\n".join(participants) + "\n\n")
+        input_field.send_keys("\n" + ", ".join(participants) + "\n\n")
         self.browser.by_text('Invite').click(timeout=TIMEOUTS.fast)
+        # making sure that invitation is posted
+        xpath = '//*[text()="Invitation posted"'\
+                'or text()="Waiting for people to join this video call..."]'
+        self.browser.xpath(xpath)
 
     @retry(stop_max_attempt_number=3)
     def participants(self):

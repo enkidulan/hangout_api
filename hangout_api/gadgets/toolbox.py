@@ -112,8 +112,10 @@ class ToolBox(object):
     #     raise NotImplemented(
     #         "Can't find a way to set image")
     #     self.base.browser.xpath(
-    #         '//img[contains(@src, "lower_24.png")]').click(timeout=0.5)
-    #     self.base.browser.by_text("Custom Upload").click(timeout=0.5)
+    #         '//img[contains(@src, "lower_24.png")]').click(
+                # timeout=TIMEOUTS.fast)
+    #     self.base.browser.by_text("Custom Upload").click(
+        # timeout=TIMEOUTS.fast)
     #     self.base.browser.execute_script(
     #         'return gapi.hangout.getParticipants()')
 
@@ -123,14 +125,15 @@ class ToolBox(object):
     #     Returns or sets Custom Overlay status. Custom Overlay should be set
     #     """
     #     self.base.browser.xpath(
-    #         '//img[contains(@src, "lower_24.png")]').click(timeout=0.5)
+    #         '//img[contains(@src, "lower_24.png")]').click(
+    #           timeout=TIMEOUTS.fast)
     #     active_button = self.base.browser.xpath(
     #         '//div[@class="custom-upload"]//*[@class="goog-switch-text"]')
     #     is_active = active_button.get_attribute('innerText') == 'ON'
     #     if value is None:
     #         return is_active
     #     if (not value and is_active) or (value and not is_active):
-    #         active_button.click(timeout=0.5)
+    #         active_button.click(timeout=TIMEOUTS.fast)
 
     @gadget_context_handler('Hangout Toolbox')
     def video_mirror_active(self, value=None):

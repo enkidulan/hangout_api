@@ -121,7 +121,7 @@ class Utils(object):
 
     # pylint: disable=C0103
     @retry(stop_max_attempt_number=3)
-    def click_cancel_button_if_there_is_one(self, timeout=0.5):
+    def click_cancel_button_if_there_is_one(self, timeout=1):
         """
         If somewhere on page is visible "cancel" or "close" button, this
         method will click on it

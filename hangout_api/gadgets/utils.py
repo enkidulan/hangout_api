@@ -5,7 +5,8 @@ from functools import wraps
 from hangout_api.utils import (
     tries_n_time_until_true,
     silence_contextmanager,
-    click_on_app_icon,)
+    click_on_app_icon,
+    TIMEOUTS)
 from retrying import retry
 
 
@@ -24,7 +25,8 @@ def get_loaded_gadgets_list(browser, desire_gadget_name=None):
     browser.switch_to_default_content()
     with silence_contextmanager(browser):
         gadgets = browser.xpath(
-            '//iframe[contains(@id, "__gadget_")]', eager=True, timeout=1)
+            '//iframe[contains(@id, "__gadget_")]',
+            eager=True, timeout=TIMEOUTS.fast)
     if not gadgets:
         return
     gadget_name_to_iframe_id = {}

@@ -4,6 +4,7 @@ Base classes and utilities for working with hangouts settings
 
 from hangout_api.exceptions import NoSuchDeviceFound
 from hangout_api.utils import silence_contextmanager, names_cleaner, TIMEOUTS
+from retrying import retry
 
 
 class BaseSettings(object):  # pylint: disable=R0903
@@ -21,6 +22,7 @@ class BaseSettings(object):  # pylint: disable=R0903
         """
         raise NotImplementedError()
 
+    @retry(stop_max_attempt_number=3)
     def _devices_getter(
             self, device_xpath, devices_list_xpath, with_nodes):
         """
@@ -52,6 +54,7 @@ class BaseSettings(object):  # pylint: disable=R0903
         # pylint: disable=bad-builtin
         return list(map(self.device_class, devices.keys()))
 
+    @retry(stop_max_attempt_number=3)
     def _device_setter(self, device_name):
         """
         Devices setter that can handle special cases when only 1 device is
@@ -72,6 +75,7 @@ class BaseSettings(object):  # pylint: disable=R0903
         self.get_devices(with_nodes=True)[device_name].click()
         self.base.click_on_devices_save_button()
 
+    @retry(stop_max_attempt_number=3)
     def _current_device_getter(self, text_selector, parrenty=2):
         """
         Returns currently used device
@@ -98,6 +102,7 @@ class MutingHandler(object):
         self.xpath = '//div[contains(@aria-label, "%s")]' % self.base_text
         self.no_device_xpath = '//div[contains(@aria-label, "%s")]' % no_device
 
+    @retry(stop_max_attempt_number=3)
     def get_mute_button_label(self):
         """
         Returns current text of 'mute' button. In case if muting is not
@@ -116,12 +121,14 @@ class MutingHandler(object):
             self.base.browser.xpath(self.xpath, timeout=TIMEOUTS.fast)
         return mute_button.get_attribute('aria-label')
 
+    @retry(stop_max_attempt_number=3)
     def is_muted(self):
         """
         Returns True if muted otherwise False
         """
         return self.get_mute_button_label() == self.unmute_label
 
+    @retry(stop_max_attempt_number=3)
     def mute(self):
         """
         Mutes device
@@ -131,6 +138,7 @@ class MutingHandler(object):
         self.base.click_menu_element(self.xpath)
         return True
 
+    @retry(stop_max_attempt_number=3)
     def unmute(self):
         """
         Un-mutes device
