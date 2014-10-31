@@ -9,10 +9,6 @@ class TestCameraman(unittest.TestCase):
         from hangout_api.tests import HANGOUT
         self.hangout = HANGOUT
 
-    @classmethod
-    def teardown_class(self):
-        del self.hangout
-
     def test_mute_new_guests(self):
         self.hangout.cameraman.mute_new_guests(False)
 

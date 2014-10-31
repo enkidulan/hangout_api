@@ -78,9 +78,9 @@ class TestToolboxApp(unittest.TestCase):
         self.hangout.toolbox.video_mirror_active(True)
         compare(self.hangout.toolbox.video_mirror_active(), True)
 
-    def test_load_presets(self):
-        name = 'my default presets'
-        self.hangout.toolbox.load_presets(name)
-        xpath = '//*[text()="%s"]/..//div[contains(@class, "icn-toggle")'\
-                ' and contains(@class, "enabled")]' % name
-        compare(self.hangout.browser.xpath(xpath) is not None, True)
+    # def test_load_presets(self):
+    #     name = 'my default presets'
+    #     self.hangout.toolbox.load_presets(name)
+    #     xpath = '//*[text()="%s"]/..//div[contains(@class, "icn-toggle")'\
+    #             ' and contains(@class, "enabled")]' % name
+    #     compare(self.hangout.browser.xpath(xpath) is not None, True)

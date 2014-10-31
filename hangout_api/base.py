@@ -13,10 +13,12 @@ from pyvirtualdisplay.smartdisplay import SmartDisplay
 import seleniumwrapper as selwrap
 from chromedriver import CHROMEDRV_PATH
 from zope.component import getUtilitiesFor
+from retrying import retry
 
 from .utils import (
     Utils,
     URLS,
+    TIMEOUTS,
     Participant,
     tries_n_time_until_true,
     names_cleaner,
@@ -25,6 +27,7 @@ from .exceptions import LoginError
 from .interfaces import IModule, IOnAirModule
 
 
+@retry(stop_max_attempt_number=3)
 def _create_hangout_event(browser, name, attendees):
     """
     Creates hangout event on google plus. As arguments takes event name and
@@ -32,7 +35,7 @@ def _create_hangout_event(browser, name, attendees):
     visitor is logged in
     """
     browser.get(URLS.onair)
-    browser.by_text('Start a Hangout On Air').click(0.5)
+    browser.by_text('Start a Hangout On Air').click(TIMEOUTS.fast)
     # Setting name
     browser.xpath(
         '//input[@aria-label="Give it a name"]').send_keys(name)
@@ -41,10 +44,12 @@ def _create_hangout_event(browser, name, attendees):
         '//input[@aria-label="Add more people"]').send_keys(
             '\b\b\b' + ','.join(attendees) + ',')
     browser.xpath(
-        '//*[@guidedhelpid="shareboxcontrols"]//*[text()="Share"]').click(0.5)
+        '//*[@guidedhelpid="shareboxcontrols"]//*[text()="Share"]').click(
+            timeout=TIMEOUTS.fast)
     # waiting for redirecting to OnAir event page to be complete
     browser.xpath(
-        '//div[@data-tooltip="Start the Hangout On Air"]', timeout=60)
+        '//div[@data-tooltip="Start the Hangout On Air"]',
+        timeout=TIMEOUTS.extralong)
     return browser.current_url
 
 
@@ -145,7 +150,7 @@ class Hangouts(object):
             # on event page, redirecting can take some time
             self.browser.xpath(
                 '//div[@data-tooltip="Start the Hangout On Air"]',
-                timeout=60).click(0.5)
+                timeout=120).click(TIMEOUTS.fast)
             for name, instance in getUtilitiesFor(IOnAirModule):
                 setattr(self, name, instance(self.utils))
 
@@ -155,7 +160,7 @@ class Hangouts(object):
                 self.browser.get(URLS.hangouts_active_list)
             # G+ opens new window for new hangout, so we need to
             # switch selenium to it
-            self.browser.by_class('opd').click(timeout=0.5)
+            self.browser.by_class('opd').click(timeout=TIMEOUTS.fast)
 
         # waiting until new window appears
         tries_n_time_until_true(
@@ -164,18 +169,20 @@ class Hangouts(object):
         # self.browser.close()  # closing old window
         self.browser.switch_to_window(self.browser.window_handles[-1])
 
-        self.utils.click_cancel_button_if_there_is_one(timeout=30)
+        self.utils.click_cancel_button_if_there_is_one(
+            timeout=TIMEOUTS.extralong)
 
         if self.on_air:
             #  waiting for broadcasting to be ready
             broadcast_button = self.browser.by_text(
-                'Start broadcast', timeout=60)
+                'Start broadcast', timeout=TIMEOUTS.long)
             tries_n_time_until_true(broadcast_button.is_displayed, try_num=600)
 
         # setting hangout id property
         self.hangout_id = self.browser.current_url.replace(
             URLS.hangout_session_base, '', 1).split('?', 1)[0]
 
+    @retry(stop_max_attempt_number=3)
     def connect(self, hangout_id):
         """
         Connect to an existing hangout.
@@ -199,10 +206,13 @@ class Hangouts(object):
         button_text = names_cleaner(join_button.get_attribute('innerText'))
         if button_text == 'Okay, got it!':
             # to join hangout we need to set agreement checkbox
-            self.browser.xpath('//*[@role="presentation"]').click(timeout=0.5)
-            join_button.click(timeout=5)
-        self.browser.by_text('Join', timeout=40).click(timeout=0.5)
+            self.browser.xpath('//*[@role="presentation"]').click(
+                timeout=TIMEOUTS.fast)
+            join_button.click(timeout=TIMEOUTS.average)
+        self.browser.by_text('Join', timeout=TIMEOUTS.long).click(
+            timeout=TIMEOUTS.fast)
 
+    @retry(stop_max_attempt_number=3)
     def login(self, username, password, otp=None):
         """
         Log in to google plus.
@@ -221,12 +231,12 @@ class Hangouts(object):
         self.browser.get(URLS.service_login)
         self.browser.by_id('Email').send_keys(username)
         self.browser.by_id('Passwd').send_keys(password)
-        self.browser.by_id('signIn').click(timeout=0.5)
+        self.browser.by_id('signIn').click(timeout=TIMEOUTS.fast)
 
         # filling up one time password if provides
         if otp:
             self.browser.by_id('smsUserPin').send_keys(otp)
-            self.browser.by_id('smsVerifyPin').click(timeout=0.5)
+            self.browser.by_id('smsVerifyPin').click(timeout=TIMEOUTS.fast)
 
         # checking if log in was successful
         if not self.utils.is_logged_in:
@@ -234,6 +244,7 @@ class Hangouts(object):
                 'Wasn\'t able to login. Check if credentials are correct'
                 'and make sure that you have G+ account activated')
 
+    @retry(stop_max_attempt_number=3)
     def invite(self, participants):
         """
         Invite person or circle to hangout:
@@ -252,8 +263,9 @@ class Hangouts(object):
         input_field = self.browser.xpath(
             '//input[@placeholder="+ Add names, circles, or email addresses"]')
         input_field.send_keys("\n".join(participants) + "\n\n")
-        self.browser.by_text('Invite').click(timeout=0.5)
+        self.browser.by_text('Invite').click(timeout=TIMEOUTS.fast)
 
+    @retry(stop_max_attempt_number=3)
     def participants(self):
         """
         Returns list of namedtuples of current participants:
@@ -269,6 +281,7 @@ class Hangouts(object):
                             p.get_attribute('data-userid'))
                 for p in participants]
 
+    @retry(stop_max_attempt_number=3)
     def disconnect(self):
         """
         Leave hangout (equal on clicking on "Leave call" button). After

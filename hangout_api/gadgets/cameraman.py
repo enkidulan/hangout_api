@@ -2,6 +2,7 @@
 API for Cameraman Hangout PlugIn
 """
 from hangout_api.gadgets.utils import gadget_context_handler
+from hangout_api.utils import TIMEOUTS
 
 
 class Cameraman(object):
@@ -52,7 +53,7 @@ class Cameraman(object):
         if status != value:
             value_xpath = '//*[contains(@class, "%s")]//div[text()="%s"]' % (
                 class_name, 'Yes' if value else 'No')
-            self.base.browser.xpath(value_xpath).click(0.5)
+            self.base.browser.xpath(value_xpath).click(TIMEOUTS.fast)
             return True
         return False
 

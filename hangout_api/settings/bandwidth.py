@@ -4,6 +4,7 @@ Hangout API for bandwidth
 
 from enum import Enum
 from hangout_api.settings.utils import BaseSettings
+from hangout_api.utils import TIMEOUTS
 
 BANDWIDTH_LEVELS = Enum(
     'Bandwidth', {
@@ -64,7 +65,7 @@ class BandwidthSettings(BaseSettings):
         controller = self._get_bandwidth_controller()
         levels = controller.by_class('Sa-IU-HT', eager=True)
         # setting levels
-        levels[bandwidth].click(timeout=0.5)
+        levels[bandwidth].click(TIMEOUTS.fast)
 
     def get(self):
         """

@@ -28,49 +28,49 @@ There is also some extension that are availably for OnAir Hangouts only:
 Also you can read `developers notes`_
 
 
-How to use Hangout API
-============================================
+.. How to use Hangout API
+.. ============================================
 
-.. testsetup:: base_api
+.. .. testsetup:: base_api
 
-    from hangout_api.tests.utils import credentials
-    from hangout_api.tests.utils import hangout_factory as Hangouts
-    email = credentials['name']
-    password = credentials['password']
+..     from hangout_api.tests.utils import credentials
+..     from hangout_api.tests.utils import hangout_factory as Hangouts
+..     email = credentials['name']
+..     password = credentials['password']
 
-.. testcleanup:: base_api
+.. .. testcleanup:: base_api
 
-    del hangout
+..     del hangout
 
 
-First of all you need to log in:
+.. First of all you need to log in:
 
-    .. doctest:: base_api
+..     .. doctest:: base_api
 
-        >>> hangout = Hangouts()
-        >>> hangout.login(email, password)
+..         >>> hangout = Hangouts()
+..         >>> hangout.login(email, password)
 
-Now you can start new or connect to existing hangouts and invite people:
+.. Now you can start new or connect to existing hangouts and invite people:
 
-    .. doctest:: base_api
+..     .. doctest:: base_api
 
-        >>> hangout.start()
-        >>> hangout.invite(['maxybot@gmail.com', 'Friends'])
+..         >>> hangout.start()
+..         >>> hangout.invite(['maxybot@gmail.com', 'Friends'])
 
-Or get (or change) call setting, like bandwidth, audio, etc:
+.. Or get (or change) call setting, like bandwidth, audio, etc:
 
-    .. doctest:: base_api
+..     .. doctest:: base_api
 
-        >>> hangout.microphone.get_devices()
-        [...]
-        >>> hangout.video.get_devices()
-        [...]
+..         >>> hangout.microphone.get_devices()
+..         [...]
+..         >>> hangout.video.get_devices()
+..         [...]
 
-And leave the call when you done:
+.. And leave the call when you done:
 
-    .. doctest:: base_api
+..     .. doctest:: base_api
 
-        >>> hangout.disconnect()
+..         >>> hangout.disconnect()
 
 
 Indices and tables

@@ -3,7 +3,7 @@ Base classes and utilities for working with hangouts settings
 """
 
 from hangout_api.exceptions import NoSuchDeviceFound
-from hangout_api.utils import silence_contextmanager, names_cleaner
+from hangout_api.utils import silence_contextmanager, names_cleaner, TIMEOUTS
 
 
 class BaseSettings(object):  # pylint: disable=R0903
@@ -33,7 +33,7 @@ class BaseSettings(object):  # pylint: disable=R0903
         # click on MC list to make it load list of all devices
         device_box = self.base.browser.xpath(device_xpath).parent
         with silence_contextmanager(device_box):
-            if device_box.by_class('c-h-i-b-o', timeout=0.2):
+            if device_box.by_class('c-h-i-b-o', timeout=TIMEOUTS.immediately):
                 # if this class present that means that there is no devices
                 # available to change
                 device_name = device_box.get_attribute(
@@ -42,7 +42,7 @@ class BaseSettings(object):  # pylint: disable=R0903
                 if ' found' in device_name:
                     return []
                 return [self.device_class(names_cleaner(device_name))]
-        device_box.click(timeout=0.5)
+        device_box.click(timeout=TIMEOUTS.fast)
         # get list of devices
         devices = {
             names_cleaner(n.get_attribute('innerText')): n
@@ -109,11 +109,11 @@ class MutingHandler(object):
         if mute_button is None:
             with silence_contextmanager(self.base.browser):
                 no_device = self.base.browser.xpath(
-                    self.no_device_xpath, timeout=0.5)
+                    self.no_device_xpath, timeout=TIMEOUTS.fast)
             if no_device:
                 raise NoSuchDeviceFound('No device found')
             # raising original exception
-            self.base.browser.xpath(self.xpath, timeout=0.5)
+            self.base.browser.xpath(self.xpath, timeout=TIMEOUTS.fast)
         return mute_button.get_attribute('aria-label')
 
     def is_muted(self):

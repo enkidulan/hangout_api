@@ -9,6 +9,7 @@ from easydict import EasyDict
 from time import sleep
 from collections import namedtuple
 from contextlib import contextmanager
+from retrying import retry
 
 
 Participant = namedtuple('Participant', ['name', 'profile_id'])
@@ -22,6 +23,20 @@ URLS = EasyDict(
     personalinfo='https://www.google.com/settings/personalinfo',
     service_login='https://accounts.google.com/ServiceLogin',
 )
+
+
+class Timeouts():
+    # pylint: disable=too-few-public-methods, no-init
+    """
+    Timeouts helper, contain set of used timeouts for easier management
+    """
+    immediately = 1
+    fast = 5
+    average = 30
+    long = 90
+    extralong = 240
+
+TIMEOUTS = Timeouts()
 
 
 def names_cleaner(name):
@@ -59,6 +74,17 @@ def tries_n_time_until_true(func, try_num=10):
     return False
 
 
+@retry(stop_max_attempt_number=3)
+def click_on_app_icon(browser, xpath, func='xpath'):
+    """
+    Clicks on app icon on menu panel
+    """
+    gadget_icon = getattr(browser, func)(xpath)
+    if gadget_icon.location['x'] < 0 or not gadget_icon.is_displayed():
+        browser.by_class('Za-Ja-m').click(timeout=TIMEOUTS.fast)
+    gadget_icon.click(timeout=TIMEOUTS.fast)
+
+
 class Utils(object):
     """
     Batch of function to navigate through G+ Hangout to keep main API
@@ -91,13 +117,10 @@ class Utils(object):
         provided by 'xpath' argumet
         """
         self.click_cancel_button_if_there_is_one()
-        menu_button = getattr(self.browser, func)(xpath)
-        if not menu_button.is_displayed():
-            # if menu buttons is hidden make them displayed
-            self.browser.by_class('Za-Ja-m').click(timeout=1)
-        menu_button.click(2)
+        click_on_app_icon(self.browser, xpath, func)
 
     # pylint: disable=C0103
+    @retry(stop_max_attempt_number=3)
     def click_cancel_button_if_there_is_one(self, timeout=0.5):
         """
         If somewhere on page is visible "cancel" or "close" button, this
@@ -139,4 +162,4 @@ class Utils(object):
         Clicks on button with text "Save"
         """
         xpath = '//div[text()="Save"]'
-        self.browser.xpath(xpath).click(timeout=0.5)
+        self.browser.xpath(xpath).click(timeout=TIMEOUTS.fast)

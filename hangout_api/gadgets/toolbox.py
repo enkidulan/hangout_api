@@ -2,6 +2,7 @@
 API for Tollbox Hangout PlugIn
 """
 from hangout_api.gadgets.utils import gadget_context_handler
+from hangout_api.utils import TIMEOUTS
 
 
 class ToolBox(object):
@@ -41,7 +42,7 @@ class ToolBox(object):
         """
 
         self.base.browser.xpath(
-            '//img[contains(@src, "lower_24.png")]').click(timeout=0.5)
+            '//img[contains(@src, "lower_24.png")]').click(TIMEOUTS.fast)
 
         self.base.set_text('//input[@placeholder="Enter Display Name"]', name)
 
@@ -55,7 +56,7 @@ class ToolBox(object):
 
         if color:
             self.base.browser.by_class(
-                'color-picker-container').click(timeout=0.5)
+                'color-picker-container').click(TIMEOUTS.fast)
             self.base.set_text(
                 '//*[@class="goog-hsv-palette-sm-input"]', color)
 
@@ -95,13 +96,13 @@ class ToolBox(object):
 
         """
         self.base.browser.xpath(
-            '//img[contains(@src, "lower_24.png")]').click(timeout=0.5)
+            '//img[contains(@src, "lower_24.png")]').click(TIMEOUTS.fast)
         active_button = self.base.browser.by_class('goog-switch-text')
         is_active = active_button.get_attribute('innerText') == 'ON'
         if active is None:
             return is_active
         if (not active and is_active) or (active and not is_active):
-            active_button.click(timeout=0.5)
+            active_button.click(TIMEOUTS.fast)
 
     # @gadget_context_handler('Hangout Toolbox')
     # def custom_overlay(self, image):
@@ -164,7 +165,7 @@ class ToolBox(object):
 
         """
         self.base.browser.xpath(
-            '//img[contains(@src, "lower_24.png")]').click(timeout=0.5)
+            '//img[contains(@src, "lower_24.png")]').click(TIMEOUTS.fast)
         enable_button = self.base.browser.xpath(
             '//*[text()="%s"]/..//div[contains(@class, "icn-toggle")]' % name)
-        enable_button.click(timeout=0.5)
+        enable_button.click(TIMEOUTS.fast)

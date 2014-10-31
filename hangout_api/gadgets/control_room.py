@@ -2,7 +2,7 @@
 API for ControlRoom Hangout PlugIn
 """
 from hangout_api.gadgets.utils import gadget_context_handler
-from hangout_api.utils import tries_n_time_until_true
+from hangout_api.utils import tries_n_time_until_true, TIMEOUTS
 
 _AUDIO_XPATH = '//div[contains(text(), "%s")]/../../div[2]/div[1]'
 _VIDEO_XPATH = '//div[contains(text(), "%s")]/../../div[2]/div[2]'
@@ -68,9 +68,11 @@ class ControlRoom(object):
         if mute is None:
             return status
         if status != mute:
-            controller.parent.click(0.5)
-            controller.click(0.5)
-            tries_n_time_until_true(lambda: get_status(controller) == mute)
+            controller.parent.click(TIMEOUTS.fast)
+            controller.parent.click(TIMEOUTS.fast)
+            controller.click(TIMEOUTS.fast)
+            tries_n_time_until_true(
+                lambda: get_status(controller) == mute, try_num=200)
             return True
         return False
 
