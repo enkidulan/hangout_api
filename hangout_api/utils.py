@@ -111,6 +111,7 @@ class Utils(object):
         node.clear()
         node.send_keys(text)
 
+    @retry(stop_max_attempt_number=3)
     def click_menu_element(self, xpath, func='xpath'):
         """
         Make items menu to show out if it is hidden and click on its element
@@ -140,6 +141,7 @@ class Utils(object):
                     cancel_button.click(timeout=timeout)
 
     @property
+    @retry(stop_max_attempt_number=3)
     def is_logged_in(self):
         """
         Returns True if user is loged in, otherwise returns False.
@@ -151,6 +153,7 @@ class Utils(object):
             self.browser.current_url.startswith(URLS.personalinfo)
         return tries_n_time_until_true(is_logged_in)
 
+    @retry(stop_max_attempt_number=3)
     def navigate_to_devices_settings(self):
         """
         Opens dialog box for device setting in HG call.

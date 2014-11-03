@@ -126,7 +126,6 @@ class Hangouts(object):
 
         .. doctest:: HangoutsBase
 
-            >>> hangout.hangout_id
             >>> hangout.start()
             >>> hangout.hangout_id
             'gs4pp6g62w65moctfqsvihzq2qa'
@@ -186,7 +185,7 @@ class Hangouts(object):
         self.hangout_id = self.browser.current_url.replace(
             URLS.hangout_session_base, '', 1).split('?', 1)[0]
 
-    @retry(stop_max_attempt_number=3)
+    # @retry(stop_max_attempt_number=3)
     def connect(self, hangout_id):
         """
         Connect to an existing hangout.
@@ -267,7 +266,8 @@ class Hangouts(object):
         self.utils.click_menu_element('//div[@aria-label="Invite People"]')
         input_field = self.browser.xpath(
             '//input[@placeholder="+ Add names, circles, or email addresses"]')
-        input_field.send_keys("\n" + ", ".join(participants) + "\n\n")
+        input_field.click()
+        self.utils.set_text(input_field, ", ".join(participants) + ",\n\n")
         self.browser.by_text('Invite').click(timeout=TIMEOUTS.fast)
         # making sure that invitation is posted
         xpath = '//*[text()="Invitation posted"'\
@@ -315,14 +315,13 @@ class Hangouts(object):
         self.browser.switch_to_window(self.browser.window_handles[-1])
 
     def __del__(self):
-        # leaving the call first
-        try:
-            if self.hangout_id:
-                self.disconnect()
-        finally:
-            # and quiting browser and display
+        # and quiting browser and display
+        if self.browser:
             try:
-                self.browser.quit()
+                if self.hangout_id and self.browser.window_handles:
+                    # leaving the call first
+                    self.disconnect()
             finally:
-                if self.display is not None:
-                    self.display.stop()
+                self.browser.quit()
+        if self.display is not None:
+            self.display.stop()

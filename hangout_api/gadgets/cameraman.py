@@ -44,16 +44,21 @@ class Cameraman(object):
         """
         Helper function that handles turning on and off Cameraman properties
         """
-        status_xpath = '//*[contains(@class, "%s")]/div[@aria-checked="true"]'
-        status = self.base.browser.xpath(
-            status_xpath % class_name).get_attribute(
-                'innerText').strip() == 'Yes'
+        status_xpath = \
+            '//*[contains(@class, "%s")]/div[@aria-checked="true"]' \
+            % class_name
+        value_xpath = '//*[contains(@class, "%s")]//div[text()="%s"]' % (
+            class_name, 'Yes' if value else 'No')
+        status = self.base.browser.xpath(status_xpath).get_attribute(
+            'innerText').strip() == 'Yes'
         if value is None:
             return status
         if status != value:
-            value_xpath = '//*[contains(@class, "%s")]//div[text()="%s"]' % (
-                class_name, 'Yes' if value else 'No')
             self.base.browser.xpath(value_xpath).click(TIMEOUTS.fast)
+            # waiting for a change
+            self.base.browser.xpath(
+                status_xpath + '//div[text()="%s"]' % (
+                    'Yes' if value else 'No'))
             return True
         return False
 

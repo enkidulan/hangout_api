@@ -113,7 +113,7 @@ class ToolBox(object):
     #         "Can't find a way to set image")
     #     self.base.browser.xpath(
     #         '//img[contains(@src, "lower_24.png")]').click(
-                # timeout=TIMEOUTS.fast)
+    #            # timeout=TIMEOUTS.fast)
     #     self.base.browser.by_text("Custom Upload").click(
         # timeout=TIMEOUTS.fast)
     #     self.base.browser.execute_script(
