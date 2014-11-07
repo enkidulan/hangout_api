@@ -25,7 +25,7 @@ URLS = EasyDict(
 )
 
 
-class Timeouts():
+class Timeouts(object):
     # pylint: disable=too-few-public-methods, no-init
     """
     Timeouts helper, contain set of used timeouts for easier management
