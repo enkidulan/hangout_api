@@ -3,6 +3,7 @@ Hangout API for audio
 """
 
 from hangout_api.settings.utils import BaseSettings
+from retrying import retry
 
 
 class AudioDevice(object):
@@ -60,6 +61,7 @@ class AudioSettings(BaseSettings):
     """
     device_class = AudioDevice
 
+    @retry(stop_max_attempt_number=3)
     def get_devices(self, with_nodes=False):
         """
         Returns list of available audio devices:
@@ -76,6 +78,7 @@ class AudioSettings(BaseSettings):
         return self._devices_getter(
             device_xpath, devices_list_xpath, with_nodes)
 
+    @retry(stop_max_attempt_number=3)
     def set_device(self, device_name):
         """
         Set device by its name:
@@ -90,6 +93,7 @@ class AudioSettings(BaseSettings):
         return self._device_setter(device_name)
 
     @property
+    @retry(stop_max_attempt_number=3)
     def current_device(self):
         """
         Returns current device:

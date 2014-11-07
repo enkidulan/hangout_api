@@ -5,6 +5,8 @@ Hangout API for bandwidth
 from enum import Enum
 from hangout_api.settings.utils import BaseSettings
 from hangout_api.utils import TIMEOUTS
+from retrying import retry
+
 
 BANDWIDTH_LEVELS = Enum(
     'Bandwidth', {
@@ -53,6 +55,7 @@ class BandwidthSettings(BaseSettings):
         return self.base.browser.xpath(
             '//div[@aria-label="Adjust the quality of your video"]')
 
+    @retry(stop_max_attempt_number=3)
     def set(self, bandwidth):
         """
         Set bandwidth setting for hangout
@@ -67,6 +70,7 @@ class BandwidthSettings(BaseSettings):
         # setting levels
         levels[bandwidth].click(TIMEOUTS.fast)
 
+    @retry(stop_max_attempt_number=3)
     def get(self):
         """
         Get bandwidth setting for hangout.

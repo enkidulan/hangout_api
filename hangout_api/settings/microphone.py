@@ -3,6 +3,7 @@ Hangout API for Microphone
 """
 
 from hangout_api.settings.utils import BaseSettings, MutingHandler
+from retrying import retry
 
 
 class MicrophoneDevice(object):
@@ -81,6 +82,7 @@ class MicrophoneSettings(BaseSettings):
             no_device='Microphone not detected')
 
     @property
+    @retry(stop_max_attempt_number=3)
     def is_muted(self):
         """
         Returns True if microphone is muted, otherwise returns False
@@ -93,6 +95,7 @@ class MicrophoneSettings(BaseSettings):
         """
         return self.muting_handler.is_muted()
 
+    @retry(stop_max_attempt_number=3)
     def unmute(self):
         """
         Un-mute microphone device. Returns:
@@ -111,6 +114,7 @@ class MicrophoneSettings(BaseSettings):
         """
         return self.muting_handler.unmute()
 
+    @retry(stop_max_attempt_number=3)
     def mute(self):
         """
         Mute microphone device. Returns:
@@ -129,6 +133,7 @@ class MicrophoneSettings(BaseSettings):
         """
         return self.muting_handler.mute()
 
+    @retry(stop_max_attempt_number=3)
     def get_devices(self, with_nodes=False):
         """
         Returns list of available microphone devices:
@@ -144,6 +149,7 @@ class MicrophoneSettings(BaseSettings):
         return self._devices_getter(
             device_xpath, devices_list_xpath, with_nodes)
 
+    @retry(stop_max_attempt_number=3)
     def set_device(self, device_name):
         """
         Set device by its name:
@@ -158,6 +164,7 @@ class MicrophoneSettings(BaseSettings):
         return self._device_setter(device_name)
 
     @property
+    @retry(stop_max_attempt_number=3)
     def current_device(self):
         """
         Returns current device:

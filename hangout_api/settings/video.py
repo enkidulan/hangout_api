@@ -3,6 +3,7 @@ Hangout API for Video
 """
 
 from hangout_api.settings.utils import BaseSettings, MutingHandler
+from retrying import retry
 
 
 class VideoDevice(object):
@@ -77,6 +78,7 @@ class VideoSettings(BaseSettings):
             no_device='Camera not detected')
 
     @property
+    @retry(stop_max_attempt_number=3)
     def is_muted(self):
         """
         Returns True if video is muted, otherwise returns True
@@ -88,6 +90,7 @@ class VideoSettings(BaseSettings):
         """
         return self.muting_handler.is_muted()
 
+    @retry(stop_max_attempt_number=3)
     def mute(self):
         """
         Mute video device. Returns:
@@ -106,6 +109,7 @@ class VideoSettings(BaseSettings):
         """
         return self.muting_handler.mute()
 
+    @retry(stop_max_attempt_number=3)
     def unmute(self):
         """
         Un-mute video device. Returns:
@@ -124,6 +128,7 @@ class VideoSettings(BaseSettings):
         """
         return self.muting_handler.unmute()
 
+    @retry(stop_max_attempt_number=3)
     def get_devices(self, with_nodes=False):
         """
         Returns list of available video devices:
@@ -140,6 +145,7 @@ class VideoSettings(BaseSettings):
         return self._devices_getter(
             device_xpath, devices_list_xpath, with_nodes)
 
+    @retry(stop_max_attempt_number=3)
     def set_device(self, device_name):
         """
         Set device by its name:
@@ -154,6 +160,7 @@ class VideoSettings(BaseSettings):
         return self._device_setter(device_name)
 
     @property
+    @retry(stop_max_attempt_number=3)
     def current_device(self):
         """
         Returns current device:
