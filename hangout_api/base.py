@@ -92,6 +92,20 @@ class Hangouts(object):
         seleniumwrapper.create = DummySelenium
 
 
+    .. testsetup:: HangoutsBase2
+
+        import os
+        os.environ['DISPLAY'] = '1'
+        from hangout_api import Hangouts
+        from hangout_api.tests.doctests_utils import DummySelenium
+        import seleniumwrapper
+
+        DummySelenium.location = {'x': 1}
+
+        seleniumwrapper.create = DummySelenium
+        hangout = Hangouts()
+
+
     .. doctest:: HangoutsBase
 
         >>> hangout = Hangouts()
@@ -253,7 +267,7 @@ class Hangouts(object):
         """
         Invite person or circle to hangout:
 
-        .. doctest:: HangoutsBase
+        .. doctest:: HangoutsBase2
 
             >>> hangout.invite("persona@gmail.com")
             >>> hangout.invite(["personb@gmail.com", "Public", "Friends"])
@@ -296,7 +310,7 @@ class Hangouts(object):
         Leave hangout (equal on clicking on "Leave call" button). After
         leaving the call you can create a new one or connect to existing.
 
-        .. doctest:: HangoutsBase
+        .. doctest:: HangoutsBase2
 
             >>> hangout.disconnect()
 

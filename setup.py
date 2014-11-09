@@ -16,7 +16,7 @@ install_requires = [
     'chromedriver',
     'zope.interface',
     'zope.component',
-    'retrying',
+    'retrying>=1.3.1enkidu',
     # -*- Extra requirements: -*-
 ]
 

@@ -11,6 +11,9 @@ class DummySelenium():
     def __init__(*args, **kargs):
         return
 
+    def clear(self):
+        pass
+
     def quit(self):
         return
 

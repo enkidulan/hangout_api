@@ -6,71 +6,78 @@
 Welcome to Python Hangout Api's documentation
 ==============================================
 
-Hangout API is python API for google hangouts build on top of selenium library.
+Hangout API is python API for google hangouts built on top of selenium library.
 It provides ability to create new hangouts, connect to existing calls,
 invite people to call and manage call settings.
 
 Hangout structure:
 
-  - `hangout`_ it is a base allows you to log in, create new hangouts, etc..
-  - `hangout.audio`_ - that allows you to set or get audio device, etc...
-  - `hangout.video`_ - that allows you to mute/un-mute video, set video device, etc...
-  - `hangout.microphone`_ - that allows you to mute/un-mute microphone, set microphone device, etc...
-  - `hangout.bandwidth`_ - that allows you to get or set bandwidth.
-  - `hangout.toolbox`_ - API to Hangouts ToolBox PlugIn
+  - `hangout`_ - Base Hangouts functionality. Allows you to log in, create new hangouts, etc..
+  - `hangout.audio`_ - Allows control over the hangout's audio output settings.
+  - `hangout.video`_ - Allows control over the hangout's video output settings.
+  - `hangout.microphone`_ - Allows control over the hangout's microphone settings.
+  - `hangout.bandwidth`_ - Allows control over the hangout's bandwidth and quality.
+  - `hangout.toolbox`_ - API to Hangouts `ToolBox PlugIn`_
 
-There is also some extension that are availably for OnAir Hangouts only:
+Some extensions are only available in `OnAir Hangouts`_. These are:
 
-  - `hangout.broadcast`_ - allows you manage your broadcasting: start, stop, get its youtube url, etc...
-  - `hangout.cameraman`_ - API to Hangouts Cameraman PlugIn
-  - `hangout.controlroom`_ - API to Hangouts Control Room PlugIn
+  - `hangout.broadcast`_ - Allows to manage `On Air broadcasting`_
+  - `hangout.cameraman`_ - API to Hangouts `Cameraman PlugIn`_
+  - `hangout.controlroom`_ - API to Hangouts `Control Room PlugIn`_
 
 Also you can read `developers notes`_
 
 
-How to use Hangout API
-============================================
+.. How to use Hangout API
+.. ============================================
 
-.. testsetup:: base_api
+.. .. testsetup:: base_api
 
-    from hangout_api.tests.utils import credentials
-    from hangout_api.tests.utils import hangout_factory as Hangouts
-    email = credentials['name']
-    password = credentials['password']
+..     from hangout_api.tests.utils import credentials
+..     from hangout_api.tests.utils import hangout_factory as Hangouts
+..     email = credentials['name']
+..     password = credentials['password']
 
-.. testcleanup:: base_api
+.. .. testcleanup:: base_api
 
-    del hangout
+..     del hangout
 
 
-First of all you need to log in:
+.. First you need to log in:
 
-    .. doctest:: base_api
+..     .. doctest:: base_api
 
-        >>> hangout = Hangouts()
-        >>> hangout.login(email, password)
+..         >>> hangout = Hangouts()
+..         >>> hangout.login(email, password)
 
-Now you can start new or connect to existing hangouts and invite people:
+.. Then you can start a new hangout or connected to an existing one.
 
-    .. doctest:: base_api
+..     .. doctest:: base_api
 
-        >>> hangout.start()
-        >>> hangout.invite(['maxybot@gmail.com', 'Friends'])
+..         >>> hangout.start()
 
-Or get (or change) call setting, like bandwidth, audio, etc:
 
-    .. doctest:: base_api
+.. Once in a hangout you can invite (via an email address or using a circle name)
+.. other people to the hangout.
 
-        >>> hangout.microphone.get_devices()
-        [...]
-        >>> hangout.video.get_devices()
-        [...]
+..     .. doctest:: base_api
 
-And leave the call when you done:
+..         >>> hangout.invite(['maxybot@gmail.com', 'Friends'])
 
-    .. doctest:: base_api
+.. Or get (or change) call setting, like bandwidth, audio, etc:
 
-        >>> hangout.disconnect()
+..     .. doctest:: base_api
+
+..         >>> hangout.microphone.get_devices()
+..         [...]
+..         >>> hangout.video.get_devices()
+..         [...]
+
+.. And leave the call when you done:
+
+..     .. doctest:: base_api
+
+..         >>> hangout.disconnect()
 
 
 Indices and tables
@@ -97,3 +104,8 @@ Indices and tables
 .. _hangout.cameraman: api/Cameraman.html#hangout_api.gadgets.cameraman.Cameraman
 .. _hangout.controlroom: api/ControlRoom.html#hangout_api.gadgets.control_room.ControlRoom
 .. _developers notes: DevelopersNotes.html
+
+.. _ToolBox PlugIn: http://hangouttoolbox.com/
+.. _OnAir Hangouts: https://support.google.com/plus/answer/2660854?hl=en
+.. _Cameraman PlugIn: https://support.google.com/plus/answer/2660854?hl=en
+.. _Control Room PlugIn: https://support.google.com/plus/answer/2660854?hl=en
