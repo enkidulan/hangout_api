@@ -1,0 +1,12 @@
+#!${buildout:directory}/bin/python
+import sys
+import sphinx
+from coverage import coverage
+cov = coverage(source=['hangout_api'])
+cov.start()
+try:
+    sys.exit(sphinx.main())
+finally:
+    cov.stop()
+    cov.save()
+    cov.html_report()
