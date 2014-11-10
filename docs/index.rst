@@ -6,20 +6,20 @@
 Welcome to Python Hangout Api's documentation
 ==============================================
 
-Hangout API is python API for google hangouts built on top of selenium library.
-It provides ability to create new hangouts, connect to existing calls,
-invite people to call and manage call settings.
+Hangout API is python API for for controlling `Google Hangouts video calls`_ built
+on top of selenium library. It provides ability to create new hangouts, connect
+to existing calls, invite people to call and manage call settings.
 
 Hangout structure:
 
   - `hangout`_ - Base Hangouts functionality. Allows you to log in, create new hangouts, etc..
   - `hangout.audio`_ - Allows control over the hangout's audio output settings.
-  - `hangout.video`_ - Allows control over the hangout's video output settings.
+  - `hangout.video`_ - Allows control over the hangout's video settings.
   - `hangout.microphone`_ - Allows control over the hangout's microphone settings.
   - `hangout.bandwidth`_ - Allows control over the hangout's bandwidth and quality.
   - `hangout.toolbox`_ - API to Hangouts `ToolBox PlugIn`_
 
-Some extensions are only available in `OnAir Hangouts`_. These are:
+Some extensions are only available in `Hangouts On Air`_. These are:
 
   - `hangout.broadcast`_ - Allows to manage `On Air broadcasting`_
   - `hangout.cameraman`_ - API to Hangouts `Cameraman PlugIn`_
@@ -28,56 +28,56 @@ Some extensions are only available in `OnAir Hangouts`_. These are:
 Also you can read `developers notes`_
 
 
-.. How to use Hangout API
-.. ============================================
+How to use Hangout API
+============================================
 
-.. .. testsetup:: base_api
+.. testsetup:: base_api
 
-..     from hangout_api.tests.utils import credentials
-..     from hangout_api.tests.utils import hangout_factory as Hangouts
-..     email = credentials['name']
-..     password = credentials['password']
+    from hangout_api.tests.utils import credentials
+    from hangout_api.tests.utils import hangout_factory as Hangouts
+    email = credentials['name']
+    password = credentials['password']
 
-.. .. testcleanup:: base_api
+.. testcleanup:: base_api
 
-..     del hangout
-
-
-.. First you need to log in:
-
-..     .. doctest:: base_api
-
-..         >>> hangout = Hangouts()
-..         >>> hangout.login(email, password)
-
-.. Then you can start a new hangout or connected to an existing one.
-
-..     .. doctest:: base_api
-
-..         >>> hangout.start()
+    del hangout
 
 
-.. Once in a hangout you can invite (via an email address or using a circle name)
-.. other people to the hangout.
+First you need to log in:
 
-..     .. doctest:: base_api
+    .. doctest:: base_api
 
-..         >>> hangout.invite(['maxybot@gmail.com', 'Friends'])
+        >>> hangout = Hangouts()
+        >>> hangout.login(email, password)
 
-.. Or get (or change) call setting, like bandwidth, audio, etc:
+Then you can start a new hangout or connected to an existing one.
 
-..     .. doctest:: base_api
+    .. doctest:: base_api
 
-..         >>> hangout.microphone.get_devices()
-..         [...]
-..         >>> hangout.video.get_devices()
-..         [...]
+        >>> hangout.start()
 
-.. And leave the call when you done:
 
-..     .. doctest:: base_api
+Once in a hangout you can invite (via an email address or using a circle name)
+other people to the hangout.
 
-..         >>> hangout.disconnect()
+    .. doctest:: base_api
+
+        >>> hangout.invite(['maxybot@gmail.com', 'Friends'])
+
+Or get (or change) call setting, like bandwidth, audio, etc:
+
+    .. doctest:: base_api
+
+        >>> hangout.microphone.get_devices()
+        [...]
+        >>> hangout.video.get_devices()
+        [...]
+
+And leave the call when you done:
+
+    .. doctest:: base_api
+
+        >>> hangout.disconnect()
 
 
 Indices and tables
@@ -106,6 +106,8 @@ Indices and tables
 .. _developers notes: DevelopersNotes.html
 
 .. _ToolBox PlugIn: http://hangouttoolbox.com/
-.. _OnAir Hangouts: https://support.google.com/plus/answer/2660854?hl=en
+.. _Hangouts On Air: https://support.google.com/plus/answer/2553119?hl=en&ref_topic=2553242&rd=1
+.. _On Air broadcasting: https://support.google.com/plus/answer/2660854?hl=en
 .. _Cameraman PlugIn: https://support.google.com/plus/answer/2660854?hl=en
 .. _Control Room PlugIn: https://support.google.com/plus/answer/2660854?hl=en
+.. _Google Hangouts video calls: https://support.google.com/hangouts/answer/3110347?hl=en&ref_topic=2944918
