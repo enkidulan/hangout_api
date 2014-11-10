@@ -16,7 +16,7 @@ install_requires = [
     'chromedriver',
     'zope.interface',
     'zope.component',
-    'retrying>=1.3.1enkidu',
+    'retrying',
     # -*- Extra requirements: -*-
 ]
 
@@ -43,9 +43,6 @@ setup(name='hangout_api',
       include_package_data=True,
       zip_safe=False,
       install_requires=install_requires,
-      dependency_links=[
-        'http://dist.enkidulan.tk/retrying-1.3.1enkidu.zip',
-      ],
       extras_require={
           'tests': ['testfixtures',
                     'nose',
