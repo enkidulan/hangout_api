@@ -14,6 +14,8 @@ import seleniumwrapper as selwrap
 from chromedriver import CHROMEDRV_PATH
 from zope.component import getUtilitiesFor
 from retrying import retry
+from selenium.webdriver.common.keys import Keys
+from time import sleep
 
 from selenium.webdriver.remote.remote_connection import LOGGER
 import logging
@@ -281,7 +283,11 @@ class Hangouts(object):
         input_field = self.browser.xpath(
             '//input[@placeholder="+ Add names, circles, or email addresses"]')
         input_field.click()
-        self.utils.set_text(input_field, ", ".join(participants) + ",\n\n")
+        input_field.clear()
+        for participant in participants:
+            input_field.send_keys(participant)
+            sleep(1)  # need to wait a bit for HG to make request
+            input_field.send_keys(Keys.RETURN)
         self.browser.by_text('Invite').click(timeout=TIMEOUTS.fast)
         # making sure that invitation is posted
         xpath = '//*[text()="Invitation posted"'\
