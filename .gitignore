@@ -58,3 +58,5 @@ tests/resources/credentials.yaml
 
 # coverage
 cover/
+
+hangout_api/tests/resources/credentials.yaml
