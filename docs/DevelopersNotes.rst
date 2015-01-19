@@ -89,6 +89,17 @@ For more examples take a look at *hangout_api.gadgets*.
 Testing
 =======
 
+**Tests require to have 4 active google accounts**, one with mush have OTP
+protection. You need to put credential of these accounts into
+hangout_api/tests/resources/credentials.yaml file. Alternatively you can
+use already created account, just mail my for $super_secret_password and run
+following code:
+
+.. code:: bash:
+
+    openssl aes-256-cbc -k "$super_secret_password" -in hangout_api/tests/resources/credentials.yaml.enc -out hangout_api/tests/resources/credentials.yaml -d
+
+
 What are tested:
 
     * pep8 && pylint
