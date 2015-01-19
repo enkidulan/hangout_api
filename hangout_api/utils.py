@@ -22,6 +22,7 @@ URLS = EasyDict(
     plus_main='https://plus.google.com/',
     personalinfo='https://www.google.com/settings/personalinfo',
     service_login='https://accounts.google.com/ServiceLogin',
+    my_account_page='https://myaccount.google.com/',
 )
 
 
@@ -150,7 +151,8 @@ class Utils(object):
         """
         is_logged_in = lambda: \
             self.browser.current_url.startswith(URLS.plus_main) or \
-            self.browser.current_url.startswith(URLS.personalinfo)
+            self.browser.current_url.startswith(URLS.personalinfo) or \
+            self.browser.current_url.startswith(URLS.my_account_page)
         return tries_n_time_until_true(is_logged_in)
 
     @retry(stop_max_attempt_number=3)
