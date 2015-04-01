@@ -149,11 +149,11 @@ class Utils(object):
         Be careful this function analyzing current URL to determinate
         if user loged in or not.
         """
-        is_logged_in = lambda: \
+        def _is_logged_in():
             self.browser.current_url.startswith(URLS.plus_main) or \
             self.browser.current_url.startswith(URLS.personalinfo) or \
             self.browser.current_url.startswith(URLS.my_account_page)
-        return tries_n_time_until_true(is_logged_in)
+        return tries_n_time_until_true(_is_logged_in)
 
     @retry(stop_max_attempt_number=3)
     def navigate_to_devices_settings(self):
