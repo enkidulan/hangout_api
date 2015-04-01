@@ -13,6 +13,9 @@ Hangout API
 .. image:: https://landscape.io/github/enkidulan/hangout_api/master/landscape.png
    :target: https://landscape.io/github/enkidulan/hangout_api/master
    :alt: Code Health
+.. image:: https://www.versioneye.com/user/projects/551bed6b3661f1de6d0001f6/badge.svg?style=flat
+   :target: https://www.versioneye.com/user/projects/551bed6b3661f1de6d0001f6
+   :alt: Dependency Status
 
 **Python API for controlling Google+ Hangouts**
 
