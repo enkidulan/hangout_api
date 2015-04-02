@@ -150,9 +150,13 @@ class Utils(object):
         if user loged in or not.
         """
         def _is_logged_in():
-            self.browser.current_url.startswith(URLS.plus_main) or \
-            self.browser.current_url.startswith(URLS.personalinfo) or \
-            self.browser.current_url.startswith(URLS.my_account_page)
+            """
+            simple function wrapper to check in user is logged in
+            """
+            return \
+                self.browser.current_url.startswith(URLS.plus_main) or \
+                self.browser.current_url.startswith(URLS.personalinfo) or \
+                self.browser.current_url.startswith(URLS.my_account_page)
         return tries_n_time_until_true(_is_logged_in)
 
     @retry(stop_max_attempt_number=3)

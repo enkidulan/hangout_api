@@ -1,3 +1,4 @@
+import operator
 import unittest
 from testfixtures import compare, ShouldRaise
 from hangout_api.utils import Participant
@@ -41,14 +42,15 @@ class TestBaseAPI(unittest.TestCase):
         users = [[credentials['name_2'], credentials['password_2']],
                  [credentials['name_3'], credentials['password_3']]]
         with hangouts_connection_manager(users, self.hangout.hangout_id):
-            sleep(5)  # lets give some time to make sure that google add all
+            sleep(10)  # lets give some time to make sure that google add all
             # participants to hangout
             participants = self.hangout.participants()
+        participants.sort(key=operator.attrgetter('profile_id'))
         compare(
             participants,
-            [Participant(name='John Doe',
-                         profile_id='108775712935793912532'),
-             Participant(name='Lorem Impus',
-                         profile_id='115041713348329690244'),
-             Participant(name='Gilgamesh Bot',
-                         profile_id='108572696173264293426')])
+            [Participant(profile_id='108572696173264293426',
+                         name='Gilgamesh Bot'),
+             Participant(profile_id='108775712935793912532',
+                         name='John Doe'),
+             Participant(profile_id='115041713348329690244',
+                         name='Lorem Impus')])

@@ -17,10 +17,6 @@ from retrying import retry
 from selenium.webdriver.common.keys import Keys
 from time import sleep
 
-from selenium.webdriver.remote.remote_connection import LOGGER
-import logging
-LOGGER.setLevel(logging.WARNING)  # reducing selenium verbosity
-
 from .utils import (
     Utils,
     URLS,
@@ -32,6 +28,10 @@ from .utils import (
 from .exceptions import LoginError
 from .interfaces import IModule, IOnAirModule
 
+from selenium.webdriver.remote.remote_connection import LOGGER
+import logging
+LOGGER.setLevel(logging.WARNING)  # reducing selenium verbosity
+
 
 @retry(stop_max_attempt_number=3)
 def _create_hangout_event(browser, name, attendees):
@@ -41,7 +41,7 @@ def _create_hangout_event(browser, name, attendees):
     visitor is logged in
     """
     browser.get(URLS.onair)
-    browser.by_text('Start a Hangout On Air').click(TIMEOUTS.fast)
+    browser.by_text('Create a Hangout On Air').click(TIMEOUTS.fast)
     # Setting name
     browser.xpath(
         '//input[@aria-label="Give it a name"]').send_keys(name)
@@ -128,7 +128,7 @@ class Hangouts(object):
         kwargs = {'executable_path': executable_path or CHROMEDRV_PATH}
         if chrome_options is not None:
             kwargs['chrome_options'] = chrome_options
-        # pylint: disable=W0142
+
         self.browser = selwrap.create('chrome', **kwargs)
 
         self.utils = Utils(self.browser)
@@ -179,7 +179,8 @@ class Hangouts(object):
                 self.browser.get(URLS.hangouts_active_list)
             # G+ opens new window for new hangout, so we need to
             # switch selenium to it
-            self.browser.by_class('opd').click(timeout=TIMEOUTS.fast)
+            self.browser.by_text(
+                'Start a video Hangout').click(timeout=TIMEOUTS.fast)
 
         # waiting until new window appears
         tries_n_time_until_true(
@@ -302,13 +303,17 @@ class Hangouts(object):
         .. doctest:: HangoutsBase
 
             >>> hangout.participants()
-            [Participant(name='John Doe', profile_id='108775712935'), ...]
+            [Participant(name='John Doe', profile_id='108775712935')]
         """
         xpath = '//div[@data-userid]'
-        participants = self.browser.xpath(xpath, eager=True)
-        return [Participant(p.get_attribute('aria-label')[5:-11],
-                            p.get_attribute('data-userid'))
-                for p in participants]
+        # for some reason some persons can be listed twice, so let's
+        # filter them with dict
+        participants = {
+            p.get_attribute('data-userid'): p.get_attribute(
+                'aria-label')[5:-11]
+            for p in self.browser.xpath(xpath, eager=True)}
+        return [Participant(name=pname, profile_id=pid)
+                for pid, pname in participants.items()]
 
     @retry(stop_max_attempt_number=3)
     def disconnect(self):
